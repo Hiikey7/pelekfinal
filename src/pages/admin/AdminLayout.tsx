@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { LayoutDashboard, Home, FileText, HelpCircle, Star, Gift, Mail, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Home, FileText, HelpCircle, Star, Gift, Mail, LogOut, Menu, X, ListChecks } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { to: '/admin/reviews', icon: Star, label: 'Reviews' },
   { to: '/admin/offers', icon: Gift, label: 'Offers' },
   { to: '/admin/messages', icon: Mail, label: 'Messages' },
+  { to: '/admin/amenities', icon: ListChecks, label: 'Amenities' },
 ];
 
 export default function AdminLayout() {

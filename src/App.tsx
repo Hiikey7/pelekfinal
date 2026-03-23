@@ -27,6 +27,7 @@ import AdminFaqs from "./pages/admin/AdminFaqs";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminOffers from "./pages/admin/AdminOffers";
 import AdminMessages from "./pages/admin/AdminMessages";
+import AdminAmenities from "./pages/admin/AdminAmenities";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="offers" element={<AdminOffers />} />
             <Route path="messages" element={<AdminMessages />} />
+            <Route path="amenities" element={<AdminAmenities />} />
           </Route>
 
           {/* Public routes */}
