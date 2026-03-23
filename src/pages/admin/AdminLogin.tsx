@@ -1,24 +1,52 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth.tsx';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { setIsAdmin, setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
+    
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       toast.error(error.message);
-    } else {
-      navigate('/admin');
+      setLoading(false);
+      return;
     }
+
+    // Check admin role separately after auth completes
+    const userId = data.user?.id;
+    if (!userId) {
+      toast.error('Login failed');
+      setLoading(false);
+      return;
+    }
+
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    if (!roleData) {
+      toast.error('You do not have admin access');
+      await supabase.auth.signOut();
+      setLoading(false);
+      return;
+    }
+
+    setUser(data.user);
+    setIsAdmin(true);
+    navigate('/admin');
     setLoading(false);
   };
 
