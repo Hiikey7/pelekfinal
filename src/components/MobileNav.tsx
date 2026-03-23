@@ -24,10 +24,9 @@ export default function MobileNav() {
                 href={item.to}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center gap-0.5 text-secondary"
+                className="flex items-center justify-center text-secondary"
               >
                 <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{item.label}</span>
               </a>
             );
           }
