@@ -29,26 +29,26 @@ export default function PropertyDetail() {
           <ArrowLeft className="w-4 h-4" /> Back to Properties
         </Link>
 
-        {/* Image Gallery */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="aspect-[4/3] rounded-2xl overflow-hidden"
-          >
-            <img src={property.images[activeImage]} alt={property.title} className="w-full h-full object-cover" />
-          </motion.div>
-          <div className="grid grid-cols-2 gap-4">
-            {property.images.slice(0, 4).map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveImage(i)}
-                className={`aspect-[4/3] rounded-xl overflow-hidden border-2 transition-colors ${activeImage === i ? 'border-secondary' : 'border-transparent'}`}
-              >
-                <img src={img} alt="" loading="lazy" className="w-full h-full object-cover" />
-              </button>
-            ))}
-          </div>
+        {/* Cover Image */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden mb-4"
+        >
+          <img src={property.images[activeImage]} alt={property.title} className="w-full h-full object-cover" />
+        </motion.div>
+
+        {/* Horizontal Image Carousel */}
+        <div className="flex gap-3 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+          {property.images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveImage(i)}
+              className={`flex-shrink-0 w-24 h-20 md:w-32 md:h-24 rounded-xl overflow-hidden border-2 transition-colors ${activeImage === i ? 'border-secondary' : 'border-transparent opacity-70 hover:opacity-100'}`}
+            >
+              <img src={img} alt="" loading="lazy" className="w-full h-full object-cover" />
+            </button>
+          ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
