@@ -13,9 +13,11 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error, isAdmin } = await signIn(email, password);
     if (error) {
       toast.error(error.message);
+    } else if (!isAdmin) {
+      toast.error('You do not have admin access');
     } else {
       navigate('/admin');
     }
