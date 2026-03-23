@@ -122,31 +122,41 @@ export default function Index() {
             <span className="ml-2 font-semibold text-foreground">4.8</span>
             <span className="text-muted-foreground text-sm">from Google Reviews</span>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-            {reviews.map(r => (
+          <div className="relative overflow-hidden max-w-md mx-auto">
+            <AnimatePresence mode="wait">
               <motion.div
-                key={r.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-card rounded-xl p-6 shadow-card flex-shrink-0 w-[280px] md:w-[320px] snap-start"
+                key={activeReview}
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -60 }}
+                transition={{ duration: 0.4 }}
+                className="bg-card rounded-xl p-6 shadow-card"
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-semibold text-sm">
-                    {r.avatar}
+                    {reviews[activeReview].avatar}
                   </div>
                   <div>
-                    <p className="font-semibold text-card-foreground text-sm">{r.name}</p>
+                    <p className="font-semibold text-card-foreground text-sm">{reviews[activeReview].name}</p>
                     <div className="flex gap-0.5">
-                      {Array.from({ length: r.rating }).map((_, i) => (
+                      {Array.from({ length: reviews[activeReview].rating }).map((_, i) => (
                         <Star key={i} className="w-3 h-3 fill-secondary text-secondary" />
                       ))}
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{r.comment}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{reviews[activeReview].comment}</p>
               </motion.div>
-            ))}
+            </AnimatePresence>
+            <div className="flex justify-center gap-1.5 mt-4">
+              {reviews.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveReview(i)}
+                  className={`w-2 h-2 rounded-full transition-colors ${i === activeReview ? 'bg-secondary' : 'bg-border'}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
