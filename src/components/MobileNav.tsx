@@ -1,10 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Heart, Home, FileText, MessageCircle } from 'lucide-react';
+import { Heart, Home, MessageCircle } from 'lucide-react';
 
 const items = [
   { to: '/favorites', icon: Heart, label: 'Wishlist' },
   { to: '/properties', icon: Home, label: 'Properties', center: true },
-  { to: '/blog', icon: FileText, label: 'Blogs' },
   { to: 'https://wa.me/254700000000', icon: MessageCircle, label: 'WhatsApp', external: true },
 ];
 
@@ -12,8 +11,8 @@ export default function MobileNav() {
   const location = useLocation();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-xl border-t border-border">
-      <div className="flex items-center justify-around h-16">
+    <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
+      <div className="flex items-center justify-around h-16 bg-background/95 backdrop-blur-xl border border-border rounded-full shadow-lg">
         {items.map((item) => {
           const isActive = !item.external && location.pathname === item.to;
           const Icon = item.icon;
