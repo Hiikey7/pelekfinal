@@ -38,8 +38,10 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm opacity-60">
-          © {new Date().getFullYear()} Pelek Properties. All rights reserved.
+        <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm opacity-60 flex flex-col sm:flex-row items-center justify-center gap-2">
+          <span>© {new Date().getFullYear()} Pelek Properties. All rights reserved.</span>
+          <span className="hidden sm:inline">·</span>
+          <Link to="/terms" className="hover:opacity-100 transition-opacity underline">Terms of Service</Link>
         </div>
       </div>
     </footer>
