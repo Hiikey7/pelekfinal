@@ -11,6 +11,7 @@ const navItems = [
   { to: '/admin/reviews', icon: Star, label: 'Reviews' },
   { to: '/admin/offers', icon: Gift, label: 'Offers' },
   { to: '/admin/messages', icon: Mail, label: 'Messages' },
+  { to: '/admin/amenities', icon: ListChecks, label: 'Amenities' },
 ];
 
 export default function AdminLayout() {

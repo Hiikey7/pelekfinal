@@ -48,6 +48,7 @@ const App = () => (
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="offers" element={<AdminOffers />} />
             <Route path="messages" element={<AdminMessages />} />
+            <Route path="amenities" element={<AdminAmenities />} />
           </Route>
 
           {/* Public routes */}
