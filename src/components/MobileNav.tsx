@@ -11,8 +11,8 @@ export default function MobileNav() {
   const location = useLocation();
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 md:hidden">
-      <div className="flex items-center justify-around h-16 bg-background/95 backdrop-blur-xl border border-border rounded-full shadow-lg">
+    <div className="fixed bottom-3 left-6 right-6 z-50 md:hidden">
+      <div className="flex items-center justify-around h-12 bg-background/95 backdrop-blur-xl border border-border rounded-full shadow-lg">
         {items.map((item) => {
           const isActive = !item.external && location.pathname === item.to;
           const Icon = item.icon;
