@@ -17,6 +17,17 @@ import Favorites from "./pages/Favorites";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
+// Admin
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProperties from "./pages/admin/AdminProperties";
+import AdminBlogs from "./pages/admin/AdminBlogs";
+import AdminFaqs from "./pages/admin/AdminFaqs";
+import AdminReviews from "./pages/admin/AdminReviews";
+import AdminOffers from "./pages/admin/AdminOffers";
+import AdminMessages from "./pages/admin/AdminMessages";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -25,23 +36,45 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Navbar />
-        <main className="min-h-screen">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/properties" element={<Properties />} />
-            <Route path="/property/:id" element={<PropertyDetail />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:id" element={<BlogDetail />} />
-            <Route path="/faq" element={<FAQPage />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-        <MobileNav />
+        <Routes>
+          {/* Admin routes - no Navbar/Footer */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="properties" element={<AdminProperties />} />
+            <Route path="blogs" element={<AdminBlogs />} />
+            <Route path="faqs" element={<AdminFaqs />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="offers" element={<AdminOffers />} />
+            <Route path="messages" element={<AdminMessages />} />
+          </Route>
+
+          {/* Public routes */}
+          <Route
+            path="*"
+            element={
+              <>
+                <Navbar />
+                <main className="min-h-screen">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/properties" element={<Properties />} />
+                    <Route path="/property/:id" element={<PropertyDetail />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogDetail />} />
+                    <Route path="/faq" element={<FAQPage />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/favorites" element={<Favorites />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+                <Footer />
+                <MobileNav />
+              </>
+            }
+          />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
