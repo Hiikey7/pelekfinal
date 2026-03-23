@@ -55,10 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     signingIn.current = true;
+    console.log('[AUTH] signIn called');
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    console.log('[AUTH] signInWithPassword result:', { user: !!data?.user, error: error?.message });
     if (!error && data.user) {
       setUser(data.user);
-      setIsAdmin(await checkAdmin(data.user.id));
+      const admin = await checkAdmin(data.user.id);
+      console.log('[AUTH] checkAdmin result:', admin);
+      setIsAdmin(admin);
       setLoading(false);
     }
     signingIn.current = false;
