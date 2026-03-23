@@ -113,14 +113,14 @@ export default function Index() {
             <span className="ml-2 font-semibold text-foreground">4.8</span>
             <span className="text-muted-foreground text-sm">from Google Reviews</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
             {reviews.map(r => (
               <motion.div
                 key={r.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="bg-card rounded-xl p-6 shadow-card"
+                className="bg-card rounded-xl p-6 shadow-card flex-shrink-0 w-[280px] md:w-[320px] snap-start"
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-semibold text-sm">
