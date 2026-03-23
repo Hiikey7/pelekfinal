@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
@@ -6,7 +6,7 @@ interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any; isAdmin: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -16,7 +16,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const signingIn = useRef(false);
 
   const checkAdmin = async (userId: string) => {
     const { data } = await supabase
@@ -29,8 +28,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        setIsAdmin(await checkAdmin(currentUser.id));
+      }
+      setLoading(false);
+    });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (signingIn.current) return;
       const currentUser = session?.user ?? null;
       setUser(currentUser);
       if (currentUser) {
@@ -41,32 +48,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-      if (currentUser) {
-        setIsAdmin(await checkAdmin(currentUser.id));
-      }
-      setLoading(false);
-    });
-
     return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    signingIn.current = true;
-    console.log('[AUTH] signIn called');
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    console.log('[AUTH] signInWithPassword result:', { user: !!data?.user, error: error?.message });
-    if (!error && data.user) {
-      setUser(data.user);
-      const admin = await checkAdmin(data.user.id);
-      console.log('[AUTH] checkAdmin result:', admin);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error, isAdmin: false };
+    // Wait for onAuthStateChange to process
+    await new Promise(resolve => setTimeout(resolve, 500));
+    // Double-check admin status
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      const admin = await checkAdmin(session.user.id);
       setIsAdmin(admin);
+      setUser(session.user);
       setLoading(false);
+      return { error: null, isAdmin: admin };
     }
-    signingIn.current = false;
-    return { error };
+    return { error: null, isAdmin: false };
   };
 
   const signOut = async () => {
