@@ -1,5 +1,5 @@
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth.tsx';
 import { LayoutDashboard, Home, FileText, HelpCircle, Star, Gift, Mail, LogOut, Menu, X, ListChecks } from 'lucide-react';
 import { useState } from 'react';
 
