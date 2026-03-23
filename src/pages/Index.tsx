@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Search, Star, ArrowRight, MessageCircle, ChevronDown } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import heroBg from '@/assets/hero-bg.jpg';
 import { properties, blogPosts, faqs, reviews } from '@/data/mockData';
 import PropertyCard from '@/components/PropertyCard';
