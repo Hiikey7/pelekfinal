@@ -35,7 +35,7 @@ export default function MobileNav() {
             <Link
               key={item.label}
               to={item.to}
-              className={`flex flex-col items-center gap-0.5 transition-colors ${
+              className={`flex items-center justify-center transition-colors ${
                 item.center
                   ? 'relative -mt-5 bg-secondary rounded-full p-3 text-accent-foreground shadow-lg'
                   : isActive
@@ -44,7 +44,6 @@ export default function MobileNav() {
               }`}
             >
               <Icon className={item.center ? 'w-6 h-6' : 'w-5 h-5'} />
-              {!item.center && <span className="text-[10px] font-medium">{item.label}</span>}
             </Link>
           );
         })}
