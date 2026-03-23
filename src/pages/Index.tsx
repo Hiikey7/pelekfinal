@@ -11,6 +11,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 export default function Index() {
   const { toggleFavorite, isFavorite } = useFavorites();
   const featured = properties.filter(p => p.featured);
+  const [activeReview, setActiveReview] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveReview(prev => (prev + 1) % reviews.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div>
