@@ -14,6 +14,7 @@ import BlogDetail from "./pages/BlogDetail";
 import FAQPage from "./pages/FAQPage";
 import Contact from "./pages/Contact";
 import Favorites from "./pages/Favorites";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
