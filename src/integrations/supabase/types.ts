@@ -170,6 +170,62 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string
+          num_days: number
+          payment_method: string
+          phone: string
+          price_per_night: number
+          property_id: string | null
+          property_title: string
+          status: string
+          total_amount: number
+          updated_at: string
+          visitor_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string
+          num_days?: number
+          payment_method?: string
+          phone?: string
+          price_per_night?: number
+          property_id?: string | null
+          property_title?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          visitor_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string
+          num_days?: number
+          payment_method?: string
+          phone?: string
+          price_per_night?: number
+          property_id?: string | null
+          property_title?: string
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          visitor_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       properties: {
         Row: {
           amenities: string[]

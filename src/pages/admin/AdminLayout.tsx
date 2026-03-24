@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.tsx';
-import { LayoutDashboard, Home, FileText, HelpCircle, Star, Gift, Mail, LogOut, Menu, X, ListChecks } from 'lucide-react';
+import { LayoutDashboard, Home, FileText, HelpCircle, Star, Gift, ShoppingCart, LogOut, Menu, X, ListChecks } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
@@ -10,7 +10,7 @@ const navItems = [
   { to: '/admin/faqs', icon: HelpCircle, label: 'FAQs' },
   { to: '/admin/reviews', icon: Star, label: 'Reviews' },
   { to: '/admin/offers', icon: Gift, label: 'Offers' },
-  { to: '/admin/messages', icon: Mail, label: 'Messages' },
+  { to: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
   { to: '/admin/amenities', icon: ListChecks, label: 'Amenities' },
 ];
 
