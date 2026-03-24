@@ -143,6 +143,8 @@ export type Database = {
           description: string
           id: string
           image: string
+          offer_type: string
+          promo_code: string
           title: string
           updated_at: string
         }
@@ -154,6 +156,8 @@ export type Database = {
           description?: string
           id?: string
           image?: string
+          offer_type?: string
+          promo_code?: string
           title: string
           updated_at?: string
         }
@@ -165,6 +169,8 @@ export type Database = {
           description?: string
           id?: string
           image?: string
+          offer_type?: string
+          promo_code?: string
           title?: string
           updated_at?: string
         }
