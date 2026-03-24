@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.tsx';
-import { LayoutDashboard, Home, FileText, HelpCircle, Star, Gift, Mail, LogOut, Menu, X, ListChecks } from 'lucide-react';
+import { LayoutDashboard, Home, FileText, HelpCircle, Star, Gift, ShoppingCart, LogOut, Menu, X, ListChecks } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
