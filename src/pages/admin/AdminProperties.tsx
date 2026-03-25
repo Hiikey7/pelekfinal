@@ -140,6 +140,15 @@ export default function AdminProperties() {
             <input placeholder="Bathrooms" type="number" value={form.bathrooms} onChange={e => setForm({ ...form, bathrooms: Number(e.target.value) })} className={inputClass} />
             <input placeholder="Latitude" type="number" step="any" value={form.lat} onChange={e => setForm({ ...form, lat: Number(e.target.value) })} className={inputClass} />
             <input placeholder="Longitude" type="number" step="any" value={form.lng} onChange={e => setForm({ ...form, lng: Number(e.target.value) })} className={inputClass} />
+            <input placeholder="Google Map Link (full URL)" value={form.google_map_link} onChange={e => setForm({ ...form, google_map_link: e.target.value })} className={inputClass} />
+            <div className="flex gap-2">
+              <select value={form.social_media_type} onChange={e => setForm({ ...form, social_media_type: e.target.value })} className={`${inputClass} w-1/3`}>
+                <option value="">No Social</option>
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+              </select>
+              <input placeholder="Social media URL" value={form.social_media_url} onChange={e => setForm({ ...form, social_media_url: e.target.value })} className={`${inputClass} flex-1`} />
+            </div>
           </div>
 
           <textarea placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className={`w-full ${inputClass} min-h-[80px]`} />
