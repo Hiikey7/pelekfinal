@@ -11,6 +11,7 @@ const emptyForm = {
   category: 'rental', type: '', image: '', images: [] as string[], description: '',
   amenities: [] as string[], bedrooms: 1, bathrooms: 1, guests: null as number | null,
   featured: false, whatsapp: '+254700000000', lat: 0, lng: 0,
+  google_map_link: '', social_media_url: '', social_media_type: '',
 };
 
 export default function AdminProperties() {
@@ -43,6 +44,7 @@ export default function AdminProperties() {
       amenities: p.amenities || [], bedrooms: p.bedrooms, bathrooms: p.bathrooms,
       guests: p.guests, featured: p.featured, whatsapp: p.whatsapp,
       lat: Number(p.lat), lng: Number(p.lng),
+      google_map_link: p.google_map_link || '', social_media_url: p.social_media_url || '', social_media_type: p.social_media_type || '',
     });
     setShowForm(true);
   };
@@ -138,6 +140,15 @@ export default function AdminProperties() {
             <input placeholder="Bathrooms" type="number" value={form.bathrooms} onChange={e => setForm({ ...form, bathrooms: Number(e.target.value) })} className={inputClass} />
             <input placeholder="Latitude" type="number" step="any" value={form.lat} onChange={e => setForm({ ...form, lat: Number(e.target.value) })} className={inputClass} />
             <input placeholder="Longitude" type="number" step="any" value={form.lng} onChange={e => setForm({ ...form, lng: Number(e.target.value) })} className={inputClass} />
+            <input placeholder="Google Map Link (full URL)" value={form.google_map_link} onChange={e => setForm({ ...form, google_map_link: e.target.value })} className={inputClass} />
+            <div className="flex gap-2">
+              <select value={form.social_media_type} onChange={e => setForm({ ...form, social_media_type: e.target.value })} className={`${inputClass} w-1/3`}>
+                <option value="">No Social</option>
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+              </select>
+              <input placeholder="Social media URL" value={form.social_media_url} onChange={e => setForm({ ...form, social_media_url: e.target.value })} className={`${inputClass} flex-1`} />
+            </div>
           </div>
 
           <textarea placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className={`w-full ${inputClass} min-h-[80px]`} />

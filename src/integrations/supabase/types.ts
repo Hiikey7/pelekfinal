@@ -241,6 +241,7 @@ export type Database = {
           created_at: string
           description: string
           featured: boolean
+          google_map_link: string
           guests: number | null
           id: string
           image: string
@@ -252,6 +253,8 @@ export type Database = {
           price_label: string
           rating: number
           reviews_count: number
+          social_media_type: string
+          social_media_url: string
           title: string
           type: string
           updated_at: string
@@ -265,6 +268,7 @@ export type Database = {
           created_at?: string
           description?: string
           featured?: boolean
+          google_map_link?: string
           guests?: number | null
           id?: string
           image?: string
@@ -276,6 +280,8 @@ export type Database = {
           price_label?: string
           rating?: number
           reviews_count?: number
+          social_media_type?: string
+          social_media_url?: string
           title: string
           type?: string
           updated_at?: string
@@ -289,6 +295,7 @@ export type Database = {
           created_at?: string
           description?: string
           featured?: boolean
+          google_map_link?: string
           guests?: number | null
           id?: string
           image?: string
@@ -300,6 +307,8 @@ export type Database = {
           price_label?: string
           rating?: number
           reviews_count?: number
+          social_media_type?: string
+          social_media_url?: string
           title?: string
           type?: string
           updated_at?: string
