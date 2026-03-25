@@ -28,7 +28,7 @@ import AdminFaqs from "./pages/admin/AdminFaqs";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminOffers from "./pages/admin/AdminOffers";
 import AdminOrders from "./pages/admin/AdminOrders";
-import AdminAmenities from "./pages/admin/AdminAmenities";
+import OfferPopup from "./components/OfferPopup";
 
 const queryClient = new QueryClient();
 
