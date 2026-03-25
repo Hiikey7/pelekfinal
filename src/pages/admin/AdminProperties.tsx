@@ -11,6 +11,7 @@ const emptyForm = {
   category: 'rental', type: '', image: '', images: [] as string[], description: '',
   amenities: [] as string[], bedrooms: 1, bathrooms: 1, guests: null as number | null,
   featured: false, whatsapp: '+254700000000', lat: 0, lng: 0,
+  google_map_link: '', social_media_url: '', social_media_type: '',
 };
 
 export default function AdminProperties() {
