@@ -1,24 +1,50 @@
 import { Link } from 'react-router-dom';
-import { Search, Star, ArrowRight, MessageCircle, ChevronDown } from 'lucide-react';
+import { Search, Star, ArrowRight, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import heroBg from '@/assets/hero-bg.jpg';
-import { properties, blogPosts, faqs, reviews } from '@/data/mockData';
+import { supabase } from '@/integrations/supabase/client';
 import PropertyCard from '@/components/PropertyCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import type { Tables } from '@/integrations/supabase/types';
+
+type Property = Tables<'properties'>;
+type Blog = Tables<'blogs'>;
+type FAQ = Tables<'faqs'>;
+type Review = Tables<'reviews'>;
 
 export default function Index() {
   const { toggleFavorite, isFavorite } = useFavorites();
-  const featured = properties.filter(p => p.featured);
+  const [featured, setFeatured] = useState<Property[]>([]);
+  const [blogPosts, setBlogPosts] = useState<Blog[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [activeReview, setActiveReview] = useState(0);
 
   useEffect(() => {
+    const fetchAll = async () => {
+      const [{ data: props }, { data: blogs }, { data: faqData }, { data: reviewData }] = await Promise.all([
+        supabase.from('properties').select('*').eq('featured', true).order('created_at', { ascending: false }),
+        supabase.from('blogs').select('*').order('created_at', { ascending: false }).limit(3),
+        supabase.from('faqs').select('*').order('sort_order').limit(3),
+        supabase.from('reviews').select('*').order('created_at', { ascending: false }),
+      ]);
+      if (props) setFeatured(props);
+      if (blogs) setBlogPosts(blogs);
+      if (faqData) setFaqs(faqData);
+      if (reviewData) setReviews(reviewData);
+    };
+    fetchAll();
+  }, []);
+
+  useEffect(() => {
+    if (reviews.length === 0) return;
     const timer = setInterval(() => {
       setActiveReview(prev => (prev + 1) % reviews.length);
     }, 3000);
     return () => clearInterval(timer);
-  }, []);
+  }, [reviews.length]);
 
   return (
     <div>
@@ -54,11 +80,7 @@ export default function Index() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-muted-foreground">Location</label>
-                <input
-                  type="text"
-                  placeholder="Where to?"
-                  className="bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
-                />
+                <input type="text" placeholder="Where to?" className="bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary" />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-muted-foreground">Type</label>
@@ -71,16 +93,9 @@ export default function Index() {
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-muted-foreground">Budget</label>
-                <input
-                  type="text"
-                  placeholder="Max price"
-                  className="bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
-                />
+                <input type="text" placeholder="Max price" className="bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary" />
               </div>
-              <Link
-                to="/properties"
-                className="bg-secondary text-accent-foreground rounded-lg px-6 py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mt-auto"
-              >
+              <Link to="/properties" className="bg-secondary text-accent-foreground rounded-lg px-6 py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mt-auto">
                 <Search className="w-4 h-4" /> Search
               </Link>
             </div>
@@ -89,136 +104,136 @@ export default function Index() {
       </section>
 
       {/* Featured Properties */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Featured Properties</h2>
-              <p className="text-muted-foreground mt-2">Hand-picked properties for you</p>
+      {featured.length > 0 && (
+        <section className="py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Featured Properties</h2>
+                <p className="text-muted-foreground mt-2">Hand-picked properties for you</p>
+              </div>
+              <Link to="/properties" className="hidden md:flex items-center gap-1 text-secondary font-medium text-sm hover:underline">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
-            <Link to="/properties" className="hidden md:flex items-center gap-1 text-secondary font-medium text-sm hover:underline">
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featured.map(p => (
+                <PropertyCard key={p.id} property={p} isFavorite={isFavorite(p.id)} onToggleFavorite={toggleFavorite} />
+              ))}
+            </div>
+            <div className="mt-8 text-center md:hidden">
+              <Link to="/properties" className="inline-flex items-center gap-1 text-secondary font-medium text-sm">
+                View All Properties <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.map(p => (
-              <PropertyCard key={p.id} property={p} isFavorite={isFavorite(p.id)} onToggleFavorite={toggleFavorite} />
-            ))}
-          </div>
-          <div className="mt-8 text-center md:hidden">
-            <Link to="/properties" className="inline-flex items-center gap-1 text-secondary font-medium text-sm">
-              View All Properties <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Google Reviews */}
-      <section className="py-16 bg-muted">
-        <div className="container mx-auto px-4">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground text-center mb-4">What Our Clients Say</h2>
-          <div className="flex items-center justify-center gap-1 mb-10">
-            {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 fill-secondary text-secondary" />)}
-            <span className="ml-2 font-semibold text-foreground">4.8</span>
-            <span className="text-muted-foreground text-sm">from Google Reviews</span>
-          </div>
-          <div className="relative overflow-hidden max-w-md mx-auto">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeReview}
-                initial={{ opacity: 0, x: 60 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -60 }}
-                transition={{ duration: 0.4 }}
-                className="bg-card rounded-xl p-6 shadow-card"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-semibold text-sm">
-                    {reviews[activeReview].avatar}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-card-foreground text-sm">{reviews[activeReview].name}</p>
-                    <div className="flex gap-0.5">
-                      {Array.from({ length: reviews[activeReview].rating }).map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-secondary text-secondary" />
-                      ))}
+      {reviews.length > 0 && (
+        <section className="py-16 bg-muted">
+          <div className="container mx-auto px-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground text-center mb-4">What Our Clients Say</h2>
+            <div className="flex items-center justify-center gap-1 mb-10">
+              {[1,2,3,4,5].map(i => <Star key={i} className="w-5 h-5 fill-secondary text-secondary" />)}
+              <span className="ml-2 font-semibold text-foreground">4.8</span>
+              <span className="text-muted-foreground text-sm">from Google Reviews</span>
+            </div>
+            <div className="relative overflow-hidden max-w-md mx-auto">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeReview}
+                  initial={{ opacity: 0, x: 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -60 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-card rounded-xl p-6 shadow-card"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-semibold text-sm">
+                      {reviews[activeReview]?.avatar || '?'}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-card-foreground text-sm">{reviews[activeReview]?.name}</p>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: reviews[activeReview]?.rating || 0 }).map((_, i) => (
+                          <Star key={i} className="w-3 h-3 fill-secondary text-secondary" />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{reviews[activeReview].comment}</p>
-              </motion.div>
-            </AnimatePresence>
-            <div className="flex justify-center gap-1.5 mt-4">
-              {reviews.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveReview(i)}
-                  className={`w-2 h-2 rounded-full transition-colors ${i === activeReview ? 'bg-secondary' : 'bg-border'}`}
-                />
+                  <p className="text-sm text-muted-foreground leading-relaxed">{reviews[activeReview]?.comment}</p>
+                </motion.div>
+              </AnimatePresence>
+              <div className="flex justify-center gap-1.5 mt-4">
+                {reviews.map((_, i) => (
+                  <button key={i} onClick={() => setActiveReview(i)}
+                    className={`w-2 h-2 rounded-full transition-colors ${i === activeReview ? 'bg-secondary' : 'bg-border'}`} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Recent Blogs */}
+      {blogPosts.length > 0 && (
+        <section className="py-16 md:py-24">
+          <div className="container mx-auto px-4">
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Recent Blogs</h2>
+                <p className="text-muted-foreground mt-2">Tips, guides, and insights</p>
+              </div>
+              <Link to="/blog" className="hidden md:flex items-center gap-1 text-secondary font-medium text-sm hover:underline">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {blogPosts.map(post => (
+                <motion.div key={post.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                  className="group bg-card rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all">
+                  <div className="aspect-[16/10] overflow-hidden">
+                    <img src={post.image} alt={post.title} loading="lazy" width={800} height={600} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <div className="p-5">
+                    <span className="text-xs font-medium text-secondary">{post.category}</span>
+                    <h3 className="font-display font-semibold text-card-foreground mt-1 mb-2 line-clamp-2">{post.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{post.excerpt}</p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{post.date}</span>
+                      <Link to={`/blog/${post.id}`} className="text-secondary font-medium hover:underline">Read More</Link>
+                    </div>
+                  </div>
+                </motion.div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Recent Blogs */}
-      <section className="py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Recent Blogs</h2>
-              <p className="text-muted-foreground mt-2">Tips, guides, and insights</p>
-            </div>
-            <Link to="/blog" className="hidden md:flex items-center gap-1 text-secondary font-medium text-sm hover:underline">
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {blogPosts.map(post => (
-              <motion.div
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="group bg-card rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all"
-              >
-                <div className="aspect-[16/10] overflow-hidden">
-                  <img src={post.image} alt={post.title} loading="lazy" width={800} height={600} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="p-5">
-                  <span className="text-xs font-medium text-secondary">{post.category}</span>
-                  <h3 className="font-display font-semibold text-card-foreground mt-1 mb-2 line-clamp-2">{post.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{post.excerpt}</p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{post.date}</span>
-                    <Link to={`/blog/${post.id}`} className="text-secondary font-medium hover:underline">Read More</Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* FAQ Preview */}
-      <section className="py-16 bg-muted">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground text-center mb-10">Frequently Asked Questions</h2>
-          <Accordion type="single" collapsible>
-            {faqs.slice(0, 3).map(faq => (
-              <AccordionItem key={faq.id} value={faq.id}>
-                <AccordionTrigger className="text-left font-medium text-foreground">{faq.question}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-          <div className="text-center mt-8">
-            <Link to="/faq" className="inline-flex items-center gap-1 text-secondary font-medium text-sm hover:underline">
-              View All FAQs <ArrowRight className="w-4 h-4" />
-            </Link>
+      {faqs.length > 0 && (
+        <section className="py-16 bg-muted">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground text-center mb-10">Frequently Asked Questions</h2>
+            <Accordion type="single" collapsible>
+              {faqs.map(faq => (
+                <AccordionItem key={faq.id} value={faq.id}>
+                  <AccordionTrigger className="text-left font-medium text-foreground">{faq.question}</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            <div className="text-center mt-8">
+              <Link to="/faq" className="inline-flex items-center gap-1 text-secondary font-medium text-sm hover:underline">
+                View All FAQs <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Contact CTA */}
       <section className="py-16 md:py-24 bg-hero-gradient">
@@ -229,12 +244,8 @@ export default function Index() {
             <Link to="/contact" className="px-8 py-3 bg-background text-foreground rounded-xl font-semibold hover:opacity-90 transition-opacity">
               Contact Us
             </Link>
-            <a
-              href="https://wa.me/254700000000"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-secondary text-accent-foreground rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
-            >
+            <a href="https://wa.me/254700000000" target="_blank" rel="noopener noreferrer"
+              className="px-8 py-3 bg-secondary text-accent-foreground rounded-xl font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </a>
           </div>
