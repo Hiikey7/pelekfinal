@@ -1,9 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { properties } from '@/data/mockData';
+import { supabase } from '@/integrations/supabase/client';
 import PropertyCard from '@/components/PropertyCard';
 import { useFavorites } from '@/hooks/useFavorites';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search } from 'lucide-react';
+import type { Tables } from '@/integrations/supabase/types';
+
+type Property = Tables<'properties'>;
 
 export default function Properties() {
   const [searchParams] = useSearchParams();
@@ -11,6 +14,17 @@ export default function Properties() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState(searchParams.get('category') || 'all');
   const [sort, setSort] = useState('popular');
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const { data } = await supabase.from('properties').select('*').order('created_at', { ascending: false });
+      if (data) setProperties(data);
+      setLoading(false);
+    };
+    fetch();
+  }, []);
 
   const filtered = useMemo(() => {
     let result = properties;
@@ -19,11 +33,11 @@ export default function Properties() {
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       p.location.toLowerCase().includes(search.toLowerCase())
     );
-    if (sort === 'price-low') result = [...result].sort((a, b) => a.price - b.price);
-    if (sort === 'price-high') result = [...result].sort((a, b) => b.price - a.price);
-    if (sort === 'rating') result = [...result].sort((a, b) => b.rating - a.rating);
+    if (sort === 'price-low') result = [...result].sort((a, b) => Number(a.price) - Number(b.price));
+    if (sort === 'price-high') result = [...result].sort((a, b) => Number(b.price) - Number(a.price));
+    if (sort === 'rating') result = [...result].sort((a, b) => Number(b.rating) - Number(a.rating));
     return result;
-  }, [category, search, sort]);
+  }, [properties, category, search, sort]);
 
   return (
     <div className="pt-20 pb-24 md:pb-12">
@@ -43,21 +57,15 @@ export default function Properties() {
             />
           </div>
           <div className="flex gap-3">
-            <select
-              value={category}
-              onChange={e => setCategory(e.target.value)}
-              className="bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary"
-            >
+            <select value={category} onChange={e => setCategory(e.target.value)}
+              className="bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary">
               <option value="all">All Categories</option>
               <option value="airbnb">Airbnb</option>
               <option value="rental">Rental</option>
               <option value="sale">For Sale</option>
             </select>
-            <select
-              value={sort}
-              onChange={e => setSort(e.target.value)}
-              className="bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary"
-            >
+            <select value={sort} onChange={e => setSort(e.target.value)}
+              className="bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary">
               <option value="popular">Popular</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
@@ -66,7 +74,9 @@ export default function Properties() {
           </div>
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-20 text-muted-foreground">Loading properties...</div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-muted-foreground">No properties found matching your criteria.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
