@@ -58,6 +58,7 @@ const App = () => (
             path="*"
             element={
               <>
+                <OfferPopup />
                 <Navbar />
                 <main className="min-h-screen">
                   <Routes>
