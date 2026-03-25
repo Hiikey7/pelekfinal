@@ -44,6 +44,7 @@ export default function AdminProperties() {
       amenities: p.amenities || [], bedrooms: p.bedrooms, bathrooms: p.bathrooms,
       guests: p.guests, featured: p.featured, whatsapp: p.whatsapp,
       lat: Number(p.lat), lng: Number(p.lng),
+      google_map_link: p.google_map_link || '', social_media_url: p.social_media_url || '', social_media_type: p.social_media_type || '',
     });
     setShowForm(true);
   };
