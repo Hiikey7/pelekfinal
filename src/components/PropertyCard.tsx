@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Heart, Star, MapPin, MessageCircle } from 'lucide-react';
-import { Property } from '@/data/mockData';
 import { motion } from 'framer-motion';
+import type { Tables } from '@/integrations/supabase/types';
+
+type Property = Tables<'properties'>;
 
 interface Props {
   property: Property;
@@ -33,7 +35,7 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite }:
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-3 left-3">
-          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${categoryColors[property.category]}`}>
+          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${categoryColors[property.category] || ''}`}>
             {property.category === 'sale' ? 'For Sale' : property.category}
           </span>
         </div>
@@ -54,10 +56,10 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite }:
         <div className="flex items-center gap-1 mb-3">
           <Star className="w-3.5 h-3.5 fill-secondary text-secondary" />
           <span className="text-sm font-medium text-card-foreground">{property.rating}</span>
-          <span className="text-xs text-muted-foreground">({property.reviews})</span>
+          <span className="text-xs text-muted-foreground">({property.reviews_count})</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="font-display font-bold text-secondary">{property.priceLabel}</span>
+          <span className="font-display font-bold text-secondary">{property.price_label}</span>
           <div className="flex gap-2">
             <a
               href={`https://wa.me/${property.whatsapp.replace('+', '')}?text=Hi, I'm interested in ${property.title}`}

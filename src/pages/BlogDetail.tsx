@@ -1,10 +1,25 @@
 import { useParams, Link } from 'react-router-dom';
-import { blogPosts } from '@/data/mockData';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft } from 'lucide-react';
+import type { Tables } from '@/integrations/supabase/types';
+
+type Blog = Tables<'blogs'>;
 
 export default function BlogDetail() {
   const { id } = useParams();
-  const post = blogPosts.find(p => p.id === id);
+  const [post, setPost] = useState<Blog | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+    supabase.from('blogs').select('*').eq('id', id).single().then(({ data }) => {
+      setPost(data);
+      setLoading(false);
+    });
+  }, [id]);
+
+  if (loading) return <div className="pt-20 pb-24 container mx-auto px-4 text-center"><p className="text-muted-foreground py-20">Loading...</p></div>;
 
   if (!post) {
     return (
@@ -23,13 +38,12 @@ export default function BlogDetail() {
         </Link>
         <span className="text-sm font-medium text-secondary">{post.category}</span>
         <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-2 mb-4">{post.title}</h1>
-        <p className="text-muted-foreground text-sm mb-8">{post.author} · {post.date} · {post.readTime}</p>
+        <p className="text-muted-foreground text-sm mb-8">{post.author} · {post.date} · {post.read_time}</p>
         <div className="aspect-[16/9] rounded-2xl overflow-hidden mb-8">
           <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
         </div>
         <div className="prose prose-lg max-w-none text-foreground">
-          <p className="text-muted-foreground leading-relaxed">{post.content}</p>
-          <p className="text-muted-foreground leading-relaxed mt-4">{post.excerpt} This is a sample blog post content. In a production setup, this would contain rich formatted content from your CMS.</p>
+          <div className="text-muted-foreground leading-relaxed whitespace-pre-line">{post.content}</div>
         </div>
       </div>
     </div>
