@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.tsx';
-import { LayoutDashboard, Home, FileText, Star, Gift, ShoppingCart, LogOut, Menu, X, ListChecks, Receipt } from 'lucide-react';
+import { LayoutDashboard, Home, FileText, Star, Gift, ShoppingCart, LogOut, Menu, X, ListChecks, Receipt, Settings } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { to: '/admin/offers', icon: Gift, label: 'Offers' },
   { to: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
   { to: '/admin/amenities', icon: ListChecks, label: 'Amenities' },
+  { to: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 
 export default function AdminLayout() {
