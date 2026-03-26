@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Home, FileText, HelpCircle, Star, Gift, ShoppingCart, TrendingUp, Eye, Heart, DollarSign } from 'lucide-react';
+import { Home, FileText, Star, Gift, ShoppingCart, TrendingUp, Eye, Heart, DollarSign, Receipt } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 
 interface Stats {
   properties: number;
   blogs: number;
-  faqs: number;
   reviews: number;
   offers: number;
   orders: number;
+  expenses: number;
 }
 
 interface Order {
@@ -21,26 +21,26 @@ interface Order {
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats>({ properties: 0, blogs: 0, faqs: 0, reviews: 0, offers: 0, orders: 0 });
+  const [stats, setStats] = useState<Stats>({ properties: 0, blogs: 0, reviews: 0, offers: 0, orders: 0, expenses: 0 });
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     const fetchAll = async () => {
-      const [p, b, f, r, o, ord] = await Promise.all([
+      const [p, b, r, o, ord, exp] = await Promise.all([
         supabase.from('properties').select('id', { count: 'exact', head: true }),
         supabase.from('blogs').select('id', { count: 'exact', head: true }),
-        supabase.from('faqs').select('id', { count: 'exact', head: true }),
         supabase.from('reviews').select('id', { count: 'exact', head: true }),
         supabase.from('offers').select('id', { count: 'exact', head: true }),
         supabase.from('orders').select('id', { count: 'exact', head: true }),
+        supabase.from('expenses').select('id', { count: 'exact', head: true }),
       ]);
       setStats({
         properties: p.count ?? 0,
         blogs: b.count ?? 0,
-        faqs: f.count ?? 0,
         reviews: r.count ?? 0,
         offers: o.count ?? 0,
         orders: ord.count ?? 0,
+        expenses: exp.count ?? 0,
       });
 
       const { data: orderData } = await supabase.from('orders').select('id, property_title, total_amount, created_at, payment_method').order('created_at', { ascending: false }).limit(100);
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
     { label: 'Blogs', count: stats.blogs, icon: FileText },
     { label: 'Reviews', count: stats.reviews, icon: Star },
     { label: 'Offers', count: stats.offers, icon: Gift },
-    { label: 'FAQs', count: stats.faqs, icon: HelpCircle },
+    { label: 'Expenses', count: stats.expenses, icon: Receipt },
   ];
 
   return (

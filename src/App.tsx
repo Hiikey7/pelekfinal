@@ -25,8 +25,8 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProperties from "./pages/admin/AdminProperties";
 import AdminBlogs from "./pages/admin/AdminBlogs";
-import AdminFaqs from "./pages/admin/AdminFaqs";
 import AdminReviews from "./pages/admin/AdminReviews";
+import AdminExpenses from "./pages/admin/AdminExpenses";
 import AdminOffers from "./pages/admin/AdminOffers";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminAmenities from "./pages/admin/AdminAmenities";
@@ -55,8 +55,8 @@ const App = () => (
             <Route index element={<AdminDashboard />} />
             <Route path="properties" element={<AdminProperties />} />
             <Route path="blogs" element={<AdminBlogs />} />
-            <Route path="faqs" element={<AdminFaqs />} />
             <Route path="reviews" element={<AdminReviews />} />
+            <Route path="expenses" element={<AdminExpenses />} />
             <Route path="offers" element={<AdminOffers />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="amenities" element={<AdminAmenities />} />
