@@ -27,6 +27,7 @@ import AdminProperties from "./pages/admin/AdminProperties";
 import AdminBlogs from "./pages/admin/AdminBlogs";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminExpenses from "./pages/admin/AdminExpenses";
+import AdminSettings from "./pages/admin/AdminSettings";
 import AdminOffers from "./pages/admin/AdminOffers";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminAmenities from "./pages/admin/AdminAmenities";
@@ -60,6 +61,7 @@ const App = () => (
             <Route path="offers" element={<AdminOffers />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="amenities" element={<AdminAmenities />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
 
           {/* Public routes */}
