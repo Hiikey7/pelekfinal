@@ -376,8 +376,8 @@ ${order.notes ? `<div class="row"><span class="label">Notes</span><span class="v
                   </td>
                 </tr>
               ))}
-              {orders.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">No orders yet. Click "New Order" to record one.</td></tr>
+              {filteredOrders.length === 0 && (
+                <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">No orders found.</td></tr>
               )}
             </tbody>
           </table>
