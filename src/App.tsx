@@ -48,6 +48,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
         <ScrollToTop />
+        <Routes>
           {/* Admin routes - no Navbar/Footer */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
