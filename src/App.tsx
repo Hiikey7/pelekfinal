@@ -32,6 +32,12 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminAmenities from "./pages/admin/AdminAmenities";
 import OfferPopup from "./components/OfferPopup";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
+
 const queryClient = new QueryClient();
 
 const App = () => (
