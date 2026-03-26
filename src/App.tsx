@@ -47,7 +47,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-        <Routes>
+        <ScrollToTop />
           {/* Admin routes - no Navbar/Footer */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
