@@ -40,6 +40,7 @@ export default function AdminOrders() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [viewReceipt, setViewReceipt] = useState<Order | null>(null);
+  const [filterMonth, setFilterMonth] = useState('');
   const [form, setForm] = useState({
     visitor_name: '',
     phone: '',
@@ -113,6 +114,36 @@ export default function AdminOrders() {
     fetchOrders();
   };
 
+  const filteredOrders = filterMonth
+    ? orders.filter(o => o.created_at.slice(0, 7) === filterMonth)
+    : orders;
+
+  const downloadCSV = () => {
+    const rows = filteredOrders.map(o => ({
+      Date: new Date(o.created_at).toLocaleDateString(),
+      Guest: o.visitor_name,
+      Phone: o.phone,
+      Property: o.property_title,
+      'Price/Night': o.price_per_night,
+      Days: o.num_days,
+      Total: o.total_amount,
+      Payment: o.payment_method,
+      Status: o.status,
+      Notes: o.notes,
+    }));
+    if (rows.length === 0) { toast.error('No orders to export'); return; }
+    const headers = Object.keys(rows[0]);
+    const csv = [headers.join(','), ...rows.map(r => headers.map(h => `"${String((r as any)[h]).replace(/"/g, '""')}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders${filterMonth ? '-' + filterMonth : ''}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('CSV downloaded');
+  };
+
   const generateReceiptHTML = (order: Order) => {
     return `
 <!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt</title>
@@ -181,9 +212,19 @@ ${order.notes ? `<div class="row"><span class="label">Notes</span><span class="v
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h1 className="font-display text-2xl font-bold text-foreground">Orders</h1>
-        <Button onClick={() => setShowForm(true)} className="gap-2"><Plus className="w-4 h-4" /> New Order</Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="gap-2" onClick={downloadCSV}><Download className="w-4 h-4" /> CSV</Button>
+          <Button onClick={() => setShowForm(true)} className="gap-2"><Plus className="w-4 h-4" /> New Order</Button>
+        </div>
+      </div>
+
+      {/* Month filter */}
+      <div className="flex items-center gap-3 mb-4">
+        <label className="text-sm font-medium text-muted-foreground">Filter by month:</label>
+        <Input type="month" value={filterMonth} onChange={e => setFilterMonth(e.target.value)} className="w-44" />
+        {filterMonth && <button onClick={() => setFilterMonth('')} className="text-xs text-secondary hover:underline">Clear</button>}
       </div>
 
       {/* New Order Form Modal */}
@@ -318,7 +359,7 @@ ${order.notes ? `<div class="row"><span class="label">Notes</span><span class="v
               </tr>
             </thead>
             <tbody>
-              {orders.map(o => (
+              {filteredOrders.map(o => (
                 <tr key={o.id} className="border-b border-border hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3 text-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
                   <td className="px-4 py-3 text-foreground font-medium">{o.visitor_name}</td>
@@ -335,8 +376,8 @@ ${order.notes ? `<div class="row"><span class="label">Notes</span><span class="v
                   </td>
                 </tr>
               ))}
-              {orders.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">No orders yet. Click "New Order" to record one.</td></tr>
+              {filteredOrders.length === 0 && (
+                <tr><td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">No orders found.</td></tr>
               )}
             </tbody>
           </table>
