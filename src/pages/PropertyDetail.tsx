@@ -18,6 +18,7 @@ const TikTokIcon = () => (
 export default function PropertyDetail() {
   const { id } = useParams();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { settings } = useSiteSettings();
   const [activeImage, setActiveImage] = useState(0);
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
