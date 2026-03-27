@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Pencil, Trash2, Upload, ImageIcon } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, ImageIcon, Home } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Blog = Tables<'blogs'>;
 
-const emptyForm = { title: '', excerpt: '', content: '', image: '', author: 'Pelek Properties', date: '', category: '', read_time: '5 min read' };
+const emptyForm = { title: '', excerpt: '', content: '', image: '', author: 'Pelek Properties', date: '', category: '', read_time: '5 min read', show_on_homepage: false };
 
 export default function AdminBlogs() {
   const [items, setItems] = useState<Blog[]>([]);
@@ -23,7 +23,7 @@ export default function AdminBlogs() {
   useEffect(() => { fetchData(); }, []);
 
   const openNew = () => { setEditing(null); setForm({ ...emptyForm, date: new Date().toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' }) }); setShowForm(true); };
-  const openEdit = (b: Blog) => { setEditing(b); setForm({ title: b.title, excerpt: b.excerpt, content: b.content, image: b.image, author: b.author, date: b.date, category: b.category, read_time: b.read_time }); setShowForm(true); };
+  const openEdit = (b: Blog) => { setEditing(b); setForm({ title: b.title, excerpt: b.excerpt, content: b.content, image: b.image, author: b.author, date: b.date, category: b.category, read_time: b.read_time, show_on_homepage: (b as any).show_on_homepage ?? false }); setShowForm(true); };
 
   const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -107,6 +107,12 @@ export default function AdminBlogs() {
 
           <textarea placeholder="Excerpt" value={form.excerpt} onChange={e => setForm({ ...form, excerpt: e.target.value })} className="w-full bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary min-h-[60px]" />
           <textarea placeholder="Content" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="w-full bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary min-h-[120px]" />
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked={form.show_on_homepage} onChange={e => setForm({ ...form, show_on_homepage: e.target.checked })} className="w-4 h-4 rounded border-border text-secondary focus:ring-secondary" />
+            <span className="text-sm font-medium text-foreground">Show on homepage</span>
+          </label>
+
           <div className="flex gap-3">
             <button onClick={save} className="bg-secondary text-accent-foreground rounded-lg px-6 py-2 text-sm font-semibold hover:opacity-90">{editing ? 'Update' : 'Create'}</button>
             <button onClick={() => setShowForm(false)} className="border border-border rounded-lg px-6 py-2 text-sm font-medium text-foreground hover:bg-muted">Cancel</button>
@@ -125,9 +131,10 @@ export default function AdminBlogs() {
                 </td>
                 <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{b.category}</td>
                 <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{b.date}</td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-right flex items-center justify-end gap-1">
+                  {(b as any).show_on_homepage && <Home className="w-4 h-4 text-secondary" title="Shown on homepage" />}
                   <button onClick={() => openEdit(b)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground"><Pencil className="w-4 h-4" /></button>
-                  <button onClick={() => remove(b.id)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-destructive ml-1"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => remove(b.id)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
                 </td>
               </tr>
             ))}
