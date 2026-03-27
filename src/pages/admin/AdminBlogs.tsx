@@ -132,7 +132,7 @@ export default function AdminBlogs() {
                 <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{b.category}</td>
                 <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{b.date}</td>
                 <td className="px-4 py-3 text-right flex items-center justify-end gap-1">
-                  {(b as any).show_on_homepage && <Home className="w-4 h-4 text-secondary" title="Shown on homepage" />}
+                  {(b as any).show_on_homepage && <Home className="w-4 h-4 text-secondary" />}
                   <button onClick={() => openEdit(b)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground"><Pencil className="w-4 h-4" /></button>
                   <button onClick={() => remove(b.id)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
                 </td>
