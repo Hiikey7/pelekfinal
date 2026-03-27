@@ -43,6 +43,7 @@ export type Database = {
           id: string
           image: string
           read_time: string
+          show_on_homepage: boolean
           title: string
           updated_at: string
         }
@@ -56,6 +57,7 @@ export type Database = {
           id?: string
           image?: string
           read_time?: string
+          show_on_homepage?: boolean
           title: string
           updated_at?: string
         }
@@ -69,6 +71,7 @@ export type Database = {
           id?: string
           image?: string
           read_time?: string
+          show_on_homepage?: boolean
           title?: string
           updated_at?: string
         }
