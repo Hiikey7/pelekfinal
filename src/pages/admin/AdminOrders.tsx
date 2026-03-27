@@ -346,27 +346,27 @@ ${order.notes ? `<div class="row"><span class="label">Notes</span><span class="v
       {/* Orders Table */}
       <div className="bg-card rounded-xl shadow-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Date</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Guest</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Property</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Days</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Total</th>
-                <th className="text-left px-4 py-3 font-medium text-muted-foreground">Payment</th>
-                <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
+                <th className="text-left px-3 py-3 font-medium text-muted-foreground whitespace-nowrap">Date</th>
+                <th className="text-left px-3 py-3 font-medium text-muted-foreground whitespace-nowrap">Guest</th>
+                <th className="text-left px-3 py-3 font-medium text-muted-foreground whitespace-nowrap">Property</th>
+                <th className="text-left px-3 py-3 font-medium text-muted-foreground whitespace-nowrap">Days</th>
+                <th className="text-left px-3 py-3 font-medium text-muted-foreground whitespace-nowrap">Total</th>
+                <th className="text-left px-3 py-3 font-medium text-muted-foreground whitespace-nowrap">Payment</th>
+                <th className="text-right px-3 py-3 font-medium text-muted-foreground whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map(o => (
                 <tr key={o.id} className="border-b border-border hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 text-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
-                  <td className="px-4 py-3 text-foreground font-medium">{o.visitor_name}</td>
-                  <td className="px-4 py-3 text-foreground">{o.property_title}</td>
-                  <td className="px-4 py-3 text-foreground">{o.num_days}</td>
-                  <td className="px-4 py-3 text-foreground font-medium">KES {Number(o.total_amount).toLocaleString()}</td>
-                  <td className="px-4 py-3 text-foreground">{o.payment_method}</td>
+                  <td className="px-3 py-3 text-foreground whitespace-nowrap">{new Date(o.created_at).toLocaleDateString()}</td>
+                  <td className="px-3 py-3 text-foreground font-medium whitespace-nowrap">{o.visitor_name}</td>
+                  <td className="px-3 py-3 text-foreground whitespace-nowrap max-w-[150px] truncate">{o.property_title}</td>
+                  <td className="px-3 py-3 text-foreground">{o.num_days}</td>
+                  <td className="px-3 py-3 text-foreground font-medium whitespace-nowrap">KES {Number(o.total_amount).toLocaleString()}</td>
+                  <td className="px-3 py-3 text-foreground whitespace-nowrap">{o.payment_method}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={() => setViewReceipt(o)} className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-secondary" title="View Receipt"><Eye className="w-4 h-4" /></button>
