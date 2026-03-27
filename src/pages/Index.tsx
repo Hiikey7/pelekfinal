@@ -26,7 +26,7 @@ export default function Index() {
     const fetchAll = async () => {
       const [{ data: props }, { data: blogs }, { data: faqData }, { data: reviewData }] = await Promise.all([
         supabase.from('properties').select('*').eq('featured', true).order('created_at', { ascending: false }),
-        supabase.from('blogs').select('*').order('created_at', { ascending: false }).limit(3),
+        supabase.from('blogs').select('*').eq('show_on_homepage', true).order('created_at', { ascending: false }).limit(3),
         supabase.from('faqs').select('*').order('sort_order').limit(3),
         supabase.from('reviews').select('*').order('created_at', { ascending: false }),
       ]);
