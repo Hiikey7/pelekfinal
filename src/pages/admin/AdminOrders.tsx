@@ -211,12 +211,12 @@ ${order.notes ? `<div class="row"><span class="label">Notes</span><span class="v
   };
 
   return (
-    <div>
+    <div className="min-w-0">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h1 className="font-display text-2xl font-bold text-foreground">Orders</h1>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="gap-2" onClick={downloadCSV}><Download className="w-4 h-4" /> CSV</Button>
-          <Button onClick={() => setShowForm(true)} className="gap-2"><Plus className="w-4 h-4" /> New Order</Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="outline" size="sm" className="gap-2" onClick={downloadCSV}><Download className="w-4 h-4" /> CSV</Button>
+          <Button size="sm" onClick={() => setShowForm(true)} className="gap-2"><Plus className="w-4 h-4" /> New Order</Button>
         </div>
       </div>
 
