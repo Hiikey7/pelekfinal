@@ -46,8 +46,8 @@ export default function PropertyDetail() {
     );
   }
 
-  const whatsappUrl = `https://wa.me/${property.whatsapp.replace('+', '')}?text=${encodeURIComponent(`Hi, I'm interested in "${property.title}" at ${property.location}. Is it available?`)}`;
-  const mapUrl = property.google_map_link || `https://www.google.com/maps?q=${property.lat},${property.lng}`;
+  const whatsappNumber = settings.whatsapp || property.whatsapp;
+  const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi, I'm interested in "${property.title}" at ${property.location}. Is it available?`)}`;
   const directionsUrl = property.google_map_link || `https://www.google.com/maps/dir/?api=1&destination=${property.lat},${property.lng}`;
 
   return (
