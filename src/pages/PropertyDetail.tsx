@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Heart, MapPin, MessageCircle, Bed, Bath, Users, ArrowLeft, ExternalLink, Instagram } from 'lucide-react';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import type { Tables } from '@/integrations/supabase/types';
@@ -17,6 +18,7 @@ const TikTokIcon = () => (
 export default function PropertyDetail() {
   const { id } = useParams();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { settings } = useSiteSettings();
   const [activeImage, setActiveImage] = useState(0);
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,8 +46,8 @@ export default function PropertyDetail() {
     );
   }
 
-  const whatsappUrl = `https://wa.me/${property.whatsapp.replace('+', '')}?text=${encodeURIComponent(`Hi, I'm interested in "${property.title}" at ${property.location}. Is it available?`)}`;
-  const mapUrl = property.google_map_link || `https://www.google.com/maps?q=${property.lat},${property.lng}`;
+  const whatsappNumber = settings.whatsapp || property.whatsapp;
+  const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi, I'm interested in "${property.title}" at ${property.location}. Is it available?`)}`;
   const directionsUrl = property.google_map_link || `https://www.google.com/maps/dir/?api=1&destination=${property.lat},${property.lng}`;
 
   return (

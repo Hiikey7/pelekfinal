@@ -13,7 +13,6 @@ export default function Navbar() {
     { to: '/', label: 'Home' },
     { to: '/properties', label: 'Properties' },
     { to: '/blog', label: 'Blog' },
-    { to: '/faq', label: 'FAQ' },
     { to: '/contact', label: 'Contact' },
     { to: '/favorites', label: 'Favourites' },
   ];
