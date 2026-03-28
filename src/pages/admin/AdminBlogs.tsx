@@ -125,16 +125,20 @@ export default function AdminBlogs() {
           <tbody>
             {items.map(b => (
               <tr key={b.id} className="border-t border-border">
-                <td className="px-4 py-3 text-foreground font-medium flex items-center gap-2">
-                  {b.image ? <img src={b.image} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" /> : <ImageIcon className="w-8 h-8 text-muted-foreground flex-shrink-0" />}
-                  <span className="truncate">{b.title}</span>
+                <td className="px-4 py-3 text-foreground font-medium">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {b.image ? <img src={b.image} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" /> : <ImageIcon className="w-8 h-8 text-muted-foreground flex-shrink-0" />}
+                    <span className="truncate">{b.title}</span>
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{b.category}</td>
                 <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{b.date}</td>
-                <td className="px-4 py-3 text-right flex items-center justify-end gap-1">
-                  {(b as any).show_on_homepage && <Home className="w-4 h-4 text-secondary" />}
-                  <button onClick={() => openEdit(b)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground"><Pencil className="w-4 h-4" /></button>
-                  <button onClick={() => remove(b.id)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
+                <td className="px-4 py-3 text-right whitespace-nowrap">
+                  <div className="inline-flex items-center gap-1">
+                    {b.show_on_homepage && <Home className="w-4 h-4 text-secondary" />}
+                    <button onClick={() => openEdit(b)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={() => remove(b.id)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
+                  </div>
                 </td>
               </tr>
             ))}
