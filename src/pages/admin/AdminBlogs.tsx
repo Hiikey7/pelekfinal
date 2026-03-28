@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Pencil, Trash2, Upload, ImageIcon, Home } from 'lucide-react';
+const RichTextEditor = lazy(() => import('@/components/RichTextEditor'));
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -106,7 +107,12 @@ export default function AdminBlogs() {
           </div>
 
           <textarea placeholder="Excerpt" value={form.excerpt} onChange={e => setForm({ ...form, excerpt: e.target.value })} className="w-full bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary min-h-[60px]" />
-          <textarea placeholder="Content" value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="w-full bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary min-h-[120px]" />
+          <div>
+            <label className="text-sm font-medium text-foreground block mb-1">Content</label>
+            <Suspense fallback={<div className="h-[200px] bg-muted rounded-lg animate-pulse" />}>
+              <RichTextEditor content={form.content} onChange={(html) => setForm(f => ({ ...f, content: html }))} />
+            </Suspense>
+          </div>
 
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.show_on_homepage} onChange={e => setForm({ ...form, show_on_homepage: e.target.checked })} className="w-4 h-4 rounded border-border text-secondary focus:ring-secondary" />
