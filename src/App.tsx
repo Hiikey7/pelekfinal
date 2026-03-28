@@ -18,6 +18,7 @@ import Contact from "./pages/Contact";
 import Favorites from "./pages/Favorites";
 import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
+import Services from "./pages/Services";
 
 // Admin
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -80,6 +81,7 @@ const App = () => (
                     <Route path="/blog/:id" element={<BlogDetail />} />
                     <Route path="/faq" element={<FAQPage />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/services" element={<Services />} />
                     <Route path="/favorites" element={<Favorites />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="*" element={<NotFound />} />
