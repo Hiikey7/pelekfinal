@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Search, Star, ArrowRight, MessageCircle } from 'lucide-react';
+import { Search, Star, ArrowRight, MessageCircle, Building2, Home as HomeIcon, BarChart3, Key, Briefcase } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import heroBg from '@/assets/hero-bg.jpg';
@@ -129,6 +129,39 @@ export default function Index() {
           </div>
         </section>
       )}
+
+      {/* Services */}
+      <section className="py-16 md:py-24 bg-muted">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Our Services</h2>
+            <p className="text-muted-foreground mt-2">Comprehensive property solutions tailored to your needs</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              { icon: Building2, title: 'Property Management', desc: 'Tenant screening, rent collection, maintenance & financial reporting.' },
+              { icon: HomeIcon, title: 'Real Estate Sales', desc: 'Buying & selling support, marketing, negotiation & closing guidance.' },
+              { icon: BarChart3, title: 'Property Valuation', desc: 'Property assessment, market analysis & investment evaluation.' },
+              { icon: Key, title: 'Rentals & Airbnb', desc: 'Residential rentals, short-term stays & tenant sourcing.' },
+              { icon: Briefcase, title: 'Commercial Solutions', desc: 'Office spaces & commercial property investment support.' },
+            ].map((svc, i) => (
+              <motion.div key={svc.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
+                className="bg-card rounded-xl p-6 shadow-card hover:shadow-card-hover transition-all group">
+                <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-4 group-hover:bg-secondary/20 transition-colors">
+                  <svc.icon className="w-6 h-6 text-secondary" />
+                </div>
+                <h3 className="font-display font-semibold text-card-foreground mb-2">{svc.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{svc.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="text-center mt-10">
+            <Link to="/services" className="inline-flex items-center gap-1 text-secondary font-medium text-sm hover:underline">
+              View All Services <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Google Reviews */}
       {reviews.length > 0 && (
