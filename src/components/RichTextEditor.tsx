@@ -47,7 +47,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
 
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, false, { preserveWhitespace: 'full' });
+      editor.commands.setContent(content);
     }
   }, [content]);
 
