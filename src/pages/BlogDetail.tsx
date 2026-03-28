@@ -42,8 +42,8 @@ export default function BlogDetail() {
         <div className="aspect-[16/9] rounded-2xl overflow-hidden mb-8">
           <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
         </div>
-        <div className="prose prose-lg max-w-none text-foreground">
-          <div className="text-muted-foreground leading-relaxed whitespace-pre-line">{post.content}</div>
+        <div className="prose prose-lg max-w-none text-foreground [&_a]:text-secondary [&_img]:rounded-xl">
+          <div className="text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>
       </div>
     </div>
