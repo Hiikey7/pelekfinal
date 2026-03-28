@@ -119,32 +119,22 @@ export default function AdminBlogs() {
           </div>
         </div>
       )}
-      <div className="bg-card rounded-xl shadow-card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted"><tr><th className="text-left px-4 py-3 font-medium text-muted-foreground">Title</th><th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Category</th><th className="text-left px-4 py-3 font-medium text-muted-foreground hidden md:table-cell">Date</th><th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th></tr></thead>
-          <tbody>
-            {items.map(b => (
-              <tr key={b.id} className="border-t border-border">
-                <td className="px-4 py-3 text-foreground font-medium">
-                  <div className="flex items-center gap-2 min-w-0">
-                    {b.image ? <img src={b.image} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" /> : <ImageIcon className="w-8 h-8 text-muted-foreground flex-shrink-0" />}
-                    <span className="truncate">{b.title}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{b.category}</td>
-                <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{b.date}</td>
-                <td className="px-4 py-3 text-right whitespace-nowrap">
-                  <div className="inline-flex items-center gap-1">
-                    {b.show_on_homepage && <Home className="w-4 h-4 text-secondary" />}
-                    <button onClick={() => openEdit(b)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground"><Pencil className="w-4 h-4" /></button>
-                    <button onClick={() => remove(b.id)} className="p-1.5 hover:bg-muted rounded-lg text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {items.length === 0 && <tr><td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">No blogs yet</td></tr>}
-          </tbody>
-        </table>
+      <div className="space-y-3">
+        {items.length === 0 && <p className="text-center text-muted-foreground py-8">No blogs yet</p>}
+        {items.map(b => (
+          <div key={b.id} className="bg-card rounded-xl shadow-card p-4 flex items-center gap-3">
+            {b.image ? <img src={b.image} alt="" className="w-12 h-12 rounded-lg object-cover flex-shrink-0" /> : <ImageIcon className="w-12 h-12 text-muted-foreground flex-shrink-0" />}
+            <div className="min-w-0 flex-1">
+              <p className="text-foreground font-medium truncate">{b.title}</p>
+              <p className="text-xs text-muted-foreground">{b.category}{b.date ? ` · ${b.date}` : ''}</p>
+            </div>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              {b.show_on_homepage && <Home className="w-4 h-4 text-secondary" />}
+              <button onClick={() => openEdit(b)} className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground"><Pencil className="w-4 h-4" /></button>
+              <button onClick={() => remove(b.id)} className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
