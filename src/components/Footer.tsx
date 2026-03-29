@@ -131,7 +131,7 @@ export default function Footer() {
                 <Phone className="w-4 h-4" /> {settings.whatsapp}
               </a>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4" /> info@pelekproperties.com
+                <Mail className="w-4 h-4" /> info@pelekproperties.co.ke
               </div>
             </div>
           </div>

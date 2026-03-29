@@ -93,10 +93,10 @@ export default function Blog() {
             Our team is ready to help you find the perfect property. Get in
             touch today.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="w-[80%] mx-auto flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/contact"
-              className="px-6 py-3 bg-background text-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
+              className="w-full sm:w-auto px-6 py-3 bg-background text-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
             >
               Contact Us
             </Link>
@@ -104,7 +104,7 @@ export default function Blog() {
               href="https://wa.me/254711614099"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 bg-secondary text-accent-foreground rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+              className="w-full sm:w-auto px-6 py-3 bg-secondary text-accent-foreground rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
             >
               <MessageCircle className="w-4 h-4" /> WhatsApp
             </a>

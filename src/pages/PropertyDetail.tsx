@@ -10,10 +10,13 @@ import {
   ArrowLeft,
   ExternalLink,
   Instagram,
+  Star,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -31,7 +34,9 @@ export default function PropertyDetail() {
   const { settings } = useSiteSettings();
   const [activeImage, setActiveImage] = useState(0);
   const [property, setProperty] = useState<Property | null>(null);
+  const [otherProperties, setOtherProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -46,6 +51,29 @@ export default function PropertyDetail() {
     };
     fetchProperty();
   }, [id]);
+
+  useEffect(() => {
+    const fetchOtherProperties = async () => {
+      if (!id) return;
+      const { data } = await supabase
+        .from("properties")
+        .select("*")
+        .neq("id", id)
+        .limit(10);
+      if (data) setOtherProperties(data);
+    };
+    fetchOtherProperties();
+  }, [id]);
+
+  const scrollCarousel = (direction: "left" | "right") => {
+    if (carouselRef.current) {
+      const scrollAmount = 350;
+      carouselRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -251,6 +279,111 @@ export default function PropertyDetail() {
             </div>
           </div>
         </div>
+
+        {/* Other Properties Carousel */}
+        {otherProperties.length > 0 && (
+          <section className="mt-16">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-2xl font-bold text-foreground">
+                Other Properties
+              </h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => scrollCarousel("left")}
+                  className="p-2 rounded-full border border-border hover:bg-muted transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => scrollCarousel("right")}
+                  className="p-2 rounded-full border border-border hover:bg-muted transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div
+              ref={carouselRef}
+              className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 -mx-2 px-2"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {otherProperties.map((prop) => (
+                <motion.div
+                  key={prop.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="flex-shrink-0 w-[300px] sm:w-[320px] md:w-[340px] group bg-card rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300"
+                >
+                  <Link to={`/property/${prop.id}`}>
+                    <div className="relative overflow-hidden aspect-[4/3]">
+                      <img
+                        src={prop.image}
+                        alt={prop.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${
+                            prop.category === "airbnb"
+                              ? "bg-secondary/10 text-secondary"
+                              : prop.category === "rental"
+                                ? "bg-primary/10 text-primary"
+                                : "bg-destructive/10 text-destructive"
+                          }`}
+                        >
+                          {prop.category === "sale"
+                            ? "For Sale"
+                            : prop.category}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>{prop.location}</span>
+                      </div>
+                      <h3 className="font-display font-semibold text-card-foreground mb-2 line-clamp-1">
+                        {prop.title}
+                      </h3>
+                      <div className="flex items-center gap-1 mb-3">
+                        <Star className="w-3.5 h-3.5 fill-secondary text-secondary" />
+                        <span className="text-sm font-medium text-card-foreground">
+                          {prop.rating}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          ({prop.reviews_count})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mb-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Bed className="w-3.5 h-3.5" /> {prop.bedrooms}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Bath className="w-3.5 h-3.5" /> {prop.bathrooms}
+                        </div>
+                        {prop.guests && (
+                          <div className="flex items-center gap-1">
+                            <Users className="w-3.5 h-3.5" /> {prop.guests}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="font-display font-bold text-secondary">
+                          {prop.price_label}
+                        </span>
+                        <span className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium">
+                          View Details
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
