@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#003329"/>
+  <rect x="50" y="50" width="1100" height="530" rx="20" fill="#ffffff"/>
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#003329" text-anchor="middle">Pelek Properties</text>
+  <text x="600" y="350" font-family="Arial, sans-serif" font-size="32" fill="#666666" text-anchor="middle">Luxury Airbnb • Rentals • Property Sales</text>
+  <text x="600" y="400" font-family="Arial, sans-serif" font-size="28" fill="#888888" text-anchor="middle">Across Kenya</text>
+  <circle cx="600" cy="480" r="60" fill="#003329"/>
+  <text x="600" y="495" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#ffffff" text-anchor="middle">P</text>
+  <text x="600" y="560" font-family="Arial, sans-serif" font-size="20" fill="#aaaaaa" text-anchor="middle">pelekproperties.co.ke</text>
+</svg>

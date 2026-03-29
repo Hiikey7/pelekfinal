@@ -1,13 +1,19 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SiteSettings {
   whatsapp: string;
   instagram: string;
   tiktok: string;
+  facebook: string;
 }
 
-const defaults: SiteSettings = { whatsapp: '+254700000000', instagram: '', tiktok: '' };
+const defaults: SiteSettings = {
+  whatsapp: "+254711614099",
+  instagram: "",
+  tiktok: "",
+  facebook: "",
+};
 
 export function useSiteSettings() {
   const [settings, setSettings] = useState<SiteSettings>(defaults);
@@ -15,7 +21,9 @@ export function useSiteSettings() {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase.from('site_settings').select('key, value');
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value");
       if (data) {
         const mapped = { ...defaults };
         data.forEach((row: { key: string; value: string }) => {
