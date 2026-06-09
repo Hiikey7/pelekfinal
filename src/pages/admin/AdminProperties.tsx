@@ -189,6 +189,7 @@ export default function AdminProperties() {
 
   const inputClass =
     "bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary";
+  const labelClass = "text-sm text-muted-foreground mb-1 block";
 
   return (
     <div>
@@ -207,97 +208,156 @@ export default function AdminProperties() {
       {showForm && (
         <div className="bg-card rounded-xl p-6 shadow-card mb-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input
-              placeholder="Title"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className={inputClass}
-            />
-            <input
-              placeholder="Location"
-              value={form.location}
-              onChange={(e) => setForm({ ...form, location: e.target.value })}
-              className={inputClass}
-            />
-            <input
-              placeholder="Price"
-              type="number"
-              value={form.price}
-              onChange={(e) =>
-                setForm({ ...form, price: Number(e.target.value) })
-              }
-              className={inputClass}
-            />
-            <input
-              placeholder="Price Label (e.g. KSh 25,000/night)"
-              value={form.price_label}
-              onChange={(e) =>
-                setForm({ ...form, price_label: e.target.value })
-              }
-              className={inputClass}
-            />
-            <select
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              className={inputClass}
-            >
-              <option value="airbnb">Airbnb</option>
-              <option value="rental">Rental</option>
-              <option value="sale">For Sale</option>
-            </select>
-            <input
-              placeholder="Type (e.g. Villa)"
-              value={form.type}
-              onChange={(e) => setForm({ ...form, type: e.target.value })}
-              className={inputClass}
-            />
-            <input
-              placeholder="Bedrooms"
-              type="number"
-              value={form.bedrooms}
-              onChange={(e) =>
-                setForm({ ...form, bedrooms: Number(e.target.value) })
-              }
-              className={inputClass}
-            />
-            <input
-              placeholder="Bathrooms"
-              type="number"
-              value={form.bathrooms}
-              onChange={(e) =>
-                setForm({ ...form, bathrooms: Number(e.target.value) })
-              }
-              className={inputClass}
-            />
-            <input
-              placeholder="Latitude"
-              type="number"
-              step="any"
-              value={form.lat}
-              onChange={(e) =>
-                setForm({ ...form, lat: Number(e.target.value) })
-              }
-              className={inputClass}
-            />
-            <input
-              placeholder="Longitude"
-              type="number"
-              step="any"
-              value={form.lng}
-              onChange={(e) =>
-                setForm({ ...form, lng: Number(e.target.value) })
-              }
-              className={inputClass}
-            />
-            <input
-              placeholder="Google Map Link (full URL)"
-              value={form.google_map_link}
-              onChange={(e) =>
-                setForm({ ...form, google_map_link: e.target.value })
-              }
-              className={inputClass}
-            />
-            <div className="flex gap-2">
+            <div>
+              <label className={labelClass}>Property title</label>
+              <input
+                placeholder="e.g. Luxury 2 Bedroom Apartment in Kilimani"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Location</label>
+              <input
+                placeholder="e.g. Kilimani, Nairobi"
+                value={form.location}
+                onChange={(e) => setForm({ ...form, location: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Numeric price</label>
+              <input
+                placeholder="e.g. 25000"
+                type="number"
+                value={form.price}
+                onChange={(e) =>
+                  setForm({ ...form, price: Number(e.target.value) })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Display price label</label>
+              <input
+                placeholder="e.g. KSh 25,000/night or KSh 8.5M"
+                value={form.price_label}
+                onChange={(e) =>
+                  setForm({ ...form, price_label: e.target.value })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Category</label>
+              <select
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                className={inputClass}
+              >
+                <option value="airbnb">Airbnb</option>
+                <option value="rental">Rental</option>
+                <option value="sale">For Sale</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Property type</label>
+              <input
+                placeholder="e.g. Apartment, Villa, Maisonette, Studio"
+                value={form.type}
+                onChange={(e) => setForm({ ...form, type: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Bedrooms</label>
+              <input
+                placeholder="e.g. 2"
+                type="number"
+                value={form.bedrooms}
+                onChange={(e) =>
+                  setForm({ ...form, bedrooms: Number(e.target.value) })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Bathrooms</label>
+              <input
+                placeholder="e.g. 2"
+                type="number"
+                value={form.bathrooms}
+                onChange={(e) =>
+                  setForm({ ...form, bathrooms: Number(e.target.value) })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Guests</label>
+              <input
+                placeholder="e.g. 4 for Airbnb capacity"
+                type="number"
+                value={form.guests ?? ""}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    guests: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>WhatsApp number</label>
+              <input
+                placeholder="e.g. +254711614099"
+                value={form.whatsapp}
+                onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Latitude</label>
+              <input
+                placeholder="e.g. -1.2921"
+                type="number"
+                step="any"
+                value={form.lat}
+                onChange={(e) =>
+                  setForm({ ...form, lat: Number(e.target.value) })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Longitude</label>
+              <input
+                placeholder="e.g. 36.8219"
+                type="number"
+                step="any"
+                value={form.lng}
+                onChange={(e) =>
+                  setForm({ ...form, lng: Number(e.target.value) })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Google Map link</label>
+              <input
+                placeholder="Paste the full Google Maps share URL"
+                value={form.google_map_link}
+                onChange={(e) =>
+                  setForm({ ...form, google_map_link: e.target.value })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Social media</label>
+              <div className="flex gap-2">
               <select
                 value={form.social_media_type}
                 onChange={(e) =>
@@ -310,26 +370,30 @@ export default function AdminProperties() {
                 <option value="tiktok">TikTok</option>
               </select>
               <input
-                placeholder="Social media URL"
+                placeholder="Paste Instagram or TikTok listing/video URL"
                 value={form.social_media_url}
                 onChange={(e) =>
                   setForm({ ...form, social_media_url: e.target.value })
                 }
                 className={`${inputClass} flex-1`}
               />
+              </div>
             </div>
           </div>
 
-          <textarea
-            placeholder="Description"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className={`w-full ${inputClass} min-h-[80px]`}
-          />
+          <div>
+            <label className={labelClass}>Description</label>
+            <textarea
+              placeholder="Describe the property, nearby landmarks, house rules, standout amenities, and who it is best for."
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              className={`w-full ${inputClass} min-h-[100px]`}
+            />
+          </div>
 
           {/* Amenities multi-select dropdown */}
           <div className="relative">
-            <label className="text-sm text-muted-foreground mb-1 block">
+            <label className={labelClass}>
               Amenities
             </label>
             <button
@@ -397,9 +461,12 @@ export default function AdminProperties() {
 
           {/* Image upload */}
           <div>
-            <label className="text-sm text-muted-foreground mb-1 block">
+            <label className={labelClass}>
               Property Images
             </label>
+            <p className="text-xs text-muted-foreground mb-2">
+              Upload clear room, exterior, and amenity photos. The first selected cover image appears on listings.
+            </p>
             <label
               className={`inline-flex items-center gap-2 cursor-pointer bg-muted rounded-lg px-4 py-2.5 text-sm text-foreground hover:bg-muted/80 ${uploading ? "opacity-50 pointer-events-none" : ""}`}
             >

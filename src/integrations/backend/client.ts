@@ -49,6 +49,13 @@ export type NeonUser = {
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 const SESSION_KEY = "pelek_admin_session";
+const SESSION_DURATION_MS = 5 * 24 * 60 * 60 * 1000;
+
+type StoredSession = {
+  user: NeonUser;
+  access_token: string;
+  expires_at: number;
+};
 
 async function request<T>(path: string, body?: unknown): Promise<T> {
   const token = getStoredSession()?.access_token;
@@ -128,7 +135,13 @@ function getStoredSession() {
   if (!raw) return null;
 
   try {
-    return JSON.parse(raw) as { user: NeonUser; access_token: string };
+    const session = JSON.parse(raw) as StoredSession;
+    if (!session.expires_at || session.expires_at <= Date.now()) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+
+    return session;
   } catch {
     localStorage.removeItem(SESSION_KEY);
     return null;
@@ -290,7 +303,11 @@ export const backend = {
           user: NeonUser;
           access_token: string;
         }>("/api/auth", credentials);
-        const session = { user: data.user, access_token: data.access_token };
+        const session: StoredSession = {
+          user: data.user,
+          access_token: data.access_token,
+          expires_at: Date.now() + SESSION_DURATION_MS,
+        };
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
         return { data: { user: data.user, session }, error: null };
       } catch (error) {

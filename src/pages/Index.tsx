@@ -109,9 +109,9 @@ export default function Index() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="bg-background/95 backdrop-blur-xl rounded-2xl p-4 md:p-6 max-w-3xl mx-auto shadow-card w-[90%]"
+            className="bg-background/95 backdrop-blur-xl rounded-xl p-3 md:p-4 max-w-2xl mx-auto shadow-card w-[88%]"
           >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-muted-foreground">
                   Location
@@ -119,14 +119,14 @@ export default function Index() {
                 <input
                   type="text"
                   placeholder="Where to?"
-                  className="bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
+                  className="bg-muted rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
                 />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-muted-foreground">
                   Type
                 </label>
-                <select className="bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary appearance-none">
+                <select className="bg-muted rounded-md px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary appearance-none">
                   <option>All Types</option>
                   <option>Airbnb</option>
                   <option>Rental</option>
@@ -140,12 +140,12 @@ export default function Index() {
                 <input
                   type="text"
                   placeholder="Max price"
-                  className="bg-muted rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
+                  className="bg-muted rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
                 />
               </div>
               <Link
                 to="/properties"
-                className="bg-secondary text-accent-foreground rounded-lg px-6 py-2.5 text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mt-auto"
+                className="bg-secondary text-accent-foreground rounded-md px-4 py-2 text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mt-auto min-h-9"
               >
                 <Search className="w-4 h-4" /> Search
               </Link>

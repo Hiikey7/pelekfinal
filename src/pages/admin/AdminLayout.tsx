@@ -1,6 +1,6 @@
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.tsx';
-import { LayoutDashboard, Home, FileText, Star, Gift, ShoppingCart, LogOut, Menu, X, ListChecks, Receipt, Settings } from 'lucide-react';
+import { LayoutDashboard, Home, FileText, Star, Gift, ShoppingCart, LogOut, Menu, X, ListChecks, Receipt, Settings, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
@@ -60,6 +60,14 @@ export default function AdminLayout() {
           ))}
         </nav>
         <div className="p-4 border-t border-border">
+          <Link
+            to="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mb-2 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground w-full transition-colors"
+          >
+            <ExternalLink className="w-4 h-4" /> View Website
+          </Link>
           <button onClick={signOut} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground w-full transition-colors">
             <LogOut className="w-4 h-4" /> Sign Out
           </button>
