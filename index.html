@@ -1,8 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-KE">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="application-name" content="Pelek Properties" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Pelek Properties" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>
       Pelek Properties | Luxury Airbnb, Rentals & Property Sales in Kenya
     </title>
@@ -27,6 +32,10 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preload" as="image" href="/src/assets/hero-bg.jpg" />
+    <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -103,7 +112,7 @@
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "Pelek Properties",
-        "url": "https://pelekproperties.com",
+        "url": "https://pelekproperties.co.ke",
         "potentialAction": {
           "@type": "SearchAction",
           "target": "https://pelekproperties.co.ke/properties?search={search_term_string}",

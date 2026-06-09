@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import PropertyCard from '@/components/PropertyCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import { Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Tables } from '@/integrations/backend/types';
 
 type Property = Tables<'properties'>;
 
@@ -15,7 +15,7 @@ export default function Favorites() {
   useEffect(() => {
     const fetch = async () => {
       if (favorites.length === 0) { setProperties([]); return; }
-      const { data } = await supabase.from('properties').select('*').in('id', favorites);
+      const { data } = await backend.from('properties').select('*').in('id', favorites);
       if (data) setProperties(data);
     };
     fetch();

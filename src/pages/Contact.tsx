@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MessageCircle, Phone, Mail, MapPin } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 
 export default function Contact() {
   const [form, setForm] = useState({
@@ -18,7 +18,7 @@ export default function Contact() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke(
+      const { data, error } = await backend.functions.invoke(
         "send-contact-email",
         {
           body: {

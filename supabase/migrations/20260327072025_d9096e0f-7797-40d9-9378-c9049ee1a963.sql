@@ -1,1 +1,0 @@
-ALTER TABLE public.blogs ADD COLUMN show_on_homepage boolean NOT NULL DEFAULT false;

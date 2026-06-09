@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { Home, FileText, Star, Gift, ShoppingCart, TrendingUp, Eye, Heart, DollarSign, Receipt } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 
@@ -27,12 +27,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchAll = async () => {
       const [p, b, r, o, ord, exp] = await Promise.all([
-        supabase.from('properties').select('id', { count: 'exact', head: true }),
-        supabase.from('blogs').select('id', { count: 'exact', head: true }),
-        supabase.from('reviews').select('id', { count: 'exact', head: true }),
-        supabase.from('offers').select('id', { count: 'exact', head: true }),
-        supabase.from('orders').select('id', { count: 'exact', head: true }),
-        supabase.from('expenses').select('id', { count: 'exact', head: true }),
+        backend.from('properties').select('id', { count: 'exact', head: true }),
+        backend.from('blogs').select('id', { count: 'exact', head: true }),
+        backend.from('reviews').select('id', { count: 'exact', head: true }),
+        backend.from('offers').select('id', { count: 'exact', head: true }),
+        backend.from('orders').select('id', { count: 'exact', head: true }),
+        backend.from('expenses').select('id', { count: 'exact', head: true }),
       ]);
       setStats({
         properties: p.count ?? 0,
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
         expenses: exp.count ?? 0,
       });
 
-      const { data: orderData } = await supabase.from('orders').select('id, property_title, total_amount, created_at, payment_method').order('created_at', { ascending: false }).limit(100);
+      const { data: orderData } = await backend.from('orders').select('id, property_title, total_amount, created_at, payment_method').order('created_at', { ascending: false }).limit(100);
       if (orderData) setOrders(orderData as Order[]);
     };
     fetchAll();

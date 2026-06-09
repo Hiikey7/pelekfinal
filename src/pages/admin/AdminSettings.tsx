@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ export default function AdminSettings() {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase.from("site_settings").select("*");
+      const { data } = await backend.from("site_settings").select("*");
       if (data) {
         setSettings(data as Setting[]);
         const mapped: any = { whatsapp: "", instagram: "", tiktok: "" };
@@ -36,7 +36,7 @@ export default function AdminSettings() {
     for (const key of ["whatsapp", "instagram", "tiktok"] as const) {
       const existing = settings.find((s) => s.key === key);
       if (existing) {
-        await supabase
+        await backend
           .from("site_settings")
           .update({ value: form[key] })
           .eq("id", existing.id);

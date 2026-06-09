@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import { Plus, Pencil, Trash2, Upload, Star, X } from "lucide-react";
 import { toast } from "sonner";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Tables } from "@/integrations/backend/types";
 
 type Property = Tables<"properties">;
 
@@ -44,11 +44,11 @@ export default function AdminProperties() {
 
   const fetchData = async () => {
     const [{ data: props }, { data: amenities }] = await Promise.all([
-      supabase
+      backend
         .from("properties")
         .select("*")
         .order("created_at", { ascending: false }),
-      supabase.from("amenities").select("*").order("name"),
+      backend.from("amenities").select("*").order("name"),
     ]);
     if (props) setItems(props);
     if (amenities) setAmenitiesList(amenities);
@@ -98,14 +98,14 @@ export default function AdminProperties() {
     for (const file of Array.from(files)) {
       const ext = file.name.split(".").pop();
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage
+      const { error } = await backend.storage
         .from("property-images")
         .upload(path, file);
       if (error) {
         toast.error(`Upload failed: ${error.message}`);
         continue;
       }
-      const { data: urlData } = supabase.storage
+      const { data: urlData } = backend.storage
         .from("property-images")
         .getPublicUrl(path);
       urls.push(urlData.publicUrl);
@@ -159,7 +159,7 @@ export default function AdminProperties() {
       lng: form.lng,
     };
     if (editing) {
-      const { error } = await supabase
+      const { error } = await backend
         .from("properties")
         .update(payload)
         .eq("id", editing.id);
@@ -169,7 +169,7 @@ export default function AdminProperties() {
       }
       toast.success("Property updated");
     } else {
-      const { error } = await supabase.from("properties").insert(payload);
+      const { error } = await backend.from("properties").insert(payload);
       if (error) {
         toast.error(error.message);
         return;
@@ -182,7 +182,7 @@ export default function AdminProperties() {
 
   const remove = async (id: string) => {
     if (!confirm("Delete this property?")) return;
-    await supabase.from("properties").delete().eq("id", id);
+    await backend.from("properties").delete().eq("id", id);
     toast.success("Deleted");
     fetchData();
   };

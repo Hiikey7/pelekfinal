@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 
 interface SiteSettings {
   whatsapp: string;
@@ -21,7 +21,7 @@ export function useSiteSettings() {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase
+      const { data } = await backend
         .from("site_settings")
         .select("key, value");
       if (data) {

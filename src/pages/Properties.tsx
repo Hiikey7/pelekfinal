@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import PropertyCard from "@/components/PropertyCard";
+import { PropertyGridSkeleton } from "@/components/loading-skeletons";
 import { useFavorites } from "@/hooks/useFavorites";
 import { Search, MessageCircle } from "lucide-react";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Tables } from "@/integrations/backend/types";
 
 type Property = Tables<"properties">;
 
@@ -21,7 +22,7 @@ export default function Properties() {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase
+      const { data } = await backend
         .from("properties")
         .select("*")
         .order("created_at", { ascending: false });
@@ -96,9 +97,7 @@ export default function Properties() {
         </div>
 
         {loading ? (
-          <div className="text-center py-20 text-muted-foreground">
-            Loading properties...
-          </div>
+          <PropertyGridSkeleton />
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-muted-foreground">
             No properties found matching your criteria.

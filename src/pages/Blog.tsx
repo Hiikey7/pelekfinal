@@ -1,22 +1,25 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import { motion } from "framer-motion";
 import { MessageCircle, ArrowRight } from "lucide-react";
-import type { Tables } from "@/integrations/supabase/types";
+import { BlogGridSkeleton } from "@/components/loading-skeletons";
+import type { Tables } from "@/integrations/backend/types";
 
 type Blog = Tables<"blogs">;
 
 export default function Blog() {
   const [posts, setPosts] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
+    backend
       .from("blogs")
       .select("*")
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         if (data) setPosts(data);
+        setLoading(false);
       });
   }, []);
 
@@ -29,8 +32,11 @@ export default function Blog() {
         <p className="text-muted-foreground mb-10">
           Insights, guides, and tips on real estate and travel
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => (
+        {loading ? (
+          <BlogGridSkeleton />
+        ) : posts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, y: 20 }}
@@ -76,9 +82,9 @@ export default function Blog() {
                 </div>
               </div>
             </motion.div>
-          ))}
-        </div>
-        {posts.length === 0 && (
+            ))}
+          </div>
+        ) : (
           <p className="text-center text-muted-foreground py-20">
             No blog posts yet.
           </p>

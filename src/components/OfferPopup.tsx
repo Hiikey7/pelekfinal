@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { X, Copy, Check, ExternalLink } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Tables } from '@/integrations/backend/types';
 
 type Offer = Tables<'offers'>;
 
@@ -14,7 +14,7 @@ export default function OfferPopup() {
 
   useEffect(() => {
     const fetchOffers = async () => {
-      const { data } = await supabase.from('offers').select('*').eq('active', true);
+      const { data } = await backend.from('offers').select('*').eq('active', true);
       if (data && data.length > 0) {
         setOffers(data);
         const timer = setTimeout(() => setVisible(true), 5000);

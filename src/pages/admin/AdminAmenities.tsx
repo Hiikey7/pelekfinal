@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -12,7 +12,7 @@ export default function AdminAmenities() {
   const [showForm, setShowForm] = useState(false);
 
   const fetchData = async () => {
-    const { data } = await supabase.from('amenities').select('*').order('name');
+    const { data } = await backend.from('amenities').select('*').order('name');
     if (data) setItems(data);
   };
 
@@ -21,11 +21,11 @@ export default function AdminAmenities() {
   const save = async () => {
     if (!name.trim()) { toast.error('Name is required'); return; }
     if (editingId) {
-      const { error } = await supabase.from('amenities').update({ name: name.trim() }).eq('id', editingId);
+      const { error } = await backend.from('amenities').update({ name: name.trim() }).eq('id', editingId);
       if (error) { toast.error(error.message); return; }
       toast.success('Amenity updated');
     } else {
-      const { error } = await supabase.from('amenities').insert({ name: name.trim() });
+      const { error } = await backend.from('amenities').insert({ name: name.trim() });
       if (error) { toast.error(error.message); return; }
       toast.success('Amenity added');
     }
@@ -43,7 +43,7 @@ export default function AdminAmenities() {
 
   const remove = async (id: string) => {
     if (!confirm('Delete this amenity?')) return;
-    await supabase.from('amenities').delete().eq('id', id);
+    await backend.from('amenities').delete().eq('id', id);
     toast.success('Deleted');
     fetchData();
   };

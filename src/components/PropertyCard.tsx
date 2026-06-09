@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Heart, Star, MapPin, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Tables } from '@/integrations/backend/types';
 
 type Property = Tables<'properties'>;
 
@@ -30,6 +30,7 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite }:
           src={property.image}
           alt={property.title}
           loading="lazy"
+          decoding="async"
           width={800}
           height={600}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

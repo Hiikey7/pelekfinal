@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import {
   Heart,
   MapPin,
@@ -18,7 +18,8 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import type { Tables } from "@/integrations/supabase/types";
+import { PropertyDetailSkeleton } from "@/components/loading-skeletons";
+import type { Tables } from "@/integrations/backend/types";
 
 type Property = Tables<"properties">;
 
@@ -41,7 +42,7 @@ export default function PropertyDetail() {
   useEffect(() => {
     const fetchProperty = async () => {
       if (!id) return;
-      const { data } = await supabase
+      const { data } = await backend
         .from("properties")
         .select("*")
         .eq("id", id)
@@ -55,7 +56,7 @@ export default function PropertyDetail() {
   useEffect(() => {
     const fetchOtherProperties = async () => {
       if (!id) return;
-      const { data } = await supabase
+      const { data } = await backend
         .from("properties")
         .select("*")
         .neq("id", id)
@@ -76,11 +77,7 @@ export default function PropertyDetail() {
   };
 
   if (loading) {
-    return (
-      <div className="pt-20 pb-24 container mx-auto px-4 text-center">
-        <p className="text-muted-foreground py-20">Loading...</p>
-      </div>
-    );
+    return <PropertyDetailSkeleton />;
   }
 
   if (!property) {

@@ -1,0 +1,47 @@
+import { neon } from "@neondatabase/serverless";
+
+export default async function handler(req: any, res: any) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: { message: "Method not allowed" } });
+  }
+
+  if (req.query.name !== "send-contact-email") {
+    return res.status(404).json({ error: { message: "Function not found" } });
+  }
+
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    return res
+      .status(500)
+      .json({ error: { message: "DATABASE_URL is not configured" } });
+  }
+
+  const { name, email, phone, subject, message } = req.body || {};
+
+  if (!name || !email || !subject || !message) {
+    return res.status(400).json({
+      error: { message: "Name, email, subject, and message are required" },
+    });
+  }
+
+  try {
+    const sql = neon(connectionString);
+    const rows = await sql`
+      INSERT INTO contact_messages (full_name, email, phone, subject, message)
+      VALUES (${name}, ${email}, ${phone || ""}, ${subject}, ${message})
+      RETURNING id
+    `;
+
+    return res.status(200).json({
+      success: true,
+      id: rows[0]?.id,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error: {
+        message:
+          error instanceof Error ? error.message : "Failed to save contact message",
+      },
+    });
+  }
+}

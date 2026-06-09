@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import {
   Accordion,
   AccordionContent,
@@ -7,11 +7,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Search } from "lucide-react";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Tables } from "@/integrations/backend/types";
 
 type FAQ = Tables<"faqs"> | { id: string; question: string; answer: string };
 
-const staticFaqs: Omit<Tables<"faqs">, "sort_order">[] = [
+const staticFaqs: FAQ[] = [
   {
     id: "faq-1",
     question: "What types of properties do you offer?",
@@ -49,7 +49,7 @@ export default function FAQPage() {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
 
   useEffect(() => {
-    supabase
+    backend
       .from("faqs")
       .select("*")
       .order("sort_order")

@@ -1,38 +1,39 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth.tsx";
+import SEO from "@/components/SEO";
+import { PageSkeleton } from "@/components/loading-skeletons";
 import Navbar from "@/components/Navbar";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
-import Index from "./pages/Index";
-import Properties from "./pages/Properties";
-import PropertyDetail from "./pages/PropertyDetail";
-import Blog from "./pages/Blog";
-import BlogDetail from "./pages/BlogDetail";
-import FAQPage from "./pages/FAQPage";
-import Contact from "./pages/Contact";
-import Favorites from "./pages/Favorites";
-import Terms from "./pages/Terms";
-import NotFound from "./pages/NotFound";
-import Services from "./pages/Services";
-
-// Admin
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminLayout from "./pages/admin/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProperties from "./pages/admin/AdminProperties";
-import AdminBlogs from "./pages/admin/AdminBlogs";
-import AdminReviews from "./pages/admin/AdminReviews";
-import AdminExpenses from "./pages/admin/AdminExpenses";
-import AdminSettings from "./pages/admin/AdminSettings";
-import AdminOffers from "./pages/admin/AdminOffers";
-import AdminOrders from "./pages/admin/AdminOrders";
-import AdminAmenities from "./pages/admin/AdminAmenities";
 import OfferPopup from "./components/OfferPopup";
+
+const Index = lazy(() => import("./pages/Index"));
+const Properties = lazy(() => import("./pages/Properties"));
+const PropertyDetail = lazy(() => import("./pages/PropertyDetail"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogDetail = lazy(() => import("./pages/BlogDetail"));
+const FAQPage = lazy(() => import("./pages/FAQPage"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Terms = lazy(() => import("./pages/Terms"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Services = lazy(() => import("./pages/Services"));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminProperties = lazy(() => import("./pages/admin/AdminProperties"));
+const AdminBlogs = lazy(() => import("./pages/admin/AdminBlogs"));
+const AdminReviews = lazy(() => import("./pages/admin/AdminReviews"));
+const AdminExpenses = lazy(() => import("./pages/admin/AdminExpenses"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+const AdminOffers = lazy(() => import("./pages/admin/AdminOffers"));
+const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
+const AdminAmenities = lazy(() => import("./pages/admin/AdminAmenities"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -49,8 +50,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+        <SEO />
         <ScrollToTop />
-        <Routes>
+        <Suspense fallback={<PageSkeleton />}>
+          <Routes>
           {/* Admin routes - no Navbar/Footer */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
@@ -92,7 +95,8 @@ const App = () => (
               </>
             }
           />
-        </Routes>
+          </Routes>
+        </Suspense>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Tables } from '@/integrations/backend/types';
 
 type FAQ = Tables<'faqs'>;
 
@@ -13,7 +13,7 @@ export default function AdminFaqs() {
   const [showForm, setShowForm] = useState(false);
 
   const fetchData = async () => {
-    const { data } = await supabase.from('faqs').select('*').order('sort_order');
+    const { data } = await backend.from('faqs').select('*').order('sort_order');
     if (data) setItems(data);
   };
   useEffect(() => { fetchData(); }, []);
@@ -24,18 +24,18 @@ export default function AdminFaqs() {
   const save = async () => {
     if (!form.question) { toast.error('Question required'); return; }
     if (editing) {
-      const { error } = await supabase.from('faqs').update(form).eq('id', editing.id);
+      const { error } = await backend.from('faqs').update(form).eq('id', editing.id);
       if (error) { toast.error(error.message); return; }
       toast.success('Updated');
     } else {
-      const { error } = await supabase.from('faqs').insert(form);
+      const { error } = await backend.from('faqs').insert(form);
       if (error) { toast.error(error.message); return; }
       toast.success('Created');
     }
     setShowForm(false); fetchData();
   };
 
-  const remove = async (id: string) => { if (!confirm('Delete?')) return; await supabase.from('faqs').delete().eq('id', id); toast.success('Deleted'); fetchData(); };
+  const remove = async (id: string) => { if (!confirm('Delete?')) return; await backend.from('faqs').delete().eq('id', id); toast.success('Deleted'); fetchData(); };
 
   return (
     <div>

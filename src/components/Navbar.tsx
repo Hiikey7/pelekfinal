@@ -30,9 +30,12 @@ export default function Navbar() {
         {/* Logo - Left */}
         <Link to="/" className="flex items-center">
           <img
-            src="/logo-p.png"
+            src="/logo-nav.png"
             alt="Pelek Properties"
             className="h-20 w-auto"
+            width={160}
+            height={80}
+            decoding="async"
           />
         </Link>
 

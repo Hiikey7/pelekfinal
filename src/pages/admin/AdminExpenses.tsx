@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ export default function AdminExpenses() {
   const [filterMonth, setFilterMonth] = useState('');
 
   const fetchData = async () => {
-    const { data } = await supabase.from('expenses').select('*').order('created_at', { ascending: false });
+    const { data } = await backend.from('expenses').select('*').order('created_at', { ascending: false });
     if (data) setItems(data as Expense[]);
   };
 
@@ -36,11 +36,11 @@ export default function AdminExpenses() {
   const save = async () => {
     if (!form.title || !form.amount) { toast.error('Title and amount required'); return; }
     if (editing) {
-      const { error } = await supabase.from('expenses').update(form).eq('id', editing.id);
+      const { error } = await backend.from('expenses').update(form).eq('id', editing.id);
       if (error) { toast.error(error.message); return; }
       toast.success('Updated');
     } else {
-      const { error } = await supabase.from('expenses').insert(form);
+      const { error } = await backend.from('expenses').insert(form);
       if (error) { toast.error(error.message); return; }
       toast.success('Created');
     }
@@ -49,7 +49,7 @@ export default function AdminExpenses() {
 
   const remove = async (id: string) => {
     if (!confirm('Delete this expense?')) return;
-    await supabase.from('expenses').delete().eq('id', id);
+    await backend.from('expenses').delete().eq('id', id);
     toast.success('Deleted'); fetchData();
   };
 

@@ -1,53 +1,48 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import { backend } from '@/integrations/backend/client';
+import type { NeonUser } from '@/integrations/backend/client';
 
 interface AuthContextType {
-  user: User | null;
+  user: NeonUser | null;
   isAdmin: boolean;
   loading: boolean;
   setIsAdmin: (v: boolean) => void;
-  setUser: (u: User | null) => void;
+  setUser: (u: NeonUser | null) => void;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<NeonUser | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    backend.auth.getSession().then(({ data: { session } }) => {
       const u = session?.user ?? null;
       setUser(u);
-      if (u) {
-        const { data } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', u.id)
-          .eq('role', 'admin')
-          .maybeSingle();
-        setIsAdmin(!!data);
-      }
+      setIsAdmin(u?.app_metadata?.role === 'admin');
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = backend.auth.onAuthStateChange((_event, session) => {
       const u = session?.user ?? null;
       setUser(u);
       if (!u) {
         setIsAdmin(false);
         setLoading(false);
+        return;
       }
+      setIsAdmin(u.app_metadata?.role === 'admin');
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await backend.auth.signOut();
     setUser(null);
     setIsAdmin(false);
   };

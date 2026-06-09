@@ -13,7 +13,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import heroBg from "@/assets/hero-bg.jpg";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import PropertyCard from "@/components/PropertyCard";
 import { useFavorites } from "@/hooks/useFavorites";
 import servicesImg from "@/assets/property-1.jpg";
@@ -23,7 +23,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Tables } from "@/integrations/backend/types";
 
 type Property = Tables<"properties">;
 type Blog = Tables<"blogs">;
@@ -40,18 +40,18 @@ export default function Index() {
     const fetchAll = async () => {
       const [{ data: props }, { data: blogs }, { data: reviewData }] =
         await Promise.all([
-          supabase
+          backend
             .from("properties")
             .select("*")
             .eq("featured", true)
             .order("created_at", { ascending: false }),
-          supabase
+          backend
             .from("blogs")
             .select("*")
             .eq("show_on_homepage", true)
             .order("created_at", { ascending: false })
             .limit(3),
-          supabase
+          backend
             .from("reviews")
             .select("*")
             .order("created_at", { ascending: false }),
@@ -81,6 +81,8 @@ export default function Index() {
           className="absolute inset-0 w-full h-full object-cover object-center"
           width={1920}
           height={1080}
+          fetchPriority="high"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-primary/70" />
         <div className="relative z-10 container mx-auto px-4 text-center">
@@ -204,6 +206,10 @@ export default function Index() {
                 src={servicesImg}
                 alt="Our Services"
                 className="w-full h-64 md:h-80 object-cover rounded-2xl shadow-card"
+                width={800}
+                height={600}
+                loading="lazy"
+                decoding="async"
               />
             </div>
             {/* Content Column */}
@@ -350,6 +356,7 @@ export default function Index() {
                       src={post.image}
                       alt={post.title}
                       loading="lazy"
+                      decoding="async"
                       width={800}
                       height={600}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

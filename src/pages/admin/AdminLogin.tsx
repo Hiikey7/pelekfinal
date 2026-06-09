@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.tsx';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { toast } from 'sonner';
 
 export default function AdminLogin() {
@@ -15,31 +15,15 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await backend.auth.signInWithPassword({ email, password });
     if (error) {
       toast.error(error.message);
       setLoading(false);
       return;
     }
 
-    // Check admin role separately after auth completes
-    const userId = data.user?.id;
-    if (!userId) {
+    if (!data.user || data.user.app_metadata?.role !== 'admin') {
       toast.error('Login failed');
-      setLoading(false);
-      return;
-    }
-
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .eq('role', 'admin')
-      .maybeSingle();
-
-    if (!roleData) {
-      toast.error('You do not have admin access');
-      await supabase.auth.signOut();
       setLoading(false);
       return;
     }

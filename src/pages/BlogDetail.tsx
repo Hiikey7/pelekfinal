@@ -1,8 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import { ArrowLeft, MessageCircle } from "lucide-react";
-import type { Tables } from "@/integrations/supabase/types";
+import type { Tables } from "@/integrations/backend/types";
 
 type Blog = Tables<"blogs">;
 
@@ -13,7 +13,7 @@ export default function BlogDetail() {
 
   useEffect(() => {
     if (!id) return;
-    supabase
+    backend
       .from("blogs")
       .select("*")
       .eq("id", id)

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { Plus, Pencil, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -37,7 +37,7 @@ export default function AdminOffers() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchData = async () => {
-    const { data } = await supabase.from('offers').select('*').order('created_at', { ascending: false });
+    const { data } = await backend.from('offers').select('*').order('created_at', { ascending: false });
     if (data) setItems(data as unknown as Offer[]);
   };
 
@@ -70,9 +70,9 @@ export default function AdminOffers() {
     setUploading(true);
     const ext = file.name.split('.').pop();
     const path = `${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('offer-images').upload(path, file);
+    const { error } = await backend.storage.from('offer-images').upload(path, file);
     if (error) { toast.error('Upload failed'); setUploading(false); return; }
-    const { data: urlData } = supabase.storage.from('offer-images').getPublicUrl(path);
+    const { data: urlData } = backend.storage.from('offer-images').getPublicUrl(path);
     setForm(f => ({ ...f, image: urlData.publicUrl }));
     setUploading(false);
     toast.success('Image uploaded');
@@ -82,11 +82,11 @@ export default function AdminOffers() {
     if (!form.title) { toast.error('Title required'); return; }
     const payload = { ...form };
     if (editing) {
-      const { error } = await supabase.from('offers').update(payload as any).eq('id', editing.id);
+      const { error } = await backend.from('offers').update(payload as any).eq('id', editing.id);
       if (error) { toast.error(error.message); return; }
       toast.success('Updated');
     } else {
-      const { error } = await supabase.from('offers').insert(payload as any);
+      const { error } = await backend.from('offers').insert(payload as any);
       if (error) { toast.error(error.message); return; }
       toast.success('Created');
     }
@@ -96,7 +96,7 @@ export default function AdminOffers() {
 
   const remove = async (id: string) => {
     if (!confirm('Delete?')) return;
-    await supabase.from('offers').delete().eq('id', id);
+    await backend.from('offers').delete().eq('id', id);
     toast.success('Deleted');
     fetchData();
   };

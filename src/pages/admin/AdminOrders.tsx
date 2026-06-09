@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { backend } from "@/integrations/backend/client";
 import { Plus, Trash2, Eye, Download, Send, X } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -56,7 +56,7 @@ export default function AdminOrders() {
   const receiptRef = useRef<HTMLDivElement>(null);
 
   const fetchOrders = async () => {
-    const { data } = await supabase
+    const { data } = await backend
       .from("orders")
       .select("*")
       .order("created_at", { ascending: false });
@@ -64,7 +64,7 @@ export default function AdminOrders() {
   };
 
   const fetchProperties = async () => {
-    const { data } = await supabase
+    const { data } = await backend
       .from("properties")
       .select("id, title, price, price_label");
     if (data) setProperties(data);
@@ -92,7 +92,7 @@ export default function AdminOrders() {
       return;
     }
     const prop = properties.find((p) => p.id === form.property_id);
-    const { error } = await supabase.from("orders").insert({
+    const { error } = await backend.from("orders").insert({
       visitor_name: form.visitor_name,
       phone: form.phone,
       property_id: form.property_id,
@@ -124,7 +124,7 @@ export default function AdminOrders() {
 
   const remove = async (id: string) => {
     if (!confirm("Delete this order?")) return;
-    await supabase.from("orders").delete().eq("id", id);
+    await backend.from("orders").delete().eq("id", id);
     toast.success("Deleted");
     if (viewReceipt?.id === id) setViewReceipt(null);
     fetchOrders();

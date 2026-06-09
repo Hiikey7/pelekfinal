@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { Trash2, Mail, MailOpen } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Tables } from '@/integrations/backend/types';
 
 type Message = Tables<'contact_messages'>;
 
@@ -11,7 +11,7 @@ export default function AdminMessages() {
   const [selected, setSelected] = useState<Message | null>(null);
 
   const fetchData = async () => {
-    const { data } = await supabase.from('contact_messages').select('*').order('created_at', { ascending: false });
+    const { data } = await backend.from('contact_messages').select('*').order('created_at', { ascending: false });
     if (data) setItems(data);
   };
   useEffect(() => { fetchData(); }, []);
@@ -19,14 +19,14 @@ export default function AdminMessages() {
   const markRead = async (msg: Message) => {
     setSelected(msg);
     if (!msg.read) {
-      await supabase.from('contact_messages').update({ read: true }).eq('id', msg.id);
+      await backend.from('contact_messages').update({ read: true }).eq('id', msg.id);
       fetchData();
     }
   };
 
   const remove = async (id: string) => {
     if (!confirm('Delete?')) return;
-    await supabase.from('contact_messages').delete().eq('id', id);
+    await backend.from('contact_messages').delete().eq('id', id);
     if (selected?.id === id) setSelected(null);
     toast.success('Deleted');
     fetchData();

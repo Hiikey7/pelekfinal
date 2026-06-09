@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef, lazy, Suspense } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { backend } from '@/integrations/backend/client';
 import { Plus, Pencil, Trash2, Upload, ImageIcon, Home } from 'lucide-react';
 const RichTextEditor = lazy(() => import('@/components/RichTextEditor'));
 import { toast } from 'sonner';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Tables } from '@/integrations/backend/types';
 
 type Blog = Tables<'blogs'>;
 
@@ -18,7 +18,7 @@ export default function AdminBlogs() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const fetchData = async () => {
-    const { data } = await supabase.from('blogs').select('*').order('created_at', { ascending: false });
+    const { data } = await backend.from('blogs').select('*').order('created_at', { ascending: false });
     if (data) setItems(data);
   };
   useEffect(() => { fetchData(); }, []);
@@ -32,9 +32,9 @@ export default function AdminBlogs() {
     setUploading(true);
     const ext = file.name.split('.').pop();
     const path = `${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('blog-images').upload(path, file);
+    const { error } = await backend.storage.from('blog-images').upload(path, file);
     if (error) { toast.error(error.message); setUploading(false); return; }
-    const { data: { publicUrl } } = supabase.storage.from('blog-images').getPublicUrl(path);
+    const { data: { publicUrl } } = backend.storage.from('blog-images').getPublicUrl(path);
     setForm(f => ({ ...f, image: publicUrl }));
     setUploading(false);
     toast.success('Image uploaded');
@@ -43,18 +43,18 @@ export default function AdminBlogs() {
   const save = async () => {
     if (!form.title) { toast.error('Title required'); return; }
     if (editing) {
-      const { error } = await supabase.from('blogs').update(form).eq('id', editing.id);
+      const { error } = await backend.from('blogs').update(form).eq('id', editing.id);
       if (error) { toast.error(error.message); return; }
       toast.success('Blog updated');
     } else {
-      const { error } = await supabase.from('blogs').insert(form);
+      const { error } = await backend.from('blogs').insert(form);
       if (error) { toast.error(error.message); return; }
       toast.success('Blog created');
     }
     setShowForm(false); fetchData();
   };
 
-  const remove = async (id: string) => { if (!confirm('Delete?')) return; await supabase.from('blogs').delete().eq('id', id); toast.success('Deleted'); fetchData(); };
+  const remove = async (id: string) => { if (!confirm('Delete?')) return; await backend.from('blogs').delete().eq('id', id); toast.success('Deleted'); fetchData(); };
 
   return (
     <div>
