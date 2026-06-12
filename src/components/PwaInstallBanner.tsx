@@ -64,7 +64,7 @@ export default function PwaInstallBanner() {
         <img
           src="/icon-192.png"
           alt=""
-          className="h-9 w-9"
+          className="h-9 w-9 bg-white"
           width={36}
           height={36}
           decoding="async"

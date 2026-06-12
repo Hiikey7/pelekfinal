@@ -105,6 +105,18 @@ export function PageSkeleton() {
   return (
     <div className="min-h-screen bg-background pt-24 pb-12">
       <div className="w-[90%] mx-auto">
+        <div className="mb-8 flex justify-center">
+          <div className="rounded-xl bg-white px-4 py-2 shadow-card">
+            <img
+              src="/logo-nav.png"
+              alt="Pelek Properties"
+              className="h-20 w-auto bg-white"
+              width={160}
+              height={80}
+              decoding="async"
+            />
+          </div>
+        </div>
         <Skeleton className="h-9 w-56" />
         <Skeleton className="mt-3 h-5 w-80 max-w-full" />
         <div className="mt-8">
