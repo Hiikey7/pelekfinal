@@ -49,7 +49,7 @@ export default function Navbar() {
         {/* Logo - Left */}
         <Link
           to="/"
-          className="flex items-center rounded-lg bg-white px-2 py-1 select-none"
+          className="flex items-center select-none"
           aria-label="Pelek Properties home"
           onPointerDown={startLogoPress}
           onPointerUp={cancelLogoPress}
@@ -66,7 +66,7 @@ export default function Navbar() {
           <img
             src="/logo-nav.png"
             alt="Pelek Properties"
-            className="h-20 w-auto bg-white"
+            className="h-20 w-auto"
             width={160}
             height={80}
             decoding="async"
