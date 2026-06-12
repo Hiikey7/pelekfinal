@@ -17,16 +17,16 @@ const routeMeta: Record<
   "/": {
     title: "Pelek Properties | Luxury Airbnb, Rentals & Property Sales in Kenya",
     description:
-      "Discover premium Airbnb stays, rentals, and properties for sale across Kenya. Book stays, compare rentals, and find property opportunities with Pelek Properties.",
+      "Discover premium Airbnb stays, rentals, properties for sale, and commercial spaces across Kenya. Book stays, compare rentals, and find property opportunities with Pelek Properties.",
     keywords:
-      "Airbnb Kenya, rentals Kenya, property for sale Kenya, luxury stays Kenya, Nairobi Airbnb, Kenya real estate",
+      "Airbnb Kenya, rentals Kenya, property for sale Kenya, commercial spaces Kenya, offices Kenya, luxury stays Kenya, Nairobi Airbnb, Kenya real estate",
   },
   "/properties": {
     title: "Properties in Kenya | Airbnb, Rentals & Homes for Sale",
     description:
-      "Browse Pelek Properties listings for short-stay Airbnb homes, long-term rentals, and property sales across Kenya.",
+      "Browse Pelek Properties listings for short-stay Airbnb homes, long-term rentals, commercial spaces, and property sales across Kenya.",
     keywords:
-      "properties Kenya, houses for rent Kenya, Airbnb Nairobi, Kenya property sales, furnished rentals Kenya",
+      "properties Kenya, houses for rent Kenya, Airbnb Nairobi, commercial spaces Kenya, offices Kenya, Kenya property sales, furnished rentals Kenya",
   },
   "/services": {
     title: "Property Management, Rentals & Real Estate Services in Kenya",

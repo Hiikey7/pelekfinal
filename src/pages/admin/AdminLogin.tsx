@@ -4,6 +4,13 @@ import { useAuth } from '@/hooks/useAuth.tsx';
 import { backend } from '@/integrations/backend/client';
 import { toast } from 'sonner';
 
+function defaultAdminPath(roles: string[] = []) {
+  if (roles.includes('admin')) return '/admin';
+  if (roles.includes('properties')) return '/admin/properties';
+  if (roles.includes('blogs')) return '/admin/blogs';
+  return '/admin/login';
+}
+
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +29,8 @@ export default function AdminLogin() {
       return;
     }
 
-    if (!data.user || data.user.app_metadata?.role !== 'admin') {
+    const roles = data.user?.app_metadata?.roles ?? [];
+    if (!data.user || (!roles.length && data.user.app_metadata?.role !== 'admin')) {
       toast.error('Login failed');
       setLoading(false);
       return;
@@ -30,7 +38,7 @@ export default function AdminLogin() {
 
     setUser(data.user);
     setIsAdmin(true);
-    navigate('/admin');
+    navigate(defaultAdminPath(roles));
     setLoading(false);
   };
 

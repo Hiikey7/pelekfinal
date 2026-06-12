@@ -1,11 +1,14 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const logoPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const logoLongPressTriggered = useRef(false);
 
   const desktopLinks = [
     { to: "/", label: "Home" },
@@ -24,11 +27,42 @@ export default function Navbar() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const cancelLogoPress = () => {
+    if (logoPressTimer.current) {
+      clearTimeout(logoPressTimer.current);
+      logoPressTimer.current = null;
+    }
+  };
+
+  const startLogoPress = () => {
+    cancelLogoPress();
+    logoLongPressTriggered.current = false;
+    logoPressTimer.current = setTimeout(() => {
+      logoLongPressTriggered.current = true;
+      navigate("/admin/login");
+    }, 3000);
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
       <div className="w-[90%] mx-auto flex items-center justify-between h-16">
         {/* Logo - Left */}
-        <Link to="/" className="flex items-center">
+        <Link
+          to="/"
+          className="flex items-center select-none"
+          aria-label="Pelek Properties home"
+          onPointerDown={startLogoPress}
+          onPointerUp={cancelLogoPress}
+          onPointerCancel={cancelLogoPress}
+          onPointerLeave={cancelLogoPress}
+          onContextMenu={(event) => event.preventDefault()}
+          onClick={(event) => {
+            if (logoLongPressTriggered.current) {
+              event.preventDefault();
+              logoLongPressTriggered.current = false;
+            }
+          }}
+        >
           <img
             src="/logo-nav.png"
             alt="Pelek Properties"
@@ -36,6 +70,7 @@ export default function Navbar() {
             width={160}
             height={80}
             decoding="async"
+            draggable={false}
           />
         </Link>
 

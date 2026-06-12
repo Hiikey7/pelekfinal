@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { backend } from "@/integrations/backend/client";
 
 interface SiteSettings {
@@ -16,27 +16,27 @@ const defaults: SiteSettings = {
 };
 
 export function useSiteSettings() {
-  const [settings, setSettings] = useState<SiteSettings>(defaults);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetch = async () => {
+  const { data: settings = defaults, isLoading: loading } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: async () => {
       const { data } = await backend
         .from("site_settings")
         .select("key, value");
+
+      const mapped = { ...defaults };
       if (data) {
-        const mapped = { ...defaults };
         data.forEach((row: { key: string; value: string }) => {
           if (row.key in mapped) {
-            (mapped as any)[row.key] = row.value;
+            mapped[row.key as keyof SiteSettings] = row.value;
           }
         });
-        setSettings(mapped);
       }
-      setLoading(false);
-    };
-    fetch();
-  }, []);
+      return mapped;
+    },
+    staleTime: 10 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   return { settings, loading };
 }

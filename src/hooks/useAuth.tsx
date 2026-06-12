@@ -5,9 +5,11 @@ import type { NeonUser } from '@/integrations/backend/client';
 interface AuthContextType {
   user: NeonUser | null;
   isAdmin: boolean;
+  roles: string[];
   loading: boolean;
   setIsAdmin: (v: boolean) => void;
   setUser: (u: NeonUser | null) => void;
+  hasRole: (role: string) => boolean;
   signOut: () => Promise<void>;
 }
 
@@ -18,11 +20,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const userRoles = (u: NeonUser | null) =>
+    u?.app_metadata?.roles ?? (u?.app_metadata?.role === 'admin' ? ['admin'] : []);
+  const canAccessAdmin = (u: NeonUser | null) => {
+    const roles = userRoles(u);
+    return u?.app_metadata?.role === 'admin' || roles.length > 0;
+  };
+
   useEffect(() => {
     backend.auth.getSession().then(({ data: { session } }) => {
       const u = session?.user ?? null;
       setUser(u);
-      setIsAdmin(u?.app_metadata?.role === 'admin');
+      setIsAdmin(canAccessAdmin(u));
       setLoading(false);
     });
 
@@ -34,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
         return;
       }
-      setIsAdmin(u.app_metadata?.role === 'admin');
+      setIsAdmin(canAccessAdmin(u));
       setLoading(false);
     });
 
@@ -47,8 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAdmin(false);
   };
 
+  const roles = userRoles(user);
+  const hasRole = (role: string) =>
+    roles.includes('admin') || roles.includes(role);
+
   return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, setIsAdmin, setUser, signOut }}>
+    <AuthContext.Provider value={{ user, isAdmin, roles, loading, setIsAdmin, setUser, hasRole, signOut }}>
       {children}
     </AuthContext.Provider>
   );

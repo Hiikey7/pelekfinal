@@ -4,6 +4,13 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const CATEGORIES = ['Ads', 'Repairs', 'Utilities', 'Supplies', 'Staff', 'Transport', 'Other'];
 
@@ -79,23 +86,27 @@ export default function AdminExpenses() {
         </div>
       </div>
 
-      {/* Form */}
-      {showForm && (
-        <div className="bg-card rounded-xl p-6 shadow-card mb-6 space-y-4">
-          <Input placeholder="Expense title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
-          <div className="grid grid-cols-2 gap-4">
-            <Input type="number" placeholder="Amount (KES)" value={form.amount || ''} onChange={e => setForm({ ...form, amount: Number(e.target.value) })} />
-            <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-              {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editing ? 'Edit Expense' : 'Add Expense'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input placeholder="Expense title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input type="number" placeholder="Amount (KES)" value={form.amount || ''} onChange={e => setForm({ ...form, amount: Number(e.target.value) })} />
+              <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <Input placeholder="Description (optional)" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
           </div>
-          <Input placeholder="Description (optional)" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
-          <div className="flex gap-3">
-            <Button onClick={save}>{editing ? 'Update' : 'Create'}</Button>
+          <DialogFooter>
             <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
-          </div>
-        </div>
-      )}
+            <Button onClick={save}>{editing ? 'Update' : 'Create'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Table */}
       <div className="bg-card rounded-xl shadow-card overflow-hidden">

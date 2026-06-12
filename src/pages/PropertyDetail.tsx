@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { backend } from "@/integrations/backend/client";
+import { useQuery } from "@tanstack/react-query";
 import {
   Heart,
   MapPin,
@@ -16,12 +16,29 @@ import {
 } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { PropertyDetailSkeleton } from "@/components/loading-skeletons";
-import type { Tables } from "@/integrations/backend/types";
+import PageSEO from "@/components/PageSEO";
+import {
+  fetchOtherProperties,
+  fetchProperty,
+  publicQueryOptions,
+} from "@/lib/public-queries";
 
-type Property = Tables<"properties">;
+const categoryLabels: Record<string, string> = {
+  airbnb: "Airbnb",
+  rental: "Rental",
+  sale: "For Sale",
+  commercial_spaces: "Commercial spaces",
+};
+
+const categoryColors: Record<string, string> = {
+  airbnb: "bg-secondary/10 text-secondary",
+  rental: "bg-primary/10 text-primary",
+  sale: "bg-destructive/10 text-destructive",
+  commercial_spaces: "bg-amber-500/10 text-amber-700",
+};
 
 const TikTokIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -34,37 +51,19 @@ export default function PropertyDetail() {
   const { toggleFavorite, isFavorite } = useFavorites();
   const { settings } = useSiteSettings();
   const [activeImage, setActiveImage] = useState(0);
-  const [property, setProperty] = useState<Property | null>(null);
-  const [otherProperties, setOtherProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
   const carouselRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchProperty = async () => {
-      if (!id) return;
-      const { data } = await backend
-        .from("properties")
-        .select("*")
-        .eq("id", id)
-        .single();
-      setProperty(data);
-      setLoading(false);
-    };
-    fetchProperty();
-  }, [id]);
-
-  useEffect(() => {
-    const fetchOtherProperties = async () => {
-      if (!id) return;
-      const { data } = await backend
-        .from("properties")
-        .select("*")
-        .neq("id", id)
-        .limit(10);
-      if (data) setOtherProperties(data);
-    };
-    fetchOtherProperties();
-  }, [id]);
+  const { data: property = null, isLoading: loading } = useQuery({
+    queryKey: ["property", id],
+    queryFn: () => fetchProperty(id || ""),
+    enabled: !!id,
+    ...publicQueryOptions,
+  });
+  const { data: otherProperties = [] } = useQuery({
+    queryKey: ["properties", "other", id],
+    queryFn: () => fetchOtherProperties(id || ""),
+    enabled: !!id,
+    ...publicQueryOptions,
+  });
 
   const scrollCarousel = (direction: "left" | "right") => {
     if (carouselRef.current) {
@@ -99,6 +98,11 @@ export default function PropertyDetail() {
 
   return (
     <div className="pt-20 pb-24 md:pb-12">
+      <PageSEO
+        title={`${property.title} in ${property.location} | Pelek Properties`}
+        description={`${property.price_label} ${categoryLabels[property.category] || property.category} property in ${property.location}. View photos, amenities, location, and booking details from Pelek Properties.`}
+        image={property.image}
+      />
       <div className="w-[90%] mx-auto">
         <Link
           to="/properties"
@@ -115,6 +119,8 @@ export default function PropertyDetail() {
           <img
             src={property.images[activeImage] || property.image}
             alt={property.title}
+            loading="eager"
+            decoding="async"
             className="w-full h-full object-cover"
           />
         </motion.div>
@@ -130,6 +136,7 @@ export default function PropertyDetail() {
                 src={img}
                 alt=""
                 loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             </button>
@@ -158,8 +165,8 @@ export default function PropertyDetail() {
             </div>
 
             <div className="flex items-center gap-4 mb-6">
-              <span className="px-3 py-1 rounded-full bg-secondary/10 text-secondary text-xs font-semibold capitalize">
-                {property.category === "sale" ? "For Sale" : property.category}
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${categoryColors[property.category] || "bg-muted text-muted-foreground"}`}>
+                {categoryLabels[property.category] || property.category}
               </span>
             </div>
 
@@ -318,21 +325,16 @@ export default function PropertyDetail() {
                         src={prop.image}
                         alt={prop.title}
                         loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute top-3 left-3">
                         <span
                           className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${
-                            prop.category === "airbnb"
-                              ? "bg-secondary/10 text-secondary"
-                              : prop.category === "rental"
-                                ? "bg-primary/10 text-primary"
-                                : "bg-destructive/10 text-destructive"
+                            categoryColors[prop.category] || "bg-muted text-muted-foreground"
                           }`}
                         >
-                          {prop.category === "sale"
-                            ? "For Sale"
-                            : prop.category}
+                          {categoryLabels[prop.category] || prop.category}
                         </span>
                       </div>
                     </div>

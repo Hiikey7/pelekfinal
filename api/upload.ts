@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { AppRole, getSessionFromRequest, hasRole } from "./auth-utils";
 
 type UploadRequest = {
   bucket?: string;
@@ -6,10 +7,18 @@ type UploadRequest = {
   file?: string;
 };
 
-function requireAdmin(req: any) {
-  const auth = req.headers.authorization || "";
-  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-  return !!process.env.ADMIN_SESSION_SECRET && token === process.env.ADMIN_SESSION_SECRET;
+function requiredRoleForBucket(bucket?: string): AppRole | null {
+  if (bucket === "property-images") return "properties";
+  if (bucket === "blog-images") return "blogs";
+  return null;
+}
+
+function canUpload(req: any, bucket?: string) {
+  const session = getSessionFromRequest(req);
+  if (hasRole(session, "admin")) return true;
+
+  const requiredRole = requiredRoleForBucket(bucket);
+  return !!requiredRole && hasRole(session, requiredRole);
 }
 
 function cloudinaryFolder(bucket?: string) {
@@ -23,7 +32,9 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: { message: "Method not allowed" } });
   }
 
-  if (!requireAdmin(req)) {
+  const { bucket, path, file } = (req.body || {}) as UploadRequest;
+
+  if (!canUpload(req, bucket)) {
     return res.status(401).json({ error: { message: "Unauthorized" } });
   }
 
@@ -40,7 +51,6 @@ export default async function handler(req: any, res: any) {
     });
   }
 
-  const { bucket, path, file } = (req.body || {}) as UploadRequest;
   if (!file || !path) {
     return res
       .status(400)

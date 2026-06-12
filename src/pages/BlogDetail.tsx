@@ -1,28 +1,17 @@
 import { useParams, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { backend } from "@/integrations/backend/client";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, MessageCircle } from "lucide-react";
-import type { Tables } from "@/integrations/backend/types";
-
-type Blog = Tables<"blogs">;
+import { fetchBlog, publicQueryOptions } from "@/lib/public-queries";
+import PageSEO from "@/components/PageSEO";
 
 export default function BlogDetail() {
   const { id } = useParams();
-  const [post, setPost] = useState<Blog | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!id) return;
-    backend
-      .from("blogs")
-      .select("*")
-      .eq("id", id)
-      .single()
-      .then(({ data }) => {
-        setPost(data);
-        setLoading(false);
-      });
-  }, [id]);
+  const { data: post = null, isLoading: loading } = useQuery({
+    queryKey: ["blog", id],
+    queryFn: () => fetchBlog(id || ""),
+    enabled: !!id,
+    ...publicQueryOptions,
+  });
 
   if (loading)
     return (
@@ -44,6 +33,11 @@ export default function BlogDetail() {
 
   return (
     <div className="pt-20 pb-24 md:pb-12">
+      <PageSEO
+        title={`${post.title} | Pelek Properties Blog`}
+        description={post.excerpt || `Read ${post.title} on the Pelek Properties blog.`}
+        image={post.image}
+      />
       <div className="container mx-auto px-4 max-w-3xl">
         <Link
           to="/blog"
@@ -64,6 +58,8 @@ export default function BlogDetail() {
           <img
             src={post.image}
             alt={post.title}
+            loading="eager"
+            decoding="async"
             className="w-full h-full object-cover"
           />
         </div>

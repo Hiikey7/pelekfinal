@@ -1,8 +1,12 @@
-const CACHE_NAME = "pelek-properties-v1";
+const CACHE_NAME = "pelek-properties-v2";
 const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
   "/favicon.ico",
+  "/icon-192.png",
+  "/icon-512.png",
+  "/logo-nav.png",
+  "/logo-p.png",
   "/og-image.svg",
   "/placeholder.svg"
 ];
@@ -40,6 +44,23 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(() => caches.match("/") || Response.error())
+    );
+    return;
+  }
+
+  if (url.origin === self.location.origin && url.pathname.startsWith("/assets/")) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+
+        return fetch(request).then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        });
+      })
     );
     return;
   }

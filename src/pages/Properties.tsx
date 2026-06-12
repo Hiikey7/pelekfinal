@@ -1,13 +1,21 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { backend } from "@/integrations/backend/client";
+import { useQuery } from "@tanstack/react-query";
 import PropertyCard from "@/components/PropertyCard";
 import { PropertyGridSkeleton } from "@/components/loading-skeletons";
 import { useFavorites } from "@/hooks/useFavorites";
 import { Search, MessageCircle } from "lucide-react";
-import type { Tables } from "@/integrations/backend/types";
+import {
+  fetchProperties,
+  publicQueryOptions,
+} from "@/lib/public-queries";
 
-type Property = Tables<"properties">;
+function parseCategories(value: string) {
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 export default function Properties() {
   const [searchParams] = useSearchParams();
@@ -17,25 +25,17 @@ export default function Properties() {
     searchParams.get("category") || "all",
   );
   const [sort, setSort] = useState("popular");
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetch = async () => {
-      const { data } = await backend
-        .from("properties")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (data) setProperties(data);
-      setLoading(false);
-    };
-    fetch();
-  }, []);
+  const { data: properties = [], isLoading: loading } = useQuery({
+    queryKey: ["properties"],
+    queryFn: fetchProperties,
+    ...publicQueryOptions,
+  });
 
   const filtered = useMemo(() => {
     let result = properties;
-    if (category !== "all")
-      result = result.filter((p) => p.category === category);
+    const selectedCategories = category === "all" ? [] : parseCategories(category);
+    if (selectedCategories.length)
+      result = result.filter((p) => selectedCategories.includes(p.category));
     if (search)
       result = result.filter(
         (p) =>
@@ -74,7 +74,7 @@ export default function Properties() {
           </div>
           <div className="flex gap-3">
             <select
-              value={category}
+              value={category.includes(",") ? "all" : category}
               onChange={(e) => setCategory(e.target.value)}
               className="bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary"
             >
@@ -82,6 +82,7 @@ export default function Properties() {
               <option value="airbnb">Airbnb</option>
               <option value="rental">Rental</option>
               <option value="sale">For Sale</option>
+              <option value="commercial_spaces">Commercial spaces</option>
             </select>
             <select
               value={sort}

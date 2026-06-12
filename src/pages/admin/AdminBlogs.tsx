@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { backend } from '@/integrations/backend/client';
 import { Plus, Pencil, Trash2, Upload, ImageIcon, Home } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 const RichTextEditor = lazy(() => import('@/components/RichTextEditor'));
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/backend/types';
@@ -10,6 +11,9 @@ type Blog = Tables<'blogs'>;
 const emptyForm = { title: '', excerpt: '', content: '', image: '', author: 'Pelek Properties', date: '', category: '', read_time: '5 min read', show_on_homepage: false };
 
 export default function AdminBlogs() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isCreateRoute = location.pathname.endsWith('/new');
   const [items, setItems] = useState<Blog[]>([]);
   const [editing, setEditing] = useState<Blog | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -24,6 +28,13 @@ export default function AdminBlogs() {
   useEffect(() => { fetchData(); }, []);
 
   const openNew = () => { setEditing(null); setForm({ ...emptyForm, date: new Date().toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' }) }); setShowForm(true); };
+
+  useEffect(() => {
+    if (isCreateRoute) {
+      openNew();
+    }
+  }, [isCreateRoute]);
+
   const openEdit = (b: Blog) => { setEditing(b); setForm({ title: b.title, excerpt: b.excerpt, content: b.content, image: b.image, author: b.author, date: b.date, category: b.category, read_time: b.read_time, show_on_homepage: (b as any).show_on_homepage ?? false }); setShowForm(true); };
 
   const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +63,9 @@ export default function AdminBlogs() {
       toast.success('Blog created');
     }
     setShowForm(false); fetchData();
+    if (isCreateRoute) {
+      navigate('/admin/blogs');
+    }
   };
 
   const remove = async (id: string) => { if (!confirm('Delete?')) return; await backend.from('blogs').delete().eq('id', id); toast.success('Deleted'); fetchData(); };
@@ -59,8 +73,10 @@ export default function AdminBlogs() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-2xl font-bold text-foreground">Blogs</h1>
-        <button onClick={openNew} className="flex items-center gap-2 bg-secondary text-accent-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:opacity-90"><Plus className="w-4 h-4" /> Add Blog</button>
+        <h1 className="font-display text-2xl font-bold text-foreground">{isCreateRoute ? 'Create Blog' : 'Blogs'}</h1>
+        {!isCreateRoute && (
+          <button onClick={() => navigate('/admin/blogs/new')} className="flex items-center gap-2 bg-secondary text-accent-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:opacity-90"><Plus className="w-4 h-4" /> Add Blog</button>
+        )}
       </div>
       {showForm && (
         <div className="bg-card rounded-xl p-6 shadow-card mb-6 space-y-4">
@@ -125,7 +141,7 @@ export default function AdminBlogs() {
           </div>
         </div>
       )}
-      <div className="space-y-3">
+      {!isCreateRoute && <div className="space-y-3">
         {items.length === 0 && <p className="text-center text-muted-foreground py-8">No blogs yet</p>}
         {items.map(b => (
           <div key={b.id} className="bg-card rounded-xl shadow-card p-4 flex items-center gap-3">
@@ -141,7 +157,7 @@ export default function AdminBlogs() {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
     </div>
   );
 }

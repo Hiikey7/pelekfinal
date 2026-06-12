@@ -44,12 +44,15 @@ export type NeonUser = {
   email: string;
   app_metadata?: {
     role?: string;
+    roles?: string[];
   };
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 const SESSION_KEY = "pelek_admin_session";
 const SESSION_DURATION_MS = 5 * 24 * 60 * 60 * 1000;
+const PUBLIC_DATA_CACHE_PREFIX = "pelek_public_data:";
+const PUBLIC_DATA_CACHE_MS = 5 * 60 * 1000;
 
 type StoredSession = {
   user: NeonUser;
@@ -59,6 +62,11 @@ type StoredSession = {
 
 async function request<T>(path: string, body?: unknown): Promise<T> {
   const token = getStoredSession()?.access_token;
+  const cacheKey = getPublicCacheKey(path, body, token);
+  const cached = cacheKey ? readPublicCache<T>(cacheKey) : null;
+
+  if (cached) return cached;
+
   const response = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     headers: {
@@ -74,7 +82,47 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
     throw new Error(result.error?.message || result.message || "Request failed");
   }
 
+  if (cacheKey) writePublicCache(cacheKey, result);
+
   return result;
+}
+
+function getPublicCacheKey(path: string, body: unknown, token?: string) {
+  if (token || path !== "/api/db" || !body) return null;
+
+  const requestBody = body as Partial<DbRequest>;
+  if (requestBody.action !== "select") return null;
+
+  return `${PUBLIC_DATA_CACHE_PREFIX}${JSON.stringify(requestBody)}`;
+}
+
+function readPublicCache<T>(key: string) {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw) as { expiresAt: number; value: T };
+    if (cached.expiresAt <= Date.now()) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+
+    return cached.value;
+  } catch {
+    sessionStorage.removeItem(key);
+    return null;
+  }
+}
+
+function writePublicCache(key: string, value: unknown) {
+  try {
+    sessionStorage.setItem(
+      key,
+      JSON.stringify({ expiresAt: Date.now() + PUBLIC_DATA_CACHE_MS, value }),
+    );
+  } catch {
+    // Storage limits or private mode should not block normal data fetching.
+  }
 }
 
 function dataUrlToBlob(dataUrl: string) {

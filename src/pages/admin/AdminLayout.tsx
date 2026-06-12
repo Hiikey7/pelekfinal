@@ -1,24 +1,58 @@
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.tsx';
-import { LayoutDashboard, Home, FileText, Star, Gift, ShoppingCart, LogOut, Menu, X, ListChecks, Receipt, Settings, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Home, FileText, Star, Gift, ShoppingCart, LogOut, Menu, X, ListChecks, Receipt, Settings, ExternalLink, PlusCircle, ChevronDown, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
-  { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
-  { to: '/admin/properties', icon: Home, label: 'Properties' },
-  { to: '/admin/blogs', icon: FileText, label: 'Blogs' },
-  { to: '/admin/reviews', icon: Star, label: 'Reviews' },
-  { to: '/admin/expenses', icon: Receipt, label: 'Expenses' },
-  { to: '/admin/offers', icon: Gift, label: 'Offers' },
-  { to: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
-  { to: '/admin/amenities', icon: ListChecks, label: 'Amenities' },
-  { to: '/admin/settings', icon: Settings, label: 'Settings' },
+  { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true, roles: ['admin'] },
+  { to: '/admin/reviews', icon: Star, label: 'Reviews', roles: ['admin'] },
+  { to: '/admin/expenses', icon: Receipt, label: 'Expenses', roles: ['admin'] },
+  { to: '/admin/reports', icon: BarChart3, label: 'Reports', roles: ['admin'] },
+  { to: '/admin/offers', icon: Gift, label: 'Offers', roles: ['admin'] },
+  { to: '/admin/amenities', icon: ListChecks, label: 'Amenities', roles: ['admin'] },
+  { to: '/admin/settings', icon: Settings, label: 'Settings', roles: ['admin'] },
 ];
 
+const ordersNavItem = { to: '/admin/orders', icon: ShoppingCart, label: 'Orders', roles: ['admin'] };
+
+const navGroups = [
+  {
+    key: 'properties',
+    icon: Home,
+    label: 'Properties',
+    roles: ['admin', 'properties'],
+    children: [
+      { to: '/admin/properties/new', icon: PlusCircle, label: 'Add New Property', end: true },
+      { to: '/admin/properties', icon: ListChecks, label: 'Property List', end: true },
+    ],
+  },
+  {
+    key: 'blogs',
+    icon: FileText,
+    label: 'Blogs',
+    roles: ['admin', 'blogs'],
+    children: [
+      { to: '/admin/blogs/new', icon: PlusCircle, label: 'Create Blog', end: true },
+      { to: '/admin/blogs', icon: ListChecks, label: 'Blogs', end: true },
+    ],
+  },
+];
+
+function defaultAdminPath(roles: string[]) {
+  if (roles.includes('admin')) return '/admin';
+  if (roles.includes('properties')) return '/admin/properties';
+  if (roles.includes('blogs')) return '/admin/blogs';
+  return '/admin/login';
+}
+
 export default function AdminLayout() {
-  const { user, isAdmin, loading, signOut } = useAuth();
+  const { user, isAdmin, roles, loading, signOut } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    properties: location.pathname.startsWith('/admin/properties'),
+    blogs: location.pathname.startsWith('/admin/blogs'),
+  });
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
@@ -28,8 +62,71 @@ export default function AdminLayout() {
     return <Navigate to="/admin/login" replace />;
   }
 
+  const visibleNavItems = navItems.filter((item) =>
+    item.roles.some((role) => roles.includes(role)),
+  );
+  const primaryNavItems = visibleNavItems.filter((item) => item.to === '/admin');
+  const secondaryNavItems = visibleNavItems.filter((item) => item.to !== '/admin');
+  const showOrdersNavItem = ordersNavItem.roles.some((role) => roles.includes(role));
+  const visibleNavGroups = navGroups.filter((group) =>
+    group.roles.some((role) => roles.includes(role)),
+  );
+  const propertiesNavGroup = visibleNavGroups.find((group) => group.key === 'properties');
+  const blogsNavGroup = visibleNavGroups.find((group) => group.key === 'blogs');
+
   const isActive = (path: string, end?: boolean) =>
-    end ? location.pathname === path : location.pathname.startsWith(path);
+    end ? location.pathname === path : location.pathname === path || location.pathname.startsWith(`${path}/`);
+
+  const childNavItems = navGroups.flatMap((group) =>
+    group.children.map((child) => ({ ...child, roles: group.roles })),
+  );
+  const currentItem = [...navItems, ordersNavItem, ...childNavItems].find((item) => isActive(item.to, item.end));
+  const canAccessRoute =
+    !currentItem || currentItem.roles.some((role) => roles.includes(role));
+
+  if (!canAccessRoute) {
+    return <Navigate to={defaultAdminPath(roles)} replace />;
+  }
+
+  const renderNavGroup = (group: (typeof navGroups)[number]) => {
+    const groupActive = group.children.some(item => isActive(item.to, item.end));
+    const isOpen = openGroups[group.key] ?? groupActive;
+
+    return (
+      <div key={group.key} className="space-y-1">
+        <button
+          type="button"
+          onClick={() => setOpenGroups((current) => ({ ...current, [group.key]: !isOpen }))}
+          className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors w-full ${
+            groupActive ? 'bg-secondary/10 text-secondary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <group.icon className="w-4 h-4" />
+          <span className="flex-1 text-left">{group.label}</span>
+          <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
+        {isOpen && (
+          <div className="ml-4 border-l border-border pl-2 space-y-1">
+            {group.children.map(item => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive(item.to, item.end) ? 'bg-secondary/10 text-secondary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
+              >
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const OrdersIcon = ordersNavItem.icon;
 
   return (
     <div className="min-h-screen flex bg-muted">
@@ -45,7 +142,34 @@ export default function AdminLayout() {
           <p className="text-xs text-muted-foreground mt-1">Admin Dashboard</p>
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map(item => (
+          {primaryNavItems.map(item => (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                isActive(item.to, item.end) ? 'bg-secondary/10 text-secondary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </Link>
+          ))}
+          {propertiesNavGroup && renderNavGroup(propertiesNavGroup)}
+          {showOrdersNavItem && (
+            <Link
+              to={ordersNavItem.to}
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                isActive(ordersNavItem.to) ? 'bg-secondary/10 text-secondary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              }`}
+            >
+              <OrdersIcon className="w-4 h-4" />
+              {ordersNavItem.label}
+            </Link>
+          )}
+          {blogsNavGroup && renderNavGroup(blogsNavGroup)}
+          {secondaryNavItems.map(item => (
             <Link
               key={item.to}
               to={item.to}

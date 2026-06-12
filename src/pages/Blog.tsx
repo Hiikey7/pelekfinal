@@ -1,27 +1,16 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { backend } from "@/integrations/backend/client";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { MessageCircle, ArrowRight } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { BlogGridSkeleton } from "@/components/loading-skeletons";
-import type { Tables } from "@/integrations/backend/types";
-
-type Blog = Tables<"blogs">;
+import { fetchBlogs, publicQueryOptions } from "@/lib/public-queries";
 
 export default function Blog() {
-  const [posts, setPosts] = useState<Blog[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    backend
-      .from("blogs")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        if (data) setPosts(data);
-        setLoading(false);
-      });
-  }, []);
+  const { data: posts = [], isLoading: loading } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: fetchBlogs,
+    ...publicQueryOptions,
+  });
 
   return (
     <div className="pt-20 pb-24 md:pb-12">

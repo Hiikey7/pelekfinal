@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { backend } from "@/integrations/backend/client";
 import { Plus, Pencil, Trash2, Upload, Star, X } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/backend/types";
 
@@ -32,6 +33,9 @@ const emptyForm = {
 };
 
 export default function AdminProperties() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isCreateRoute = location.pathname.endsWith("/new");
   const [items, setItems] = useState<Property[]>([]);
   const [editing, setEditing] = useState<Property | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -63,6 +67,13 @@ export default function AdminProperties() {
     setForm(emptyForm);
     setShowForm(true);
   };
+
+  useEffect(() => {
+    if (isCreateRoute) {
+      openNew();
+    }
+  }, [isCreateRoute]);
+
   const openEdit = (p: Property) => {
     setEditing(p);
     setForm({
@@ -178,6 +189,9 @@ export default function AdminProperties() {
     }
     setShowForm(false);
     fetchData();
+    if (isCreateRoute) {
+      navigate("/admin/properties");
+    }
   };
 
   const remove = async (id: string) => {
@@ -195,14 +209,16 @@ export default function AdminProperties() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-2xl font-bold text-foreground">
-          Properties
+          {isCreateRoute ? "Add New Property" : "Properties List"}
         </h1>
-        <button
-          onClick={openNew}
-          className="flex items-center gap-2 bg-secondary text-accent-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:opacity-90"
-        >
-          <Plus className="w-4 h-4" /> Add Property
-        </button>
+        {!isCreateRoute && (
+          <button
+            onClick={() => navigate("/admin/properties/new")}
+            className="flex items-center gap-2 bg-secondary text-accent-foreground rounded-lg px-4 py-2 text-sm font-semibold hover:opacity-90"
+          >
+            <Plus className="w-4 h-4" /> Add Property
+          </button>
+        )}
       </div>
 
       {showForm && (
@@ -227,18 +243,6 @@ export default function AdminProperties() {
               />
             </div>
             <div>
-              <label className={labelClass}>Numeric price</label>
-              <input
-                placeholder="e.g. 25000"
-                type="number"
-                value={form.price}
-                onChange={(e) =>
-                  setForm({ ...form, price: Number(e.target.value) })
-                }
-                className={inputClass}
-              />
-            </div>
-            <div>
               <label className={labelClass}>Display price label</label>
               <input
                 placeholder="e.g. KSh 25,000/night or KSh 8.5M"
@@ -259,6 +263,7 @@ export default function AdminProperties() {
                 <option value="airbnb">Airbnb</option>
                 <option value="rental">Rental</option>
                 <option value="sale">For Sale</option>
+                <option value="commercial_spaces">Commercial spaces</option>
               </select>
             </div>
             <div>
@@ -315,32 +320,6 @@ export default function AdminProperties() {
                 placeholder="e.g. +254711614099"
                 value={form.whatsapp}
                 onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Latitude</label>
-              <input
-                placeholder="e.g. -1.2921"
-                type="number"
-                step="any"
-                value={form.lat}
-                onChange={(e) =>
-                  setForm({ ...form, lat: Number(e.target.value) })
-                }
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Longitude</label>
-              <input
-                placeholder="e.g. 36.8219"
-                type="number"
-                step="any"
-                value={form.lng}
-                onChange={(e) =>
-                  setForm({ ...form, lng: Number(e.target.value) })
-                }
                 className={inputClass}
               />
             </div>
@@ -547,7 +526,7 @@ export default function AdminProperties() {
         </div>
       )}
 
-      <div className="bg-card rounded-xl shadow-card overflow-hidden">
+      {!isCreateRoute && <div className="bg-card rounded-xl shadow-card overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-muted">
             <tr>
@@ -579,7 +558,11 @@ export default function AdminProperties() {
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
                   <span className="px-2 py-1 rounded-full bg-secondary/10 text-secondary text-xs capitalize">
-                    {p.category}
+                    {p.category === "sale"
+                      ? "For Sale"
+                      : p.category === "commercial_spaces"
+                        ? "Commercial spaces"
+                        : p.category}
                   </span>
                 </td>
                 <td className="px-4 py-3 hidden md:table-cell">
@@ -613,7 +596,7 @@ export default function AdminProperties() {
             )}
           </tbody>
         </table>
-      </div>
+      </div>}
     </div>
   );
 }

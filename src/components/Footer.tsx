@@ -116,6 +116,12 @@ export default function Footer() {
               >
                 For Sale
               </Link>
+              <Link
+                to="/properties?category=commercial_spaces"
+                className="hover:opacity-100 transition-opacity"
+              >
+                Commercial spaces
+              </Link>
             </div>
           </div>
           <div>

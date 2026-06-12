@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import MobileNav from "@/components/MobileNav";
 import Footer from "@/components/Footer";
 import OfferPopup from "./components/OfferPopup";
+import PwaInstallBanner from "@/components/PwaInstallBanner";
 
 const Index = lazy(() => import("./pages/Index"));
 const Properties = lazy(() => import("./pages/Properties"));
@@ -30,6 +31,7 @@ const AdminProperties = lazy(() => import("./pages/admin/AdminProperties"));
 const AdminBlogs = lazy(() => import("./pages/admin/AdminBlogs"));
 const AdminReviews = lazy(() => import("./pages/admin/AdminReviews"));
 const AdminExpenses = lazy(() => import("./pages/admin/AdminExpenses"));
+const AdminReports = lazy(() => import("./pages/admin/AdminReports"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminOffers = lazy(() => import("./pages/admin/AdminOffers"));
 const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
@@ -41,7 +43,16 @@ function ScrollToTop() {
   return null;
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -59,9 +70,12 @@ const App = () => (
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="properties" element={<AdminProperties />} />
+            <Route path="properties/new" element={<AdminProperties />} />
             <Route path="blogs" element={<AdminBlogs />} />
+            <Route path="blogs/new" element={<AdminBlogs />} />
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="expenses" element={<AdminExpenses />} />
+            <Route path="reports" element={<AdminReports />} />
             <Route path="offers" element={<AdminOffers />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="amenities" element={<AdminAmenities />} />
@@ -73,6 +87,7 @@ const App = () => (
             path="*"
             element={
               <>
+                <PwaInstallBanner />
                 <OfferPopup />
                 <Navbar />
                 <main className="min-h-screen">

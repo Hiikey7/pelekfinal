@@ -1,4 +1,5 @@
 import { neon } from "@neondatabase/serverless";
+import { AppRole, getSessionFromRequest, hasRole } from "./auth-utils";
 
 type DbFilter = {
   column: string;
@@ -184,10 +185,18 @@ function cleanPayload(table: TableName, payload: Record<string, unknown>) {
   );
 }
 
-function requireAdmin(req: any) {
-  const auth = req.headers.authorization || "";
-  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-  return !!process.env.ADMIN_SESSION_SECRET && token === process.env.ADMIN_SESSION_SECRET;
+const writeRolesByTable: Partial<Record<TableName, AppRole>> = {
+  blogs: "blogs",
+  properties: "properties",
+};
+
+function canAccess(req: any, table: TableName, action: DbRequest["action"]) {
+  const session = getSessionFromRequest(req);
+  if (hasRole(session, "admin")) return true;
+  if (action === "select" && publicReadTables.has(table)) return true;
+
+  const requiredRole = writeRolesByTable[table];
+  return action !== "select" && !!requiredRole && hasRole(session, requiredRole);
 }
 
 export default async function handler(req: any, res: any) {
@@ -210,11 +219,7 @@ export default async function handler(req: any, res: any) {
       throw new Error(`Table "${table}" is not allowed`);
     }
 
-    if (body.action !== "select" && !requireAdmin(req)) {
-      return res.status(401).json({ error: { message: "Unauthorized" } });
-    }
-
-    if (body.action === "select" && !publicReadTables.has(table) && !requireAdmin(req)) {
+    if (!canAccess(req, table, body.action)) {
       return res.status(401).json({ error: { message: "Unauthorized" } });
     }
 

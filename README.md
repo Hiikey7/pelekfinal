@@ -18,6 +18,8 @@ Copy [`.env.example`](C:\Users\Hiikey\Desktop\pelek-home-hub\.env.example) into 
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
+- `PROPERTY_BLOG_ADMIN_EMAIL` optional limited dashboard user for properties/blogs
+- `PROPERTY_BLOG_ADMIN_PASSWORD` optional limited dashboard user password
 - `CLOUDINARY_CLOUD_NAME`
 - `CLOUDINARY_API_KEY`
 - `CLOUDINARY_API_SECRET`

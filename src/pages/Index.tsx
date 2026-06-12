@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import heroBg from "@/assets/hero-bg.jpg";
-import { backend } from "@/integrations/backend/client";
 import PropertyCard from "@/components/PropertyCard";
 import { useFavorites } from "@/hooks/useFavorites";
 import servicesImg from "@/assets/property-1.jpg";
@@ -23,45 +23,50 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import type { Tables } from "@/integrations/backend/types";
-
-type Property = Tables<"properties">;
-type Blog = Tables<"blogs">;
-type Review = Tables<"reviews">;
+import {
+  fetchFeaturedProperties,
+  fetchHomepageBlogs,
+  fetchReviews,
+  publicQueryOptions,
+} from "@/lib/public-queries";
 
 export default function Index() {
   const { toggleFavorite, isFavorite } = useFavorites();
-  const [featured, setFeatured] = useState<Property[]>([]);
-  const [blogPosts, setBlogPosts] = useState<Blog[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [activeReview, setActiveReview] = useState(0);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const { data: featured = [] } = useQuery({
+    queryKey: ["properties", "featured"],
+    queryFn: fetchFeaturedProperties,
+    ...publicQueryOptions,
+  });
+  const { data: blogPosts = [] } = useQuery({
+    queryKey: ["blogs", "homepage"],
+    queryFn: fetchHomepageBlogs,
+    ...publicQueryOptions,
+  });
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["reviews"],
+    queryFn: fetchReviews,
+    ...publicQueryOptions,
+  });
+  const typeTabs = [
+    { value: "airbnb", label: "Airbnb" },
+    { value: "rental", label: "Rental" },
+    { value: "sale", label: "For Sale" },
+    { value: "commercial_spaces", label: "Commercial" },
+  ];
+  const searchPath =
+    selectedTypes.length === 0
+      ? "/properties"
+      : `/properties?category=${selectedTypes.join(",")}`;
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      const [{ data: props }, { data: blogs }, { data: reviewData }] =
-        await Promise.all([
-          backend
-            .from("properties")
-            .select("*")
-            .eq("featured", true)
-            .order("created_at", { ascending: false }),
-          backend
-            .from("blogs")
-            .select("*")
-            .eq("show_on_homepage", true)
-            .order("created_at", { ascending: false })
-            .limit(3),
-          backend
-            .from("reviews")
-            .select("*")
-            .order("created_at", { ascending: false }),
-        ]);
-      if (props) setFeatured(props);
-      if (blogs) setBlogPosts(blogs);
-      if (reviewData) setReviews(reviewData);
-    };
-    fetchAll();
-  }, []);
+  const toggleType = (type: string) => {
+    setSelectedTypes((current) =>
+      current.includes(type)
+        ? current.filter((item) => item !== type)
+        : [...current, type],
+    );
+  };
 
   useEffect(() => {
     if (reviews.length === 0) return;
@@ -101,54 +106,57 @@ export default function Index() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-primary-foreground/80 text-lg md:text-xl mb-8 max-w-2xl mx-auto"
           >
-            Luxury Airbnb stays, premium rentals, and properties for sale across
-            Kenya
+            Luxury Airbnb stays, premium rentals, properties for sale, and
+            commercial spaces like offices across Kenya
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="bg-background/95 backdrop-blur-xl rounded-xl p-3 md:p-4 max-w-2xl mx-auto shadow-card w-[88%]"
+            className="bg-background/95 backdrop-blur-xl rounded-xl p-2.5 md:p-3 max-w-xl mx-auto shadow-card w-[82%] md:w-[78%]"
           >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2.5">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  placeholder="Where to?"
-                  className="bg-muted rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
-                />
+            <div className="space-y-2.5">
+              <div className="flex flex-col gap-1 min-w-0 w-full md:w-3/4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 bg-muted rounded-md p-1">
+                  {typeTabs.map((tab) => (
+                    <button
+                      key={tab.value}
+                      type="button"
+                      onClick={() => toggleType(tab.value)}
+                      className={`min-h-7 rounded px-2 text-xs font-medium transition-colors ${
+                        selectedTypes.includes(tab.value)
+                          ? "bg-secondary text-accent-foreground"
+                          : "bg-secondary/10 text-secondary hover:bg-secondary/15"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Type
-                </label>
-                <select className="bg-muted rounded-md px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-secondary appearance-none">
-                  <option>All Types</option>
-                  <option>Airbnb</option>
-                  <option>Rental</option>
-                  <option>For Sale</option>
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2.5">
+                <div className="flex flex-col gap-1">
+                  <input
+                    type="text"
+                    placeholder="Where to?"
+                    className="bg-muted border border-gray-300 rounded-md px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input
+                    type="text"
+                    placeholder="Max price"
+                    className="bg-muted border border-gray-300 rounded-md px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
+                  />
+                </div>
+                <Link
+                  to={searchPath}
+                  className="bg-secondary text-accent-foreground rounded-md px-4 py-1.5 text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mt-auto min-h-8"
+                >
+                  <Search className="w-4 h-4" /> Search
+                </Link>
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Budget
-                </label>
-                <input
-                  type="text"
-                  placeholder="Max price"
-                  className="bg-muted rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-secondary"
-                />
-              </div>
-              <Link
-                to="/properties"
-                className="bg-secondary text-accent-foreground rounded-md px-4 py-2 text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity mt-auto min-h-9"
-              >
-                <Search className="w-4 h-4" /> Search
-              </Link>
             </div>
           </motion.div>
         </div>

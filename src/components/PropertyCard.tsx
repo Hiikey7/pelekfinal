@@ -15,6 +15,14 @@ const categoryColors: Record<string, string> = {
   airbnb: 'bg-secondary/10 text-secondary',
   rental: 'bg-primary/10 text-primary',
   sale: 'bg-destructive/10 text-destructive',
+  commercial_spaces: 'bg-amber-500/10 text-amber-700',
+};
+
+const categoryLabels: Record<string, string> = {
+  airbnb: 'Airbnb',
+  rental: 'Rental',
+  sale: 'For Sale',
+  commercial_spaces: 'Commercial spaces',
 };
 
 export default function PropertyCard({ property, isFavorite, onToggleFavorite }: Props) {
@@ -37,7 +45,7 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite }:
         />
         <div className="absolute top-3 left-3">
           <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${categoryColors[property.category] || ''}`}>
-            {property.category === 'sale' ? 'For Sale' : property.category}
+            {categoryLabels[property.category] || property.category}
           </span>
         </div>
         <button
