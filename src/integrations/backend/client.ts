@@ -39,7 +39,7 @@ type UploadResponse = {
   publicUrl: string;
 };
 
-export type NeonUser = {
+export type BackendUser = {
   id: string;
   email: string;
   app_metadata?: {
@@ -55,7 +55,7 @@ const PUBLIC_DATA_CACHE_PREFIX = "pelek_public_data:";
 const PUBLIC_DATA_CACHE_MS = 5 * 60 * 1000;
 
 type StoredSession = {
-  user: NeonUser;
+  user: BackendUser;
   access_token: string;
   expires_at: number;
 };
@@ -334,7 +334,7 @@ export const backend = {
     onAuthStateChange(
       _callback?: (
         event: string,
-        session: { user: NeonUser; access_token: string } | null,
+        session: { user: BackendUser; access_token: string } | null,
       ) => void,
     ) {
       return {
@@ -348,7 +348,7 @@ export const backend = {
     async signInWithPassword(credentials: { email: string; password: string }) {
       try {
         const data = await request<{
-          user: NeonUser;
+          user: BackendUser;
           access_token: string;
         }>("/api/auth", credentials);
         const session: StoredSession = {

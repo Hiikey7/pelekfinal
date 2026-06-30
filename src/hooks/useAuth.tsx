@@ -1,14 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { backend } from '@/integrations/backend/client';
-import type { NeonUser } from '@/integrations/backend/client';
+import type { BackendUser } from '@/integrations/backend/client';
 
 interface AuthContextType {
-  user: NeonUser | null;
+  user: BackendUser | null;
   isAdmin: boolean;
   roles: string[];
   loading: boolean;
   setIsAdmin: (v: boolean) => void;
-  setUser: (u: NeonUser | null) => void;
+  setUser: (u: BackendUser | null) => void;
   hasRole: (role: string) => boolean;
   signOut: () => Promise<void>;
 }
@@ -16,13 +16,13 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<NeonUser | null>(null);
+  const [user, setUser] = useState<BackendUser | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const userRoles = (u: NeonUser | null) =>
+  const userRoles = (u: BackendUser | null) =>
     u?.app_metadata?.roles ?? (u?.app_metadata?.role === 'admin' ? ['admin'] : []);
-  const canAccessAdmin = (u: NeonUser | null) => {
+  const canAccessAdmin = (u: BackendUser | null) => {
     const roles = userRoles(u);
     return u?.app_metadata?.role === 'admin' || roles.length > 0;
   };

@@ -1,4 +1,4 @@
-import { neon } from "@neondatabase/serverless";
+import { getDatabaseUrl, query as dbQuery } from "../postgres";
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
@@ -9,11 +9,15 @@ export default async function handler(req: any, res: any) {
     return res.status(404).json({ error: { message: "Function not found" } });
   }
 
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = getDatabaseUrl();
   if (!connectionString) {
     return res
       .status(500)
-      .json({ error: { message: "DATABASE_URL is not configured" } });
+      .json({
+        error: {
+          message: "SUPABASE_DATABASE_URL or DATABASE_URL is not configured",
+        },
+      });
   }
 
   const { name, email, phone, subject, message } = req.body || {};
@@ -25,12 +29,14 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const sql = neon(connectionString);
-    const rows = await sql`
+    const rows = await dbQuery<{ id: string }>(
+      `
       INSERT INTO contact_messages (full_name, email, phone, subject, message)
-      VALUES (${name}, ${email}, ${phone || ""}, ${subject}, ${message})
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING id
-    `;
+      `,
+      [name, email, phone || "", subject, message],
+    );
 
     return res.status(200).json({
       success: true,

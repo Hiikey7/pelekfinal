@@ -1,20 +1,20 @@
 # Pelek Home Hub
 
-This project uses `Neon Postgres` as its database, `Cloudinary` for image storage/optimization, and a small serverless API layer in [`api/`](C:\Users\Hiikey\Desktop\pelek-home-hub\api) for auth, CRUD, uploads, and function requests.
+This project uses `Supabase Postgres` as its database, `Cloudinary` for image storage/optimization, and a small serverless API layer in [`api/`](api) for auth, CRUD, uploads, and function requests.
 
 ## Stack
 
 - `Vite + React + TypeScript`
 - `Vercel` for frontend and API routes
-- `Neon Postgres` for the database
+- `Supabase Postgres` for the database
 - `Cloudinary` for uploaded images
-- A legacy backend frontend client wrapper in [`src/integrations/backend/client.ts`](C:\Users\Hiikey\Desktop\pelek-home-hub\src\integrations\backend\client.ts) that talks to your own API instead of external backend services
+- A backend frontend client wrapper in [`src/integrations/backend/client.ts`](src/integrations/backend/client.ts) that talks to your own API instead of external backend services
 
 ## Environment
 
-Copy [`.env.example`](C:\Users\Hiikey\Desktop\pelek-home-hub\.env.example) into `.env` and set:
+Copy [`.env.example`](.env.example) into `.env` and set:
 
-- `DATABASE_URL` to your Neon connection string
+- `SUPABASE_DATABASE_URL` to your new Supabase Postgres connection string. The app also accepts `DATABASE_URL` as a fallback.
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
@@ -30,11 +30,11 @@ Copy [`.env.example`](C:\Users\Hiikey\Desktop\pelek-home-hub\.env.example) into 
 
 ## Database
 
-- Schema source: [`neon/schema.sql`](C:\Users\Hiikey\Desktop\pelek-home-hub\neon\schema.sql)
-- Runtime database connection: [`api/db.ts`](C:\Users\Hiikey\Desktop\pelek-home-hub\api\db.ts)
-- Admin auth endpoint: [`api/auth.ts`](C:\Users\Hiikey\Desktop\pelek-home-hub\api\auth.ts)
+- Schema source: [`supabase/schema.sql`](supabase/schema.sql)
+- Runtime database connection: [`api/postgres.ts`](api/postgres.ts) and [`api/db.ts`](api/db.ts)
+- Admin auth endpoint: [`api/auth.ts`](api/auth.ts)
 
-If you are replacing an older data source, import the data into Neon, then update `DATABASE_URL` in your local and hosting environment variables.
+For a fresh Supabase database, run [`supabase/schema.sql`](supabase/schema.sql) in Supabase SQL Editor, then update `SUPABASE_DATABASE_URL` in your local and hosting environment variables.
 
 ## Commands
 
@@ -47,5 +47,5 @@ npm test
 
 ## Notes
 
-- The frontend still uses a backend client interface for compatibility, but the active runtime is Neon Postgres and Cloudinary.
+- The frontend still uses a backend client interface for compatibility, but the active runtime is Supabase Postgres and Cloudinary.
 - Rotate any previously committed database credentials before deploying.

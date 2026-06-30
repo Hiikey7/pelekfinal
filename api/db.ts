@@ -1,5 +1,5 @@
-import { neon } from "@neondatabase/serverless";
 import { AppRole, getSessionFromRequest, hasRole } from "./auth-utils";
+import { getDatabaseUrl, query as dbQuery } from "./postgres";
 
 type DbFilter = {
   column: string;
@@ -204,11 +204,15 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: { message: "Method not allowed" } });
   }
 
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = getDatabaseUrl();
   if (!connectionString) {
     return res
       .status(500)
-      .json({ error: { message: "DATABASE_URL is not configured" } });
+      .json({
+        error: {
+          message: "SUPABASE_DATABASE_URL or DATABASE_URL is not configured",
+        },
+      });
   }
 
   try {
@@ -223,13 +227,12 @@ export default async function handler(req: any, res: any) {
       return res.status(401).json({ error: { message: "Unauthorized" } });
     }
 
-    const sql = neon(connectionString);
     const params: unknown[] = [];
     const where = addFilters(table, body.filters, params);
 
     if (body.action === "select") {
       if (body.count === "exact" && body.head) {
-        const rows = await sql.query(
+        const rows = await dbQuery<{ count: number }>(
           `SELECT count(*)::int AS count FROM "${table}"${where}`,
           params,
         );
@@ -255,7 +258,7 @@ export default async function handler(req: any, res: any) {
         query += ` LIMIT $${params.length}`;
       }
 
-      const rows = await sql.query(query, params);
+      const rows = await dbQuery(query, params);
 
       if (body.single || body.maybeSingle) {
         return res.status(200).json({
@@ -284,7 +287,7 @@ export default async function handler(req: any, res: any) {
         const query = `INSERT INTO "${table}" (${columns
           .map((column) => `"${column}"`)
           .join(", ")}) VALUES (${placeholders}) RETURNING *`;
-        const result = await sql.query(query, values);
+        const result = await dbQuery(query, values);
         inserted.push(...result);
       }
 
@@ -303,7 +306,7 @@ export default async function handler(req: any, res: any) {
         .map((column, index) => `"${column}" = $${index + 1}`)
         .join(", ");
       const shiftedWhere = addFilters(table, body.filters, values);
-      const rows = await sql.query(
+      const rows = await dbQuery(
         `UPDATE "${table}" SET ${setClause}${shiftedWhere} RETURNING *`,
         values,
       );
@@ -313,7 +316,7 @@ export default async function handler(req: any, res: any) {
 
     if (body.action === "delete") {
       if (!where) throw new Error("Delete requires at least one filter");
-      const rows = await sql.query(`DELETE FROM "${table}"${where} RETURNING *`, params);
+      const rows = await dbQuery(`DELETE FROM "${table}"${where} RETURNING *`, params);
       return res.status(200).json({ data: rows, error: null });
     }
 
