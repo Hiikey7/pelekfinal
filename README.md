@@ -31,7 +31,7 @@ Copy [`.env.example`](.env.example) into `.env` and set:
 ## Database
 
 - Schema source: [`supabase/schema.sql`](supabase/schema.sql)
-- Runtime database connection: [`server/postgres.ts`](server/postgres.ts) and [`api/db.ts`](api/db.ts)
+- Runtime database connection: [`api/db.ts`](api/db.ts)
 - Admin auth endpoint: [`api/auth.ts`](api/auth.ts)
 
 For a fresh Supabase database, run [`supabase/schema.sql`](supabase/schema.sql) in Supabase SQL Editor, then update `SUPABASE_DATABASE_URL` in your local and hosting environment variables.

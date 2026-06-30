@@ -1,5 +1,9 @@
+import pg from "pg";
 import { AppRole, getSessionFromRequest, hasRole } from "./auth-utils";
-import { getDatabaseUrl, query as dbQuery } from "../server/postgres";
+
+const { Pool } = pg;
+let pool: pg.Pool | null = null;
+let poolConnectionString = "";
 
 type DbFilter = {
   column: string;
@@ -23,6 +27,42 @@ type DbRequest = {
   count?: "exact";
   head?: boolean;
 };
+
+function getDatabaseUrl() {
+  return process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL || "";
+}
+
+function shouldUseSsl(connectionString: string) {
+  return !/[?&]sslmode=disable(?:&|$)/i.test(connectionString);
+}
+
+function getPool(connectionString: string) {
+  if (!pool || poolConnectionString !== connectionString) {
+    pool = new Pool({
+      connectionString,
+      max: 3,
+      ssl: shouldUseSsl(connectionString)
+        ? { rejectUnauthorized: false }
+        : undefined,
+    });
+    pool.on("error", (error) => {
+      console.error("Postgres pool error", error);
+    });
+    poolConnectionString = connectionString;
+  }
+
+  return pool;
+}
+
+async function dbQuery<T = any>(text: string, values: unknown[] = []) {
+  const connectionString = getDatabaseUrl();
+  if (!connectionString) {
+    throw new Error("SUPABASE_DATABASE_URL or DATABASE_URL is not configured");
+  }
+
+  const result = await getPool(connectionString).query<T>(text, values);
+  return result.rows;
+}
 
 const tableColumns = {
   amenities: ["created_at", "id", "name"],

@@ -1,3 +1,7 @@
+import pg from "pg";
+
+const { Client } = pg;
+
 const requiredEnv = [
   "ADMIN_EMAIL",
   "ADMIN_PASSWORD",
@@ -17,10 +21,24 @@ export default async function handler(req: any, res: any) {
   };
 
   if (req.query?.db === "1") {
+    const connectionString = process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL;
     try {
-      const { query: dbQuery } = await import("../server/postgres");
-      const rows = await dbQuery<{ ok: number }>("SELECT 1 AS ok");
-      payload.db = { ok: rows[0]?.ok === 1 };
+      if (!connectionString) {
+        throw new Error("SUPABASE_DATABASE_URL or DATABASE_URL is not configured");
+      }
+
+      const client = new Client({
+        connectionString,
+        ssl: { rejectUnauthorized: false },
+      });
+
+      await client.connect();
+      try {
+        const result = await client.query<{ ok: number }>("SELECT 1 AS ok");
+        payload.db = { ok: result.rows[0]?.ok === 1 };
+      } finally {
+        await client.end();
+      }
     } catch (error) {
       payload.ok = false;
       payload.db = {
