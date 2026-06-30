@@ -9,6 +9,26 @@ const requiredEnv = [
   "SUPABASE_DATABASE_URL",
 ] as const;
 
+function describeDatabaseUrl() {
+  const connectionString = process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL;
+  if (!connectionString) return null;
+
+  try {
+    const parsed = new URL(connectionString);
+    return {
+      host: parsed.hostname,
+      port: parsed.port || "5432",
+      database: parsed.pathname.replace(/^\//, "") || null,
+      isPooler: parsed.hostname.includes("pooler.supabase.com"),
+      isDirectSupabase: /^db\.[^.]+\.supabase\.co$/.test(parsed.hostname),
+    };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Invalid database URL",
+    };
+  }
+}
+
 export default async function handler(req: any, res: any) {
   const env = Object.fromEntries(
     requiredEnv.map((name) => [name, Boolean(process.env[name])]),
@@ -18,6 +38,7 @@ export default async function handler(req: any, res: any) {
     ok: Object.values(env).every(Boolean),
     env,
     node: process.version,
+    databaseUrl: describeDatabaseUrl(),
   };
 
   if (req.query?.db === "1") {
