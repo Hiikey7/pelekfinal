@@ -35,46 +35,55 @@ function configuredUsers(): LoginUser[] {
 }
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: { message: "Method not allowed" } });
-  }
+  try {
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: { message: "Method not allowed" } });
+    }
 
-  const sessionSecret = process.env.ADMIN_SESSION_SECRET;
+    const sessionSecret = process.env.ADMIN_SESSION_SECRET;
 
-  const users = configuredUsers();
-  if (!users.length || !sessionSecret) {
+    const users = configuredUsers();
+    if (!users.length || !sessionSecret) {
+      return res.status(500).json({
+        error: {
+          message:
+            "Admin auth is not configured. Set ADMIN_EMAIL, ADMIN_PASSWORD, and ADMIN_SESSION_SECRET.",
+        },
+      });
+    }
+
+    const { email, password } =
+      typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
+    const user = users.find(
+      (item) => item.email === email && item.password === password,
+    );
+
+    if (!user) {
+      return res.status(401).json({ error: { message: "Invalid email or password" } });
+    }
+
+    const accessToken = createSessionToken({
+      id: user.id,
+      email: user.email,
+      roles: user.roles,
+    });
+
+    return res.status(200).json({
+      access_token: accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        app_metadata: {
+          role: user.roles.includes("admin") ? "admin" : "limited_admin",
+          roles: user.roles,
+        },
+      },
+    });
+  } catch (error) {
     return res.status(500).json({
       error: {
-        message:
-          "Admin auth is not configured. Set ADMIN_EMAIL, ADMIN_PASSWORD, and ADMIN_SESSION_SECRET.",
+        message: error instanceof Error ? error.message : "Admin login failed",
       },
     });
   }
-
-  const { email, password } = req.body || {};
-  const user = users.find(
-    (item) => item.email === email && item.password === password,
-  );
-
-  if (!user) {
-    return res.status(401).json({ error: { message: "Invalid email or password" } });
-  }
-
-  const accessToken = createSessionToken({
-    id: user.id,
-    email: user.email,
-    roles: user.roles,
-  });
-
-  return res.status(200).json({
-    access_token: accessToken,
-    user: {
-      id: user.id,
-      email: user.email,
-      app_metadata: {
-        role: user.roles.includes("admin") ? "admin" : "limited_admin",
-        roles: user.roles,
-      },
-    },
-  });
 }

@@ -28,6 +28,9 @@ export function getPool() {
         ? { rejectUnauthorized: false }
         : undefined,
     });
+    pool.on("error", (error) => {
+      console.error("Postgres pool error", error);
+    });
     poolConnectionString = connectionString;
   }
 
