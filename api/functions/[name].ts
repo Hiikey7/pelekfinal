@@ -1,4 +1,4 @@
-import { getDatabaseUrl, query as dbQuery } from "../postgres";
+import { getDatabaseUrl, query as dbQuery } from "../../server/postgres";
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {

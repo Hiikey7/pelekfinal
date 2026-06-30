@@ -1,5 +1,5 @@
 import { AppRole, getSessionFromRequest, hasRole } from "./auth-utils";
-import { getDatabaseUrl, query as dbQuery } from "./postgres";
+import { getDatabaseUrl, query as dbQuery } from "../server/postgres";
 
 type DbFilter = {
   column: string;
