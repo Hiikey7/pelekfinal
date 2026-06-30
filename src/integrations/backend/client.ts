@@ -76,10 +76,23 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const result = await response.json().catch(() => ({}));
+  const responseText = await response.text();
+  let result: any = {};
+
+  if (responseText) {
+    try {
+      result = JSON.parse(responseText);
+    } catch {
+      result = { message: responseText };
+    }
+  }
 
   if (!response.ok) {
-    throw new Error(result.error?.message || result.message || "Request failed");
+    throw new Error(
+      result.error?.message ||
+        result.message ||
+        `Request failed with status ${response.status}`,
+    );
   }
 
   if (cacheKey) writePublicCache(cacheKey, result);
