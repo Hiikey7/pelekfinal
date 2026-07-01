@@ -5,6 +5,7 @@ import { componentTagger } from "lovable-tagger";
 import authHandler from "./api/auth";
 import dbHandler from "./api/db";
 import functionHandler from "./api/functions/[name]";
+import healthHandler from "./api/health";
 import uploadHandler from "./api/upload";
 
 async function readJsonBody(req: any) {
@@ -59,6 +60,11 @@ function localApiPlugin(): Plugin {
 
           if (url.pathname === "/api/db") {
             await dbHandler(apiReq, apiRes);
+            return;
+          }
+
+          if (url.pathname === "/api/health") {
+            await healthHandler(apiReq, apiRes);
             return;
           }
 
