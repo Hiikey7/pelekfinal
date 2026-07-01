@@ -9,6 +9,11 @@ const requiredEnv = [
   "SUPABASE_DATABASE_URL",
 ] as const;
 
+const optionalEnv = [
+  "PROPERTY_BLOG_ADMIN_EMAIL",
+  "PROPERTY_BLOG_ADMIN_PASSWORD",
+] as const;
+
 function describeDatabaseUrl() {
   const connectionString = process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL;
   if (!connectionString) return null;
@@ -33,10 +38,14 @@ export default async function handler(req: any, res: any) {
   const env = Object.fromEntries(
     requiredEnv.map((name) => [name, Boolean(process.env[name])]),
   );
+  const optional = Object.fromEntries(
+    optionalEnv.map((name) => [name, Boolean(process.env[name])]),
+  );
 
   const payload: Record<string, unknown> = {
     ok: Object.values(env).every(Boolean),
     env,
+    optional,
     node: process.version,
     databaseUrl: describeDatabaseUrl(),
   };
