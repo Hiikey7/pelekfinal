@@ -1,51 +1,66 @@
 # Pelek Home Hub
 
-This project uses `Supabase Postgres` as its database, `Cloudinary` for image storage/optimization, and a small serverless API layer in [`api/`](api) for auth, CRUD, uploads, and function requests.
+This project is a Laravel-based application using Blade templates and Livewire for frontend interactions; it still uses MySQL and Cloudinary for storage.
 
 ## Stack
 
-- `Vite + React + TypeScript`
-- `Vercel` for frontend and API routes
-- `Supabase Postgres` for the database
-- `Cloudinary` for uploaded images
-- A backend frontend client wrapper in [`src/integrations/backend/client.ts`](src/integrations/backend/client.ts) that talks to your own API instead of external backend services
+- Backend: Laravel 12 (PHP 8.2)
+- Database: MySQL
+- Frontend templates: Blade
+- Styling: Tailwind CSS (Vite)
+- Responsive interactions: Livewire 3 (and optional AJAX endpoints in `api/`)
+- Icons: Lucide (npm)
+- PDF receipts: DomPDF (`barryvdh/laravel-dompdf`)
+- PWA: `manifest.webmanifest` + `sw.js` in `public/`
+- Dependency management: Composer (PHP) and npm/Vite (frontend)
+- Version control: Git (GitHub)
+- Hosting target: HostPinnacle cPanel (PHP 8.2, Apache)
+- SSL: AutoSSL / HTTPS (use cPanel to enable)
 
 ## Environment
 
-Copy [`.env.example`](.env.example) into `.env` and set:
-
-- `SUPABASE_DATABASE_URL` to your new Supabase Postgres connection string. The app also accepts `DATABASE_URL` as a fallback.
-- `ADMIN_EMAIL`
-- `ADMIN_PASSWORD`
-- `ADMIN_SESSION_SECRET`
-- `PROPERTY_BLOG_ADMIN_EMAIL` optional limited dashboard user for properties/blogs
-- `PROPERTY_BLOG_ADMIN_PASSWORD` optional limited dashboard user password
-- `CLOUDINARY_CLOUD_NAME`
-- `CLOUDINARY_API_KEY`
-- `CLOUDINARY_API_SECRET`
-- `CLOUDINARY_FOLDER` optional, defaults to `pelek-home-hub`
-- `RESEND_API_KEY`
-- `CONTACT_TO_EMAIL`
-- `VITE_API_BASE_URL` to `""` for local development
+Copy [`.env.example`](.env.example) into `.env` and set database credentials and secrets. The repo includes both Laravel-style `DB_*` env keys and `MYSQL_*` entries used by the lightweight `api/` scripts. Ensure both are set on production.
 
 ## Database
 
-- Schema source: [`supabase/schema.sql`](supabase/schema.sql)
-- Runtime database connection: [`api/db.ts`](api/db.ts)
-- Admin auth endpoint: [`api/auth.ts`](api/auth.ts)
+- MySQL schema source: [`mysql/schema.sql`](mysql/schema.sql)
+- Runtime database connection helper: [`api/bootstrap.php`](api/bootstrap.php)
+- Admin auth endpoint: [`api/auth.php`](api/auth.php)
+- Generic CRUD endpoint: [`api/db.php`](api/db.php)
 
-For a fresh Supabase database, run [`supabase/schema.sql`](supabase/schema.sql) in Supabase SQL Editor, then update `SUPABASE_DATABASE_URL` in your local and hosting environment variables.
+For a fresh MySQL database, create the database, run [`mysql/schema.sql`](mysql/schema.sql), then set the `MYSQL_*` environment variables in your PHP hosting environment.
+
+## Local Development
+
+Run the frontend as usual:
+
+```sh
+npm install
+npm run dev
+```
+
+Run the PHP API from the project root with PHP's built-in server, or serve it through Apache/Nginx:
+
+```sh
+php -S localhost:8000
+```
+
+When using Vite and the PHP server separately, set:
+
+```sh
+VITE_API_BASE_URL="http://localhost:8000"
+VITE_API_EXTENSION=".php"
+```
 
 ## Commands
 
-```bash
-npm install
-npm run dev
+```sh
 npm run build
 npm test
 ```
 
 ## Notes
 
-- The frontend still uses a backend client interface for compatibility, but the active runtime is Supabase Postgres and Cloudinary.
+- The frontend UI/components were left in place; only the backend/database target changed.
+- Uploaded images still use Cloudinary.
 - Rotate any previously committed database credentials before deploying.

@@ -7,8 +7,8 @@ export type Json =
   | Json[]
 
 export type Database = {
-    __InternalBackend: {
-    PostgrestVersion: "14.4"
+  __InternalBackend: {
+    Runtime: "php-mysql"
   }
   public: {
     Tables: {
@@ -430,7 +430,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "properties" | "blogs"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -558,7 +558,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "properties", "blogs"],
     },
   },
 } as const

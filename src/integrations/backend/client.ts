@@ -49,10 +49,14 @@ export type BackendUser = {
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const API_EXTENSION = import.meta.env.VITE_API_EXTENSION ?? ".php";
 const SESSION_KEY = "pelek_admin_session";
 const SESSION_DURATION_MS = 5 * 24 * 60 * 60 * 1000;
 const PUBLIC_DATA_CACHE_PREFIX = "pelek_public_data:";
 const PUBLIC_DATA_CACHE_MS = 5 * 60 * 1000;
+const DB_ENDPOINT = apiPath("/api/db");
+const AUTH_ENDPOINT = apiPath("/api/auth");
+const UPLOAD_ENDPOINT = apiPath("/api/upload");
 
 type StoredSession = {
   user: BackendUser;
@@ -100,8 +104,17 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   return result;
 }
 
+function apiPath(path: string) {
+  if (!API_EXTENSION || path.endsWith(API_EXTENSION)) return path;
+  return `${path}${API_EXTENSION}`;
+}
+
+function functionEndpoint(name: string) {
+  return apiPath(`/api/functions/${name}`);
+}
+
 function getPublicCacheKey(path: string, body: unknown, token?: string) {
-  if (token || path !== "/api/db" || !body) return null;
+  if (token || path !== DB_ENDPOINT || !body) return null;
 
   const requestBody = body as Partial<DbRequest>;
   if (requestBody.action !== "select") return null;
@@ -308,7 +321,7 @@ class QueryBuilder<T = unknown> implements PromiseLike<DbResponse<T[]>> {
         head: this.headOnly,
       };
 
-      return await request<DbResponse<T[]>>("/api/db", body);
+      return await request<DbResponse<T[]>>(DB_ENDPOINT, body);
     } catch (error) {
       return {
         data: null,
@@ -363,7 +376,7 @@ export const backend = {
         const data = await request<{
           user: BackendUser;
           access_token: string;
-        }>("/api/auth", credentials);
+        }>(AUTH_ENDPOINT, credentials);
         const session: StoredSession = {
           user: data.user,
           access_token: data.access_token,
@@ -391,7 +404,7 @@ export const backend = {
         async upload(path: string, file: File) {
           try {
             const optimizedFile = await optimizeImage(file);
-            const data = await request<UploadResponse>("/api/upload", {
+            const data = await request<UploadResponse>(UPLOAD_ENDPOINT, {
               bucket,
               path,
               file: optimizedFile,
@@ -421,7 +434,7 @@ export const backend = {
   functions: {
     async invoke(name: string, options?: { body?: unknown }) {
       try {
-        const data = await request(`/api/functions/${name}`, options?.body);
+        const data = await request(functionEndpoint(name), options?.body);
         return { data, error: null };
       } catch (error) {
         return {
