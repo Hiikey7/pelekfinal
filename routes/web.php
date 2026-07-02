@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,5 +16,7 @@ Route::get('/services', [PageController::class, 'services'])->name('services');
 Route::get('/terms', [PageController::class, 'terms'])->name('terms');
 Route::get('/orders/{order}/receipt', [PageController::class, 'receipt'])->name('orders.receipt');
 
-Route::view('/admin/login', 'admin.login')->name('admin.login');
-Route::view('/admin', 'admin.dashboard')->name('admin.dashboard');
+Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
+Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate');
+Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
