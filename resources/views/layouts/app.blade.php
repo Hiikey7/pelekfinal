@@ -21,6 +21,7 @@
         @yield('content')
     </main>
     @include('partials.footer')
+    @include('partials.offer-popup')
     @livewireScripts
     <script>
         if ('serviceWorker' in navigator) {

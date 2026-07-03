@@ -11,7 +11,7 @@ class Order extends Model
 
     protected $fillable = [
         'visitor_name', 'phone', 'property_id', 'property_title',
-        'price_per_night', 'num_days', 'total_amount', 'payment_method',
+        'price_per_night', 'num_days', 'discount_amount', 'total_amount', 'payment_method',
         'status', 'notes',
     ];
 }

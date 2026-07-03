@@ -10,7 +10,12 @@
             <div class="space-y-2.5">
                 <div class="grid grid-cols-2 gap-1 rounded-md bg-muted p-1 sm:grid-cols-4">
                     @foreach([['airbnb','Airbnb'],['rental','Rental'],['sale','For Sale'],['commercial_spaces','Commercial']] as [$value,$label])
-                        <label class="min-h-7 cursor-pointer rounded bg-secondary/10 px-2 py-1 text-xs font-medium text-secondary hover:bg-secondary/15"><input type="checkbox" name="category[]" value="{{ $value }}" class="sr-only"> {{ $label }}</label>
+                        <label class="cursor-pointer">
+                            <input type="checkbox" name="category[]" value="{{ $value }}" class="peer sr-only">
+                            <span class="flex min-h-7 items-center justify-center rounded bg-secondary/10 px-2 py-1 text-xs font-medium text-secondary transition-colors hover:bg-secondary/15 peer-checked:bg-primary peer-checked:text-white">
+                                {{ $label }}
+                            </span>
+                        </label>
                     @endforeach
                 </div>
                 <div class="grid grid-cols-1 gap-2.5 md:grid-cols-[1fr_1fr_auto]">

@@ -1,12 +1,16 @@
 <article class="group overflow-hidden rounded-xl bg-card shadow-card transition-all hover:shadow-card-hover">
-    <a href="{{ route('property.show', $property) }}" class="block aspect-[16/11] overflow-hidden bg-muted">
+    <div class="relative aspect-[16/11] overflow-hidden bg-muted">
+        <a href="{{ route('property.show', $property) }}" class="block h-full w-full">
         <img src="{{ $property->image ?: '/images/property-1.jpg' }}" alt="{{ $property->title }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
-    </a>
-    <div class="p-5">
-        <div class="mb-2 flex items-center justify-between gap-3">
-            <span class="rounded-full bg-secondary/10 px-3 py-1 text-xs font-semibold capitalize text-secondary">{{ str_replace('_', ' ', $property->category) }}</span>
-            <span class="flex items-center gap-1 text-sm font-semibold"><i data-lucide="star" class="h-4 w-4 fill-[#06c6b6] text-[#06c6b6]"></i>{{ $property->rating ?: '4.8' }}</span>
+        </a>
+        <div class="absolute left-3 right-3 top-3 flex items-center justify-between gap-3">
+            <span class="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold capitalize text-secondary shadow-sm backdrop-blur">{{ str_replace('_', ' ', $property->category) }}</span>
+            <button type="button" data-wishlist-toggle data-wishlist-icon data-property-id="{{ $property->id }}" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-secondary shadow-sm backdrop-blur transition-colors hover:bg-secondary hover:text-white" aria-label="Add to Wishlist">
+                <i data-lucide="heart" class="h-4 w-4"></i>
+            </button>
         </div>
+    </div>
+    <div class="p-5">
         <h3 class="mb-2 line-clamp-2 font-semibold text-card-foreground">{{ $property->title }}</h3>
         <p class="mb-4 flex items-center gap-1 text-sm text-muted-foreground"><i data-lucide="map-pin" class="h-4 w-4"></i>{{ $property->location }}</p>
         <div class="mb-4 flex items-center gap-4 text-sm text-muted-foreground">

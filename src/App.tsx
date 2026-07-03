@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -54,6 +54,19 @@ const queryClient = new QueryClient({
   },
 });
 
+const AppLayout = () => (
+  <>
+    <PwaInstallBanner />
+    <OfferPopup />
+    <Navbar />
+    <main className="min-h-screen">
+      <Outlet />
+    </main>
+    <Footer />
+    <MobileNav />
+  </>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -61,57 +74,43 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-        <SEO />
-        <ScrollToTop />
-        <Suspense fallback={<PageSkeleton />}>
-          <Routes>
-          {/* Admin routes - no Navbar/Footer */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="properties" element={<AdminProperties />} />
-            <Route path="properties/new" element={<AdminProperties />} />
-            <Route path="blogs" element={<AdminBlogs />} />
-            <Route path="blogs/new" element={<AdminBlogs />} />
-            <Route path="reviews" element={<AdminReviews />} />
-            <Route path="expenses" element={<AdminExpenses />} />
-            <Route path="reports" element={<AdminReports />} />
-            <Route path="offers" element={<AdminOffers />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="amenities" element={<AdminAmenities />} />
-            <Route path="settings" element={<AdminSettings />} />
-          </Route>
+          <SEO />
+          <ScrollToTop />
+          <Suspense fallback={<PageSkeleton />}>
+            <Routes>
+              {/* Admin routes - no Navbar/Footer */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="properties" element={<AdminProperties />} />
+                <Route path="properties/new" element={<AdminProperties />} />
+                <Route path="blogs" element={<AdminBlogs />} />
+                <Route path="blogs/new" element={<AdminBlogs />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="expenses" element={<AdminExpenses />} />
+                <Route path="reports" element={<AdminReports />} />
+                <Route path="offers" element={<AdminOffers />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="amenities" element={<AdminAmenities />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
 
-          {/* Public routes */}
-          <Route
-            path="*"
-            element={
-              <>
-                <PwaInstallBanner />
-                <OfferPopup />
-                <Navbar />
-                <main className="min-h-screen">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/properties" element={<Properties />} />
-                    <Route path="/property/:id" element={<PropertyDetail />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:id" element={<BlogDetail />} />
-                    <Route path="/faq" element={<FAQPage />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/services" element={<Services />} />
-                    <Route path="/favorites" element={<Favorites />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-                <Footer />
-                <MobileNav />
-              </>
-            }
-          />
-          </Routes>
-        </Suspense>
+              {/* Public routes */}
+              <Route path="/" element={<AppLayout />}>
+                <Route index element={<Index />} />
+                <Route path="properties" element={<Properties />} />
+                <Route path="property/:id" element={<PropertyDetail />} />
+                <Route path="blog" element={<Blog />} />
+                <Route path="blog/:id" element={<BlogDetail />} />
+                <Route path="faq" element={<FAQPage />} />
+                <Route path="contact" element={<Contact />} />
+                <Route path="services" element={<Services />} />
+                <Route path="favorites" element={<Favorites />} />
+                <Route path="terms" element={<Terms />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

@@ -144,7 +144,50 @@ export default function PropertyDetail() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-1 order-1 lg:order-none">
+            <div className="bg-card rounded-2xl p-6 shadow-card sticky top-24 space-y-3">
+              <div className="text-2xl font-display font-bold text-secondary mb-1">
+                {property.price_label}
+              </div>
+              <p className="text-sm text-muted-foreground mb-6">
+                {property.type} · {property.location}
+              </p>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-secondary text-accent-foreground rounded-xl py-3 font-semibold hover:opacity-90 transition-opacity"
+              >
+                <MessageCircle className="w-5 h-5" /> Book via WhatsApp
+              </a>
+              <Link
+                to="/contact"
+                className="w-full flex items-center justify-center gap-2 border border-border rounded-xl py-3 text-foreground font-medium hover:bg-muted transition-colors"
+              >
+                Contact Us
+              </Link>
+
+              {property.social_media_type && property.social_media_url && (
+                <a
+                  href={property.social_media_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 border border-border rounded-xl py-3 text-foreground font-medium hover:bg-muted transition-colors"
+                >
+                  {property.social_media_type === "instagram" ? (
+                    <Instagram className="w-5 h-5" />
+                  ) : (
+                    <TikTokIcon />
+                  )}
+                  View on{" "}
+                  {property.social_media_type === "instagram"
+                    ? "Instagram"
+                    : "TikTok"}
+                </a>
+              )}
+            </div>
+          </div>
+          <div className="lg:col-span-2 order-3 lg:order-none">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground">
@@ -238,58 +281,14 @@ export default function PropertyDetail() {
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-card rounded-2xl p-6 shadow-card sticky top-24 space-y-3">
-              <div className="text-2xl font-display font-bold text-secondary mb-1">
-                {property.price_label}
-              </div>
-              <p className="text-sm text-muted-foreground mb-6">
-                {property.type} · {property.location}
-              </p>
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-secondary text-accent-foreground rounded-xl py-3 font-semibold hover:opacity-90 transition-opacity"
-              >
-                <MessageCircle className="w-5 h-5" /> Book via WhatsApp
-              </a>
-              <Link
-                to="/contact"
-                className="w-full flex items-center justify-center gap-2 border border-border rounded-xl py-3 text-foreground font-medium hover:bg-muted transition-colors"
-              >
-                Contact Us
-              </Link>
-
-              {property.social_media_type && property.social_media_url && (
-                <a
-                  href={property.social_media_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 border border-border rounded-xl py-3 text-foreground font-medium hover:bg-muted transition-colors"
-                >
-                  {property.social_media_type === "instagram" ? (
-                    <Instagram className="w-5 h-5" />
-                  ) : (
-                    <TikTokIcon />
-                  )}
-                  View on{" "}
-                  {property.social_media_type === "instagram"
-                    ? "Instagram"
-                    : "TikTok"}
-                </a>
-              )}
-            </div>
-          </div>
         </div>
 
-        {/* Other Properties Carousel */}
+        {/* Similar Properties Carousel */}
         {otherProperties.length > 0 && (
           <section className="mt-16">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-2xl font-bold text-foreground">
-                Other Properties
+                Similar Properties
               </h2>
               <div className="flex gap-2">
                 <button

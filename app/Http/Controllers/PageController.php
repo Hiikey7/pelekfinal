@@ -31,7 +31,28 @@ class PageController extends Controller
 
     public function property(Property $property)
     {
-        return view('pages.property', ['property' => $property]);
+        $similar = Property::query()
+            ->where('id', '!=', $property->id)
+            ->where('category', $property->category)
+            ->latest()
+            ->limit(8)
+            ->get();
+
+        if ($similar->count() < 4) {
+            $fallback = Property::query()
+                ->where('id', '!=', $property->id)
+                ->whereNotIn('id', $similar->pluck('id'))
+                ->latest()
+                ->limit(8 - $similar->count())
+                ->get();
+
+            $similar = $similar->concat($fallback);
+        }
+
+        return view('pages.property', [
+            'property' => $property,
+            'similar' => $similar,
+        ]);
     }
 
     public function blog()
@@ -53,6 +74,13 @@ class PageController extends Controller
     public function contact()
     {
         return view('pages.contact');
+    }
+
+    public function favorites()
+    {
+        return view('pages.favorites', [
+            'properties' => Property::latest()->get(),
+        ]);
     }
 
     public function sendContact(Request $request)
