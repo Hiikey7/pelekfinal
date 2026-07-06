@@ -2,7 +2,12 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PublicStorageController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/storage/{path}', [PublicStorageController::class, 'show'])
+    ->where('path', '.*')
+    ->name('public-storage.show');
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/properties', [PageController::class, 'properties'])->name('properties');

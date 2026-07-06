@@ -259,7 +259,7 @@ class AdminController extends Controller
             'author' => $data['author'] ?: 'Pelek Properties',
             'date' => $data['date'] ?: now()->format('j M Y'),
             'read_time' => $data['read_time'] ?: '5 min read',
-            'image' => $this->storedImagePath($request, 'cover_image', $data['image'] ?? ''),
+            'image' => $this->storedImagePath($request, 'cover_image', $data['image'] ?? '', 'blogs'),
             'excerpt' => $data['excerpt'],
             'content' => $data['content'],
             'show_on_homepage' => $request->boolean('show_on_homepage'),
@@ -291,7 +291,7 @@ class AdminController extends Controller
             'author' => $data['author'] ?: 'Pelek Properties',
             'date' => $data['date'] ?: now()->format('j M Y'),
             'read_time' => $data['read_time'] ?: '5 min read',
-            'image' => $this->storedImagePath($request, 'cover_image', $data['image'] ?: $blog->image),
+            'image' => $this->storedImagePath($request, 'cover_image', $data['image'] ?: $blog->image, 'blogs'),
             'excerpt' => $data['excerpt'],
             'content' => $data['content'],
             'show_on_homepage' => $request->boolean('show_on_homepage'),
@@ -854,13 +854,13 @@ class AdminController extends Controller
         return $query;
     }
 
-    private function storedImagePath(Request $request, string $fileKey, string $fallback): string
+    private function storedImagePath(Request $request, string $fileKey, string $fallback, string $subfolder = 'admin'): string
     {
         if (! $request->hasFile($fileKey)) {
             return $fallback;
         }
 
-        return $this->storeUploadedImage($request->file($fileKey), 'admin', $fileKey);
+        return $this->storeUploadedImage($request->file($fileKey), $subfolder, $fileKey);
     }
 
     private function storedImagePaths(Request $request, string $fileKey): array
