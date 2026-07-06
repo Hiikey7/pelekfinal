@@ -23,6 +23,7 @@ import PageSEO from "@/components/PageSEO";
 import {
   fetchOtherProperties,
   fetchProperty,
+  propertySlug,
   publicQueryOptions,
 } from "@/lib/public-queries";
 
@@ -59,9 +60,9 @@ export default function PropertyDetail() {
     ...publicQueryOptions,
   });
   const { data: otherProperties = [] } = useQuery({
-    queryKey: ["properties", "other", id],
-    queryFn: () => fetchOtherProperties(id || ""),
-    enabled: !!id,
+    queryKey: ["properties", "other", property?.id],
+    queryFn: () => fetchOtherProperties(property?.id || ""),
+    enabled: !!property?.id,
     ...publicQueryOptions,
   });
 
@@ -318,7 +319,7 @@ export default function PropertyDetail() {
                   viewport={{ once: true }}
                   className="flex-shrink-0 w-[300px] sm:w-[320px] md:w-[340px] group bg-card rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300"
                 >
-                  <Link to={`/property/${prop.id}`}>
+                  <Link to={`/property/${propertySlug(prop.title)}`}>
                     <div className="relative overflow-hidden aspect-[4/3]">
                       <img
                         src={prop.image}

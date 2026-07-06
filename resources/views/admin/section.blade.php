@@ -392,11 +392,17 @@
             </div>
             <label class="block">
                 <span class="mb-2 block text-sm font-semibold">Cover Image</span>
+                @if ($editingBlog?->image)
+                    <img src="{{ $editingBlog->image }}" alt="{{ $editingBlog->title }}" class="mb-3 h-32 w-48 rounded-lg border border-border object-cover">
+                @endif
                 <span class="flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground transition hover:border-[#00bfb3]">
                     <i data-lucide="upload" class="mb-2 h-5 w-5"></i>
                     Click to upload cover image
                     <input type="file" name="cover_image" accept="image/*" class="sr-only">
                 </span>
+                @error('cover_image')
+                    <span class="mt-2 block text-sm text-red-600">{{ $message }}</span>
+                @enderror
             </label>
             <textarea name="excerpt" placeholder="Excerpt" class="min-h-20 w-full rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">{{ old('excerpt', $editingBlog?->excerpt) }}</textarea>
             <div>

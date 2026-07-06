@@ -100,14 +100,27 @@ window.addEventListener('DOMContentLoaded', () => {
     const slides = Array.from(track?.children || []);
     const previous = carousel.querySelector('[data-property-carousel-prev]');
     const next = carousel.querySelector('[data-property-carousel-next]');
+    const jumpButtons = Array.from(carousel.querySelectorAll('[data-property-carousel-jump]'));
     if (!track || slides.length <= 1) return;
 
     let index = 0;
     let timer;
 
+    const syncJumpButtons = () => {
+      jumpButtons.forEach((button, buttonIndex) => {
+        const isActive = buttonIndex === index;
+        button.classList.toggle('border-secondary', isActive);
+        button.classList.toggle('border-transparent', !isActive);
+        button.classList.toggle('opacity-100', isActive);
+        button.classList.toggle('opacity-70', !isActive);
+        button.setAttribute('aria-current', isActive ? 'true' : 'false');
+      });
+    };
+
     const showSlide = (nextIndex) => {
       index = (nextIndex + slides.length) % slides.length;
       track.style.transform = `translateX(-${index * 100}%)`;
+      syncJumpButtons();
     };
 
     const start = () => {
@@ -125,8 +138,16 @@ window.addEventListener('DOMContentLoaded', () => {
       start();
     });
 
+    jumpButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        showSlide(Number(button.getAttribute('data-property-carousel-jump') || 0));
+        start();
+      });
+    });
+
     carousel.addEventListener('mouseenter', () => window.clearInterval(timer));
     carousel.addEventListener('mouseleave', start);
+    syncJumpButtons();
     start();
   });
 

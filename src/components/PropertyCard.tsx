@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Heart, Star, MapPin, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Tables } from '@/integrations/backend/types';
+import { propertySlug } from '@/lib/public-queries';
 
 type Property = Tables<'properties'>;
 
@@ -79,7 +80,7 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite }:
               <MessageCircle className="w-4 h-4" />
             </a>
             <Link
-              to={`/property/${property.id}`}
+              to={`/property/${propertySlug(property.title)}`}
               className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity"
             >
               View

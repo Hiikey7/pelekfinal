@@ -13,9 +13,20 @@
     <div class="p-5">
         <h3 class="mb-2 line-clamp-2 font-semibold text-card-foreground">{{ $property->title }}</h3>
         <p class="mb-4 flex items-center gap-1 text-sm text-muted-foreground"><i data-lucide="map-pin" class="h-4 w-4"></i>{{ $property->location }}</p>
-        <div class="mb-4 flex items-center gap-4 text-sm text-muted-foreground">
-            <span>{{ $property->bedrooms }} beds</span><span>{{ $property->bathrooms }} baths</span><span>{{ $property->guests ?: 2 }} guests</span>
-        </div>
+        @php
+            $stats = collect([
+                ['value' => $property->bedrooms, 'label' => 'bed'],
+                ['value' => $property->bathrooms, 'label' => 'bath'],
+                ['value' => $property->guests, 'label' => 'guest'],
+            ])->filter(fn ($stat) => filled($stat['value']) && (int) $stat['value'] > 0);
+        @endphp
+        @if ($stats->isNotEmpty())
+            <div class="mb-4 flex items-center gap-4 text-sm text-muted-foreground">
+                @foreach ($stats as $stat)
+                    <span>{{ $stat['value'] }} {{ str($stat['label'])->plural((int) $stat['value']) }}</span>
+                @endforeach
+            </div>
+        @endif
         <div class="flex items-center justify-between">
             <div><span class="text-lg font-bold">KES {{ number_format((float) $property->price) }}</span><span class="text-xs text-muted-foreground"> {{ $property->price_label }}</span></div>
             <a href="{{ route('property.show', $property) }}" class="text-sm font-semibold text-secondary">View</a>

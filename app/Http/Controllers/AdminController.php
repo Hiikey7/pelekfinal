@@ -860,7 +860,7 @@ class AdminController extends Controller
             return $fallback;
         }
 
-        return $this->storeUploadedImage($request->file($fileKey), 'admin');
+        return $this->storeUploadedImage($request->file($fileKey), 'admin', $fileKey);
     }
 
     private function storedImagePaths(Request $request, string $fileKey): array
@@ -870,14 +870,14 @@ class AdminController extends Controller
         }
 
         return collect($request->file($fileKey))
-            ->map(fn ($file) => $this->storeUploadedImage($file, 'properties'))
+            ->map(fn ($file) => $this->storeUploadedImage($file, 'properties', 'images'))
             ->all();
     }
 
-    private function storeUploadedImage($file, string $subfolder): string
+    private function storeUploadedImage($file, string $subfolder, string $errorKey = 'image'): string
     {
         if ($this->cloudinaryConfigured()) {
-            return $this->uploadToCloudinary($file, $subfolder);
+            return $this->uploadToCloudinary($file, $subfolder, $errorKey);
         }
 
         return $this->publicStorageUrl($file->store($subfolder, 'public'));
@@ -890,11 +890,11 @@ class AdminController extends Controller
             && filled(config('cloudinary.api_secret'));
     }
 
-    private function uploadToCloudinary($file, string $subfolder): string
+    private function uploadToCloudinary($file, string $subfolder, string $errorKey): string
     {
         if (! function_exists('curl_init') || ! class_exists(\CURLFile::class)) {
             throw ValidationException::withMessages([
-                'image' => 'Cloudinary uploads require the PHP cURL extension.',
+                $errorKey => 'Cloudinary uploads require the PHP cURL extension.',
             ]);
         }
 
@@ -904,7 +904,7 @@ class AdminController extends Controller
         $signature = sha1($signaturePayload);
 
         $curl = curl_init("https://api.cloudinary.com/v1_1/".config('cloudinary.cloud_name')."/image/upload");
-        curl_setopt_array($curl, [
+        $curlOptions = [
             CURLOPT_POST => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POSTFIELDS => [
@@ -915,7 +915,14 @@ class AdminController extends Controller
                 'signature' => $signature,
             ],
             CURLOPT_TIMEOUT => 45,
-        ]);
+        ];
+
+        $caBundle = base_path('storage/certs/cacert.pem');
+        if (is_file($caBundle)) {
+            $curlOptions[CURLOPT_CAINFO] = $caBundle;
+        }
+
+        curl_setopt_array($curl, $curlOptions);
 
         $response = curl_exec($curl);
         $error = curl_error($curl);
@@ -924,7 +931,7 @@ class AdminController extends Controller
 
         if ($response === false || $status < 200 || $status >= 300) {
             throw ValidationException::withMessages([
-                'images' => 'Cloudinary upload failed. '.$error,
+                $errorKey => 'Cloudinary upload failed. '.$error,
             ]);
         }
 
@@ -932,7 +939,7 @@ class AdminController extends Controller
 
         if (! is_array($payload) || empty($payload['secure_url'])) {
             throw ValidationException::withMessages([
-                'images' => 'Cloudinary upload failed: invalid response.',
+                $errorKey => 'Cloudinary upload failed: invalid response.',
             ]);
         }
 

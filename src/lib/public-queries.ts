@@ -11,6 +11,14 @@ type Property = Tables<"properties">;
 type Blog = Tables<"blogs">;
 type Review = Tables<"reviews">;
 
+export function propertySlug(title: string) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function readData<T>(data: T | null, fallback: T) {
   return data ?? fallback;
 }
@@ -34,14 +42,21 @@ export async function fetchFeaturedProperties() {
   return readData<Property[]>(data, []);
 }
 
-export async function fetchProperty(id: string) {
+export async function fetchProperty(slugOrId: string) {
+  const { data: propertyById } = await backend
+    .from("properties")
+    .select("*")
+    .eq("id", slugOrId)
+    .single();
+
+  if (propertyById) return propertyById as Property;
+
   const { data } = await backend
     .from("properties")
     .select("*")
-    .eq("id", id)
-    .single();
+    .order("created_at", { ascending: false });
 
-  return data as Property | null;
+  return readData<Property[]>(data, []).find((property) => propertySlug(property.title) === slugOrId) ?? null;
 }
 
 export async function fetchOtherProperties(id: string) {

@@ -39,7 +39,7 @@
 
 @layer utilities {
   .container {
-    width: min(100% - 2rem, 1200px);
+    width: min(95%, 1200px);
     margin-inline: auto;
   }
 

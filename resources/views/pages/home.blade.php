@@ -19,7 +19,7 @@
                     @endforeach
                 </div>
                 <div class="grid grid-cols-1 gap-2.5 md:grid-cols-[1fr_1fr_auto]">
-                    <input name="location" placeholder="Where to?" class="rounded-md border border-gray-300 bg-muted px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#06c6b6]">
+                    <input name="location" placeholder="Location" class="rounded-md border border-gray-300 bg-muted px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#06c6b6]">
                     <input name="maxPrice" placeholder="Max price" class="rounded-md border border-gray-300 bg-muted px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#06c6b6]">
                     <button class="flex min-h-8 items-center justify-center gap-2 rounded-md bg-secondary px-4 py-1.5 text-sm font-semibold text-white"><i data-lucide="search" class="h-4 w-4"></i> Search</button>
                 </div>
