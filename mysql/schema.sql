@@ -1,0 +1,161 @@
+CREATE TABLE IF NOT EXISTS user_roles (
+  id CHAR(32) PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  role ENUM('admin', 'user', 'properties', 'blogs') NOT NULL,
+  UNIQUE KEY user_roles_user_role_unique (user_id, role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS properties (
+  id CHAR(32) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  location VARCHAR(255) NOT NULL,
+  price DECIMAL(12,2) NOT NULL DEFAULT 0,
+  price_label VARCHAR(255) NOT NULL DEFAULT '',
+  rating DECIMAL(3,2) NOT NULL DEFAULT 0,
+  reviews_count INT NOT NULL DEFAULT 0,
+  category VARCHAR(80) NOT NULL DEFAULT 'rental',
+  type VARCHAR(120) NOT NULL DEFAULT '',
+  image TEXT NOT NULL,
+  images JSON NOT NULL,
+  description LONGTEXT NOT NULL,
+  amenities JSON NOT NULL,
+  bedrooms INT NOT NULL DEFAULT 1,
+  bathrooms INT NOT NULL DEFAULT 1,
+  guests INT NULL,
+  featured TINYINT(1) NOT NULL DEFAULT 0,
+  whatsapp VARCHAR(80) NOT NULL DEFAULT '+254700000000',
+  lat DECIMAL(10,7) NOT NULL DEFAULT 0,
+  lng DECIMAL(10,7) NOT NULL DEFAULT 0,
+  google_map_link TEXT NOT NULL,
+  social_media_url TEXT NOT NULL,
+  social_media_type VARCHAR(80) NOT NULL DEFAULT '',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS blogs (
+  id CHAR(32) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  excerpt TEXT NOT NULL,
+  content LONGTEXT NOT NULL,
+  image TEXT NOT NULL,
+  author VARCHAR(255) NOT NULL DEFAULT 'Pelek Properties',
+  date VARCHAR(80) NOT NULL DEFAULT '',
+  category VARCHAR(120) NOT NULL DEFAULT '',
+  read_time VARCHAR(80) NOT NULL DEFAULT '5 min read',
+  show_on_homepage TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS faqs (
+  id CHAR(32) PRIMARY KEY,
+  question TEXT NOT NULL,
+  answer LONGTEXT NOT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS reviews (
+  id CHAR(32) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  rating INT NOT NULL DEFAULT 5,
+  comment TEXT NOT NULL,
+  date VARCHAR(80) NOT NULL DEFAULT '',
+  avatar TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id CHAR(32) PRIMARY KEY,
+  full_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(80) NOT NULL DEFAULT '',
+  subject VARCHAR(255) NOT NULL DEFAULT '',
+  message LONGTEXT NOT NULL,
+  `read` TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS offers (
+  id CHAR(32) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  image TEXT NOT NULL,
+  cta_text VARCHAR(120) NOT NULL DEFAULT 'View Now',
+  cta_link TEXT NOT NULL,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  promo_code VARCHAR(120) NOT NULL DEFAULT '',
+  offer_type VARCHAR(80) NOT NULL DEFAULT 'cta_button',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS amenities (
+  id CHAR(32) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS orders (
+  id CHAR(32) PRIMARY KEY,
+  visitor_name VARCHAR(255) NOT NULL,
+  phone VARCHAR(80) NOT NULL DEFAULT '',
+  property_id CHAR(32) NULL,
+  property_title VARCHAR(255) NOT NULL DEFAULT '',
+  price_per_night DECIMAL(12,2) NOT NULL DEFAULT 0,
+  num_days INT NOT NULL DEFAULT 1,
+  total_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  payment_method VARCHAR(80) NOT NULL DEFAULT 'cash',
+  status VARCHAR(80) NOT NULL DEFAULT 'pending',
+  notes TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT orders_property_id_foreign FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS expenses (
+  id CHAR(32) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  category VARCHAR(120) NOT NULL DEFAULT 'other',
+  description TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS site_settings (
+  id CHAR(32) PRIMARY KEY,
+  `key` VARCHAR(120) NOT NULL UNIQUE,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO amenities (id, name) VALUES
+  (REPLACE(UUID(), '-', ''), 'WiFi'),
+  (REPLACE(UUID(), '-', ''), 'Swimming Pool'),
+  (REPLACE(UUID(), '-', ''), 'Parking'),
+  (REPLACE(UUID(), '-', ''), 'Air Conditioning'),
+  (REPLACE(UUID(), '-', ''), 'Kitchen'),
+  (REPLACE(UUID(), '-', ''), 'TV'),
+  (REPLACE(UUID(), '-', ''), 'Washer'),
+  (REPLACE(UUID(), '-', ''), 'Dryer'),
+  (REPLACE(UUID(), '-', ''), 'Hot Tub'),
+  (REPLACE(UUID(), '-', ''), 'Gym'),
+  (REPLACE(UUID(), '-', ''), 'Garden'),
+  (REPLACE(UUID(), '-', ''), 'Balcony'),
+  (REPLACE(UUID(), '-', ''), 'Security'),
+  (REPLACE(UUID(), '-', ''), 'CCTV'),
+  (REPLACE(UUID(), '-', ''), 'Generator'),
+  (REPLACE(UUID(), '-', ''), 'Water Tank'),
+  (REPLACE(UUID(), '-', ''), 'BBQ Area'),
+  (REPLACE(UUID(), '-', ''), 'Pet Friendly'),
+  (REPLACE(UUID(), '-', ''), 'Elevator'),
+  (REPLACE(UUID(), '-', ''), 'Furnished');
+
+INSERT IGNORE INTO site_settings (id, `key`, value) VALUES
+  (REPLACE(UUID(), '-', ''), 'whatsapp', '+254700000000'),
+  (REPLACE(UUID(), '-', ''), 'instagram', ''),
+  (REPLACE(UUID(), '-', ''), 'tiktok', ''),
+  (REPLACE(UUID(), '-', ''), 'facebook', '');

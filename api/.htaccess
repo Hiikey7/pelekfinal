@@ -1,0 +1,7 @@
+RewriteEngine On
+
+RewriteRule ^auth$ auth.php [L]
+RewriteRule ^db$ db.php [L]
+RewriteRule ^health$ health.php [L]
+RewriteRule ^upload$ upload.php [L]
+RewriteRule ^functions/send-contact-email$ functions/send-contact-email.php [L]
