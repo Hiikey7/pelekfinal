@@ -22,6 +22,7 @@
     </main>
     @include('partials.footer')
     @include('partials.offer-popup')
+    @include('partials.pwa-install-popup')
     @livewireScripts
     <script>
         if ('serviceWorker' in navigator) {

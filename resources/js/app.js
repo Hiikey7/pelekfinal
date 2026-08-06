@@ -29,6 +29,51 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const isStandaloneApp = () => (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    ('standalone' in window.navigator && Boolean(window.navigator.standalone))
+  );
+
+  const pwaPopup = document.querySelector('[data-pwa-install-popup]');
+  const pwaAction = document.querySelector('[data-pwa-install-action]');
+  const pwaClose = document.querySelector('[data-pwa-install-close]');
+  let pwaInstallPrompt = null;
+
+  const hidePwaPopup = () => pwaPopup?.classList.add('hidden');
+  const showPwaPopup = () => {
+    if (!isStandaloneApp()) pwaPopup?.classList.remove('hidden');
+  };
+
+  if (pwaPopup && !isStandaloneApp()) {
+    const showTimer = window.setTimeout(showPwaPopup, 600);
+    const hideTimer = window.setTimeout(hidePwaPopup, 5600);
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      pwaInstallPrompt = event;
+      showPwaPopup();
+    });
+
+    window.addEventListener('scroll', hidePwaPopup, { once: true, passive: true });
+    pwaClose?.addEventListener('click', hidePwaPopup);
+    pwaAction?.addEventListener('click', async () => {
+      if (!pwaInstallPrompt) {
+        hidePwaPopup();
+        return;
+      }
+
+      await pwaInstallPrompt.prompt();
+      await pwaInstallPrompt.userChoice.catch(() => null);
+      pwaInstallPrompt = null;
+      hidePwaPopup();
+    });
+
+    window.addEventListener('beforeunload', () => {
+      window.clearTimeout(showTimer);
+      window.clearTimeout(hideTimer);
+    });
+  }
+
   const readWishlist = () => {
     try {
       return JSON.parse(localStorage.getItem('pelek-favorites') || '[]');
