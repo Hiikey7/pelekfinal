@@ -1,6 +1,7 @@
 import './bootstrap';
 import { createIcons, icons } from 'lucide';
 
+<<<<<<< HEAD
 let deferredInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();
@@ -88,6 +89,11 @@ window.addEventListener('DOMContentLoaded', () => {
     editor.closest('form')?.addEventListener('submit', sync);
   });
 
+=======
+window.addEventListener('DOMContentLoaded', () => {
+  createIcons({ icons });
+
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
   document.querySelectorAll('[data-mobile-menu-button]').forEach((button) => {
     button.addEventListener('click', () => {
       document.querySelector('[data-mobile-menu]')?.classList.toggle('hidden');
@@ -113,6 +119,54 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+<<<<<<< HEAD
+=======
+  const isStandaloneApp = () => (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    ('standalone' in window.navigator && Boolean(window.navigator.standalone))
+  );
+
+  const pwaPopup = document.querySelector('[data-pwa-install-popup]');
+  const pwaAction = document.querySelector('[data-pwa-install-action]');
+  const pwaClose = document.querySelector('[data-pwa-install-close]');
+  let pwaInstallPrompt = null;
+
+  const hidePwaPopup = () => pwaPopup?.classList.add('hidden');
+  const showPwaPopup = () => {
+    if (!isStandaloneApp()) pwaPopup?.classList.remove('hidden');
+  };
+
+  if (pwaPopup && !isStandaloneApp()) {
+    const showTimer = window.setTimeout(showPwaPopup, 600);
+    const hideTimer = window.setTimeout(hidePwaPopup, 5600);
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      pwaInstallPrompt = event;
+      showPwaPopup();
+    });
+
+    window.addEventListener('scroll', hidePwaPopup, { once: true, passive: true });
+    pwaClose?.addEventListener('click', hidePwaPopup);
+    pwaAction?.addEventListener('click', async () => {
+      if (!pwaInstallPrompt) {
+        hidePwaPopup();
+        return;
+      }
+
+      await pwaInstallPrompt.prompt();
+      await pwaInstallPrompt.userChoice.catch(() => null);
+      pwaInstallPrompt = null;
+      hidePwaPopup();
+    });
+
+    window.addEventListener('beforeunload', () => {
+      window.clearTimeout(showTimer);
+      window.clearTimeout(hideTimer);
+    });
+  }
+
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
   const readWishlist = () => {
     try {
       return JSON.parse(localStorage.getItem('pelek-favorites') || '[]');
@@ -235,6 +289,7 @@ window.addEventListener('DOMContentLoaded', () => {
     start();
   });
 
+<<<<<<< HEAD
   document.querySelectorAll('[data-reviews-carousel]').forEach((carousel) => {
     const track = carousel.querySelector('[data-reviews-track]');
     const cards = Array.from(track?.children || []);
@@ -326,6 +381,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (event.key === 'ArrowRight') showLightboxImage(lightboxIndex + 1);
   });
 
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
   const offerPopup = document.querySelector('[data-offer-popup]');
   if (offerPopup && !sessionStorage.getItem('pelek-offer-seen')) {
     window.setTimeout(() => {

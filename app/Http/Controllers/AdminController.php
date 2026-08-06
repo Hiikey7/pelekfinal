@@ -77,9 +77,12 @@ class AdminController extends Controller
         return view('admin.section', [
             'section' => $section,
             'currentSection' => $section,
+<<<<<<< HEAD
             'propertyView' => $section === 'properties'
                 ? ($request->filled('edit') ? 'edit' : ($request->query('view') === 'add' ? 'add' : 'list'))
                 : null,
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             ...$this->sectionData($request, $section),
         ]);
     }
@@ -239,6 +242,7 @@ class AdminController extends Controller
         return back()->with('status', 'Order added.');
     }
 
+<<<<<<< HEAD
     public function updateOrder(Request $request, Order $order): RedirectResponse
     {
         $this->requireAdmin();
@@ -287,6 +291,8 @@ class AdminController extends Controller
         return redirect()->route('admin.section', 'orders')->with('status', 'Order deleted.');
     }
 
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     public function storeBlog(Request $request): RedirectResponse
     {
         $this->requireAdmin();
@@ -484,7 +490,10 @@ class AdminController extends Controller
         $images = $this->storedImagePaths($request, 'images');
         $images = $this->orderedImagesWithCover($images, (int) ($data['cover_image_index'] ?? 0));
         $coverImage = $images[0] ?? '/images/property-1.jpg';
+<<<<<<< HEAD
         $data['description'] = $this->sanitizeRichText($data['description']);
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
 
         Property::query()->create([
             'title' => $data['title'],
@@ -511,9 +520,13 @@ class AdminController extends Controller
             'social_media_type' => $data['social_media_type'] ?? '',
         ]);
 
+<<<<<<< HEAD
         return redirect()
             ->route('admin.section', ['section' => 'properties', 'view' => 'list'])
             ->with('status', 'Property created.');
+=======
+        return back()->with('status', 'Property created.');
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     }
 
     public function updateProperty(Request $request, Property $property): RedirectResponse
@@ -550,7 +563,10 @@ class AdminController extends Controller
         $existingImages = $property->images ?: [$property->image];
         $finalImages = $images ?: $existingImages;
         $coverImage = $finalImages[0] ?? $property->image ?: '/images/property-1.jpg';
+<<<<<<< HEAD
         $data['description'] = $this->sanitizeRichText($data['description']);
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
 
         $property->update([
             'title' => $data['title'],
@@ -587,6 +603,7 @@ class AdminController extends Controller
         return redirect()->route('admin.section', 'properties')->with('status', 'Property deleted.');
     }
 
+<<<<<<< HEAD
     public function togglePropertyActive(Property $property): RedirectResponse
     {
         $this->requireAdmin();
@@ -596,6 +613,8 @@ class AdminController extends Controller
         return back()->with('status', $property->active ? 'Property activated.' : 'Property deactivated.');
     }
 
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     public function exportOrders(Request $request): Response
     {
         $this->requireAdmin();
@@ -890,7 +909,10 @@ class AdminController extends Controller
             'blogs' => Blog::query()->find($request->query('edit')),
             'expenses' => DB::table('expenses')->where('id', $request->query('edit'))->first(),
             'reviews' => Review::query()->find($request->query('edit')),
+<<<<<<< HEAD
             'orders' => Order::query()->find($request->query('edit')),
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             default => null,
         };
     }
@@ -1027,6 +1049,7 @@ class AdminController extends Controller
         return array_values([$cover, ...$images]);
     }
 
+<<<<<<< HEAD
     private function sanitizeRichText(string $html): string
     {
         $allowedTags = '<p><br><strong><b><em><i><u><h2><h3><blockquote><ul><ol><li>';
@@ -1037,6 +1060,8 @@ class AdminController extends Controller
         return trim((string) preg_replace('/<([a-z][a-z0-9]*)\b[^>]*>/i', '<$1>', $html));
     }
 
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     private function publicStorageUrl(string $path): string
     {
         return '/storage/'.ltrim($path, '/');

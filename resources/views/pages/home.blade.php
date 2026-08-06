@@ -70,6 +70,7 @@
             @for($i=0;$i<5;$i++)<i data-lucide="star" class="h-5 w-5 fill-[#06c6b6] text-[#06c6b6]"></i>@endfor
             <span class="ml-2 font-semibold">4.8</span><span class="text-sm text-muted-foreground">from Google Reviews</span>
         </div>
+<<<<<<< HEAD
         <div class="mx-auto max-w-5xl" data-reviews-carousel>
             <div class="mb-5 flex justify-end gap-2">
                 <button type="button" data-reviews-prev class="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white text-secondary transition hover:bg-secondary hover:text-white" aria-label="Previous reviews">
@@ -87,6 +88,15 @@
                     </article>
                 @endforeach
             </div>
+=======
+        <div class="mx-auto grid max-w-5xl gap-4 md:grid-cols-3">
+            @foreach($reviews->take(3) as $review)
+                <article class="rounded-xl bg-card p-6 shadow-card">
+                    <div class="mb-4 flex items-center gap-3"><div class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary/10 text-sm font-semibold text-secondary">{{ $review->avatar ?: substr($review->name,0,1) }}</div><div><p class="text-sm font-semibold">{{ $review->name }}</p><p class="text-xs text-muted-foreground">{{ $review->date }}</p></div></div>
+                    <p class="text-sm leading-relaxed text-muted-foreground">{{ $review->comment }}</p>
+                </article>
+            @endforeach
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         </div>
     </div>
 </section>

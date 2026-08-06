@@ -38,6 +38,7 @@
 
                 <nav class="grid gap-1 px-4 pb-6">
                     @foreach ($navItems as $item)
+<<<<<<< HEAD
                         @if ($item['key'] === 'properties')
                             <div>
                                 <a href="{{ route('admin.section', ['section' => 'properties', 'view' => 'list']) }}" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition {{ ($currentSection ?? '') === 'properties' ? 'bg-[#dff7f4] text-[#00bfb3]' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
@@ -61,6 +62,12 @@
                                 {{ $item['label'] }}
                             </a>
                         @endif
+=======
+                        <a href="{{ $item['url'] }}" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition {{ ($currentSection ?? '') === $item['key'] ? 'bg-[#dff7f4] text-[#00bfb3]' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
+                            <i data-lucide="{{ $item['icon'] }}" class="h-4 w-4"></i>
+                            {{ $item['label'] }}
+                        </a>
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                     @endforeach
                 </nav>
 

@@ -15,7 +15,10 @@
     @livewireStyles
 </head>
 <body class="min-h-screen bg-white text-foreground">
+<<<<<<< HEAD
     @include('partials.pwa-install-banner')
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     @include('partials.nav')
     <main class="pt-16">
         {{ $slot ?? '' }}
@@ -23,6 +26,10 @@
     </main>
     @include('partials.footer')
     @include('partials.offer-popup')
+<<<<<<< HEAD
+=======
+    @include('partials.pwa-install-popup')
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     @livewireScripts
     <script>
         if ('serviceWorker' in navigator) {

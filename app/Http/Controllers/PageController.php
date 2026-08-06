@@ -17,7 +17,11 @@ class PageController extends Controller
     public function home()
     {
         return view('pages.home', [
+<<<<<<< HEAD
             'featured' => Property::where('active', true)->where('featured', true)->latest()->limit(6)->get(),
+=======
+            'featured' => Property::where('featured', true)->latest()->limit(6)->get(),
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             'blogs' => Blog::where('show_on_homepage', true)->latest()->limit(3)->get(),
             'reviews' => Review::latest('created_at')->limit(8)->get(),
             'faqs' => $this->defaultFaqs(),
@@ -31,10 +35,14 @@ class PageController extends Controller
 
     public function property(Property $property)
     {
+<<<<<<< HEAD
         abort_unless($property->active, 404);
 
         $similar = Property::query()
             ->where('active', true)
+=======
+        $similar = Property::query()
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             ->where('id', '!=', $property->id)
             ->where('category', $property->category)
             ->latest()
@@ -43,7 +51,10 @@ class PageController extends Controller
 
         if ($similar->count() < 4) {
             $fallback = Property::query()
+<<<<<<< HEAD
                 ->where('active', true)
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                 ->where('id', '!=', $property->id)
                 ->whereNotIn('id', $similar->pluck('id'))
                 ->latest()
@@ -83,7 +94,11 @@ class PageController extends Controller
     public function favorites()
     {
         return view('pages.favorites', [
+<<<<<<< HEAD
             'properties' => Property::where('active', true)->latest()->get(),
+=======
+            'properties' => Property::latest()->get(),
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         ]);
     }
 

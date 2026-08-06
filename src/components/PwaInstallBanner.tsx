@@ -59,7 +59,11 @@ export default function PwaInstallBanner() {
   if (!visible) return null;
 
   return (
+<<<<<<< HEAD
     <div className="fixed left-1/2 top-3 z-[70] w-[92%] max-w-xl -translate-x-1/2 rounded-xl border border-border bg-background/95 shadow-lg backdrop-blur-xl">
+=======
+    <div className="fixed left-1/2 top-3 z-[70] w-[90%] max-w-xl -translate-x-1/2 rounded-xl bg-background/95 shadow-lg backdrop-blur-xl">
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
       <div className="flex items-center gap-3 px-3 py-2.5">
         <img
           src="/icon-192.png"

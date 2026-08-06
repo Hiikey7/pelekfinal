@@ -1,6 +1,7 @@
 @extends('layouts.admin', ['title' => $title])
 
 @section('content')
+<<<<<<< HEAD
 @php
     $propertyView = $propertyView ?? 'list';
     $displayTitle = $section === 'properties'
@@ -10,6 +11,11 @@
 <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
     <div>
         <h1 class="text-3xl font-bold">{{ $displayTitle }}</h1>
+=======
+<div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+        <h1 class="text-3xl font-bold">{{ $title }}</h1>
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         <p class="mt-2 text-sm text-muted-foreground">{{ $description }}</p>
     </div>
 
@@ -39,8 +45,13 @@
             <i data-lucide="plus" class="h-4 w-4"></i>
             Add Amenity
         </a>
+<<<<<<< HEAD
     @elseif ($section === 'properties' && $propertyView === 'list')
         <a href="{{ route('admin.section', ['section' => 'properties', 'view' => 'add']) }}" class="inline-flex items-center gap-2 rounded-lg bg-[#00bfb3] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#00aaa0]">
+=======
+    @elseif ($section === 'properties')
+        <a href="#new-property" class="inline-flex items-center gap-2 rounded-lg bg-[#00bfb3] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#00aaa0]">
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             <i data-lucide="plus" class="h-4 w-4"></i>
             Add Property
         </a>
@@ -112,7 +123,11 @@
     </section>
 @endif
 
+<<<<<<< HEAD
 @if ($section === 'properties' && in_array($propertyView, ['add', 'edit'], true))
+=======
+@if ($section === 'properties')
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     @php($editingProperty = $editItem)
     <section id="new-property" class="mb-6 rounded-lg bg-white p-6 shadow-card">
         <form method="POST" action="{{ $editingProperty ? route('admin.properties.update', $editingProperty) : route('admin.properties.store') }}" enctype="multipart/form-data" class="space-y-5">
@@ -183,6 +198,7 @@
 
             <div>
                 <label class="mb-2 block text-sm font-medium text-muted-foreground">Description</label>
+<<<<<<< HEAD
                 <div data-rich-text-editor class="overflow-hidden rounded-lg border border-border bg-white focus-within:ring-2 focus-within:ring-[#00bfb3]/30">
                     <div class="flex flex-wrap items-center gap-1 border-b border-border bg-muted p-2" aria-label="Description formatting tools">
                         <button type="button" data-rich-text-command="bold" class="flex h-8 min-w-8 items-center justify-center rounded-sm px-2 text-sm font-bold hover:bg-white" title="Bold">B</button>
@@ -198,6 +214,9 @@
                     <div data-rich-text-content contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Describe the property, nearby landmarks, house rules, standout amenities, and who it is best for." class="prose prose-sm min-h-40 max-w-none px-4 py-3 outline-none empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"></div>
                     <textarea data-rich-text-input name="description" class="hidden">{{ old('description', $editingProperty?->description) }}</textarea>
                 </div>
+=======
+                <textarea name="description" placeholder="Describe the property, nearby landmarks, house rules, standout amenities, and who it is best for." class="min-h-28 w-full rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">{{ old('description', $editingProperty?->description) }}</textarea>
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             </div>
 
             <div>
@@ -342,6 +361,7 @@
 @endif
 
 @if ($section === 'orders')
+<<<<<<< HEAD
     @php($editingOrder = $editItem)
     <section id="new-order" class="mb-6 rounded-lg bg-white p-6 shadow-card">
         <form method="POST" action="{{ $editingOrder ? route('admin.orders.update', $editingOrder) : route('admin.orders.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -375,6 +395,35 @@
             @if ($editingOrder)
                 <a href="{{ route('admin.section', 'orders') }}" class="rounded-lg border border-border px-5 py-3 text-center text-sm font-semibold transition hover:bg-muted">Cancel</a>
             @endif
+=======
+    <section id="new-order" class="mb-6 rounded-lg bg-white p-6 shadow-card">
+        <form method="POST" action="{{ route('admin.orders.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            @csrf
+            <input name="visitor_name" placeholder="Guest name" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+            <input name="phone" placeholder="Phone" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+            <select name="property_id" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+                <option value="">Select property</option>
+                @foreach ($properties as $property)
+                    <option value="{{ $property->id }}">{{ $property->title }}</option>
+                @endforeach
+            </select>
+            <input name="price_per_night" type="number" min="0" step="1" placeholder="Price per night" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+            <input name="num_days" type="number" min="1" value="1" placeholder="Days" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+            <input name="discount_amount" type="number" min="0" step="1" value="0" placeholder="Discount" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+            <select name="payment_method" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+                <option value="cash">Cash</option>
+                <option value="mpesa">M-Pesa</option>
+                <option value="card">Card</option>
+                <option value="bank">Bank</option>
+            </select>
+            <select name="status" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <button type="submit" class="rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary/90">Create</button>
+            <textarea name="notes" placeholder="Notes" class="md:col-span-2 xl:col-span-4 min-h-24 rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30"></textarea>
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         </form>
     </section>
 @endif
@@ -466,7 +515,11 @@
     </form>
 @endif
 
+<<<<<<< HEAD
 @unless ($section === 'settings' || ($section === 'properties' && in_array($propertyView, ['add', 'edit'], true)))
+=======
+@unless ($section === 'settings')
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
 <section class="rounded-lg bg-white shadow-card">
     <div class="flex items-center gap-3 border-b border-border px-5 py-4">
         <i data-lucide="{{ $icon }}" class="h-5 w-5 text-[#00bfb3]"></i>
@@ -570,6 +623,7 @@
                                 <?php endif; ?>
 
                                 <?php if ($section === 'properties'): ?>
+<<<<<<< HEAD
                                     <div class="flex flex-wrap gap-2">
                                         <form method="POST" action="{{ route('admin.properties.active', $row) }}">
                                             @csrf
@@ -579,6 +633,9 @@
                                                 {{ $row->active ? 'Active' : 'Inactive' }}
                                             </button>
                                         </form>
+=======
+                                    <div class="flex gap-2">
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                                         <a href="{{ $openUrl }}" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
                                             <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
                                             Open
@@ -636,6 +693,7 @@
                                     </div>
                                 <?php endif; ?>
 
+<<<<<<< HEAD
                                 <?php if ($section === 'orders'): ?>
                                     <div class="flex flex-wrap gap-2">
                                         <a href="{{ $openUrl }}" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
@@ -658,13 +716,20 @@
                                 <?php endif; ?>
 
                                 <?php if (! in_array($section, ['amenities', 'offers', 'expenses', 'reviews', 'properties', 'blogs', 'orders'], true) && $openUrl): ?>
+=======
+                                <?php if (! in_array($section, ['amenities', 'offers', 'expenses', 'reviews', 'properties', 'blogs'], true) && $openUrl): ?>
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                                     <a href="{{ $openUrl }}" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
                                         <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
                                         {{ $section === 'orders' ? 'Receipt' : 'Open' }}
                                     </a>
                                 <?php endif; ?>
 
+<<<<<<< HEAD
                                 <?php if (! in_array($section, ['amenities', 'offers', 'expenses', 'reviews', 'properties', 'blogs', 'orders'], true) && ! $openUrl): ?>
+=======
+                                <?php if (! in_array($section, ['amenities', 'offers', 'expenses', 'reviews', 'properties', 'blogs'], true) && ! $openUrl): ?>
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                                     <span class="text-muted-foreground">-</span>
                                 <?php endif; ?>
                             </td>

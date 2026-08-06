@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+<<<<<<< HEAD
 vendor
 dist
 dist-ssr
@@ -25,6 +26,12 @@ storage/logs/*
 !storage/logs/.gitignore
 *.local
 .phpunit.result.cache
+=======
+dist
+dist-ssr
+public/storage
+*.local
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
 .env
 .env.*
 !.env.example

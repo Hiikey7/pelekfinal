@@ -43,12 +43,15 @@
     margin-inline: auto;
   }
 
+<<<<<<< HEAD
   @media (max-width: 639px) {
     .property-page-container {
       width: 99%;
     }
   }
 
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
   .bg-primary { background-color: hsl(var(--primary)); }
   .bg-secondary { background-color: hsl(var(--secondary)); }
   .bg-muted { background-color: hsl(var(--muted)); }

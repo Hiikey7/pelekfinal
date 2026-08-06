@@ -52,7 +52,10 @@ export default function PropertyDetail() {
   const { toggleFavorite, isFavorite } = useFavorites();
   const { settings } = useSiteSettings();
   const [activeImage, setActiveImage] = useState(0);
+<<<<<<< HEAD
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
   const carouselRef = useRef<HTMLDivElement>(null);
   const { data: property = null, isLoading: loading } = useQuery({
     queryKey: ["property", id],
@@ -116,6 +119,7 @@ export default function PropertyDetail() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+<<<<<<< HEAD
           className="aspect-[16/9] md:aspect-[21/9] rounded-xl overflow-hidden mb-4"
         >
           <button
@@ -131,6 +135,17 @@ export default function PropertyDetail() {
               className="w-full h-full object-cover rounded-xl"
             />
           </button>
+=======
+          className="aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden mb-4"
+        >
+          <img
+            src={property.images[activeImage] || property.image}
+            alt={property.title}
+            loading="eager"
+            decoding="async"
+            className="w-full h-full object-cover"
+          />
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         </motion.div>
 
         <div className="flex gap-3 overflow-x-auto pb-4 mb-8 scrollbar-hide">
@@ -138,7 +153,11 @@ export default function PropertyDetail() {
             <button
               key={i}
               onClick={() => setActiveImage(i)}
+<<<<<<< HEAD
               className={`flex-shrink-0 w-24 h-20 md:w-32 md:h-24 rounded-lg overflow-hidden border-2 transition-colors ${activeImage === i ? "border-secondary" : "border-transparent opacity-70 hover:opacity-100"}`}
+=======
+              className={`flex-shrink-0 w-24 h-20 md:w-32 md:h-24 rounded-xl overflow-hidden border-2 transition-colors ${activeImage === i ? "border-secondary" : "border-transparent opacity-70 hover:opacity-100"}`}
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             >
               <img
                 src={img}
@@ -391,6 +410,7 @@ export default function PropertyDetail() {
           </section>
         )}
       </div>
+<<<<<<< HEAD
 
       {lightboxImage && (
         <div
@@ -405,6 +425,8 @@ export default function PropertyDetail() {
           />
         </div>
       )}
+=======
+>>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     </div>
   );
 }
