@@ -39,8 +39,14 @@
 
 @layer utilities {
   .container {
-    width: min(95%, 1200px);
+    width: min(99%, 1200px);
     margin-inline: auto;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      width: min(95%, 1200px);
+    }
   }
 
   .bg-primary { background-color: hsl(var(--primary)); }

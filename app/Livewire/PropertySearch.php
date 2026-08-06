@@ -49,6 +49,7 @@ class PropertySearch extends Component
         $categories = $this->cleanCategories($this->category);
 
         $properties = Property::query()
+            ->where('active', true)
             ->when($categories !== [], fn ($query) => $query->whereIn('category', $categories))
             ->when($this->location !== '', fn ($query) => $query->where('location', 'like', "%{$this->location}%"))
             ->when($this->maxPrice !== '', fn ($query) => $query->where('price', '<=', (float) $this->maxPrice))

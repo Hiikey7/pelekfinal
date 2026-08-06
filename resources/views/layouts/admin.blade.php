@@ -42,6 +42,16 @@
                             <i data-lucide="{{ $item['icon'] }}" class="h-4 w-4"></i>
                             {{ $item['label'] }}
                         </a>
+                        @if ($item['key'] === 'properties' && ($currentSection ?? '') === 'properties')
+                            <div class="ml-7 grid gap-1 border-l border-border pl-3">
+                                <a href="{{ route('admin.section', ['section' => 'properties', 'mode' => 'create']) }}" class="rounded-lg px-3 py-2 text-xs font-semibold transition {{ request('mode') === 'create' || request()->filled('edit') ? 'bg-[#eef3f1] text-primary' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
+                                    Add Property
+                                </a>
+                                <a href="{{ route('admin.section', 'properties') }}" class="rounded-lg px-3 py-2 text-xs font-semibold transition {{ request('mode') !== 'create' && ! request()->filled('edit') ? 'bg-[#eef3f1] text-primary' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
+                                    Property List
+                                </a>
+                            </div>
+                        @endif
                     @endforeach
                 </nav>
 

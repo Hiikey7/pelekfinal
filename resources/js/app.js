@@ -196,6 +196,40 @@ window.addEventListener('DOMContentLoaded', () => {
     start();
   });
 
+  const imageLightbox = document.querySelector('[data-image-lightbox]');
+  const imageLightboxImage = document.querySelector('[data-image-lightbox-image]');
+  const closeImageLightbox = () => {
+    imageLightbox?.classList.add('hidden');
+    imageLightbox?.classList.remove('flex');
+    if (imageLightboxImage) imageLightboxImage.src = '';
+    document.body.classList.remove('overflow-hidden');
+  };
+
+  document.querySelectorAll('[data-image-lightbox-open]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const imageSrc = button.getAttribute('data-image-src');
+      if (!imageLightbox || !imageLightboxImage || !imageSrc) return;
+
+      imageLightboxImage.src = imageSrc;
+      imageLightbox.classList.remove('hidden');
+      imageLightbox.classList.add('flex');
+      document.body.classList.add('overflow-hidden');
+      createIcons({ icons });
+    });
+  });
+
+  document.querySelectorAll('[data-image-lightbox-close]').forEach((button) => {
+    button.addEventListener('click', closeImageLightbox);
+  });
+
+  imageLightbox?.addEventListener('click', (event) => {
+    if (event.target === imageLightbox) closeImageLightbox();
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeImageLightbox();
+  });
+
   const offerPopup = document.querySelector('[data-offer-popup]');
   if (offerPopup && !sessionStorage.getItem('pelek-offer-seen')) {
     window.setTimeout(() => {
@@ -326,5 +360,40 @@ window.addEventListener('DOMContentLoaded', () => {
     coverFileKey = propertyImageFiles[0] ? `${propertyImageFiles[0].name}-${propertyImageFiles[0].lastModified}` : null;
     syncPropertyImageInput();
     renderPropertyImages();
+  });
+
+  document.querySelectorAll('[data-rich-text-editor]').forEach((editor) => {
+    const input = editor.querySelector('[data-rich-text-input]');
+    const output = editor.querySelector('[data-rich-text-output]');
+    if (!input || !output) return;
+
+    const syncOutput = () => {
+      output.value = input.innerHTML.trim();
+    };
+
+    editor.querySelectorAll('[data-rich-text-command]').forEach((button) => {
+      button.addEventListener('click', () => {
+        input.focus();
+        const command = button.getAttribute('data-rich-text-command');
+        const value = button.getAttribute('data-rich-text-value');
+
+        if (command === 'createLink') {
+          const url = window.prompt('Paste the link URL');
+          if (!url) return;
+          document.execCommand(command, false, url);
+        } else if (command === 'formatBlock') {
+          document.execCommand(command, false, value || 'p');
+        } else {
+          document.execCommand(command, false, value || null);
+        }
+
+        syncOutput();
+        createIcons({ icons });
+      });
+    });
+
+    input.addEventListener('input', syncOutput);
+    input.closest('form')?.addEventListener('submit', syncOutput);
+    syncOutput();
   });
 });

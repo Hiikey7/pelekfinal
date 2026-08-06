@@ -27,6 +27,7 @@ return new class extends Migration
             $table->integer('bathrooms')->default(1);
             $table->integer('guests')->nullable();
             $table->boolean('featured')->default(false);
+            $table->boolean('active')->default(true);
             $table->string('whatsapp', 80)->default('+254711614099');
             $table->decimal('lat', 10, 7)->default(0);
             $table->decimal('lng', 10, 7)->default(0);
@@ -95,6 +96,7 @@ return new class extends Migration
         Schema::create('amenities', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name')->unique();
+            $table->string('icon', 80)->default('circle-check');
             $table->timestamp('created_at')->useCurrent();
         });
 
@@ -130,9 +132,30 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
 
-        $amenities = ['WiFi', 'Swimming Pool', 'Parking', 'Air Conditioning', 'Kitchen', 'TV', 'Washer', 'Dryer', 'Hot Tub', 'Gym', 'Garden', 'Balcony', 'Security', 'CCTV', 'Generator', 'Water Tank', 'BBQ Area', 'Pet Friendly', 'Elevator', 'Furnished'];
-        foreach ($amenities as $name) {
-            DB::table('amenities')->insert(['id' => (string) str()->uuid(), 'name' => $name]);
+        $amenities = [
+            'WiFi' => 'wifi',
+            'Swimming Pool' => 'waves',
+            'Parking' => 'square-parking',
+            'Air Conditioning' => 'snowflake',
+            'Kitchen' => 'cooking-pot',
+            'TV' => 'tv',
+            'Washer' => 'washing-machine',
+            'Dryer' => 'wind',
+            'Hot Tub' => 'bath',
+            'Gym' => 'dumbbell',
+            'Garden' => 'flower-2',
+            'Balcony' => 'building-2',
+            'Security' => 'shield-check',
+            'CCTV' => 'cctv',
+            'Generator' => 'zap',
+            'Water Tank' => 'droplets',
+            'BBQ Area' => 'flame',
+            'Pet Friendly' => 'paw-print',
+            'Elevator' => 'arrow-up-down',
+            'Furnished' => 'sofa',
+        ];
+        foreach ($amenities as $name => $icon) {
+            DB::table('amenities')->insert(['id' => (string) str()->uuid(), 'name' => $name, 'icon' => $icon]);
         }
 
         foreach (['whatsapp' => '+254711614099', 'instagram' => '', 'tiktok' => '', 'facebook' => ''] as $key => $value) {

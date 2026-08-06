@@ -108,11 +108,12 @@ class AdminController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
+            'icon' => ['nullable', 'string', 'max:80'],
         ]);
 
         DB::table('amenities')->updateOrInsert(
             ['name' => $data['name']],
-            ['id' => (string) Str::uuid(), 'created_at' => now()]
+            ['id' => (string) Str::uuid(), 'icon' => $data['icon'] ?: 'circle-check', 'created_at' => now()]
         );
 
         return back()->with('status', 'Amenity added.');
@@ -124,10 +125,12 @@ class AdminController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
+            'icon' => ['nullable', 'string', 'max:80'],
         ]);
 
         DB::table('amenities')->where('id', $id)->update([
             'name' => $data['name'],
+            'icon' => $data['icon'] ?: 'circle-check',
         ]);
 
         return redirect()->route('admin.section', 'amenities')->with('status', 'Amenity updated.');
@@ -234,6 +237,15 @@ class AdminController extends Controller
         ]);
 
         return back()->with('status', 'Order added.');
+    }
+
+    public function deleteOrder(Order $order): RedirectResponse
+    {
+        $this->requireAdmin();
+
+        $order->delete();
+
+        return redirect()->route('admin.section', 'orders')->with('status', 'Order deleted.');
     }
 
     public function storeBlog(Request $request): RedirectResponse
@@ -387,7 +399,7 @@ class AdminController extends Controller
 
         $offer->fill([
             'title' => $data['title'],
-            'description' => $data['description'],
+            'description' => $this->sanitizeRichText($data['description']),
             'image' => $image,
             'cta_text' => $isPromo ? 'Copy Code' : ($data['cta_text'] ?: 'View Now'),
             'cta_link' => $isPromo ? '' : ($data['cta_link'] ?: '/'),
@@ -445,7 +457,7 @@ class AdminController extends Controller
             'type' => $data['type'] ?? '',
             'image' => $coverImage,
             'images' => $images ?: [$coverImage],
-            'description' => $data['description'],
+            'description' => $this->sanitizeRichText($data['description']),
             'amenities' => $data['amenities'] ?? [],
             'bedrooms' => $data['bedrooms'],
             'bathrooms' => $data['bathrooms'],
@@ -506,7 +518,7 @@ class AdminController extends Controller
             'type' => $data['type'] ?? '',
             'image' => $coverImage,
             'images' => $finalImages,
-            'description' => $data['description'],
+            'description' => $this->sanitizeRichText($data['description']),
             'amenities' => $data['amenities'] ?? [],
             'bedrooms' => $data['bedrooms'],
             'bathrooms' => $data['bathrooms'],
@@ -530,6 +542,16 @@ class AdminController extends Controller
         $property->delete();
 
         return redirect()->route('admin.section', 'properties')->with('status', 'Property deleted.');
+    }
+
+    public function togglePropertyActive(Property $property): RedirectResponse
+    {
+        $this->requireAdmin();
+
+        $property->update(['active' => ! $property->active]);
+
+        return redirect()->route('admin.section', 'properties')
+            ->with('status', $property->active ? 'Property activated.' : 'Property deactivated.');
     }
 
     public function exportOrders(Request $request): Response
@@ -632,7 +654,7 @@ class AdminController extends Controller
                 'icon' => 'home',
                 'source' => 'model',
                 'model' => Property::class,
-                'columns' => ['title', 'location', 'category', 'price'],
+                'columns' => ['title', 'location', 'category', 'price', 'active'],
             ],
             'blogs' => [
                 'title' => 'Blogs',
@@ -680,7 +702,7 @@ class AdminController extends Controller
                 'icon' => 'list-checks',
                 'source' => 'table',
                 'table' => 'amenities',
-                'columns' => ['name', 'created_at'],
+                'columns' => ['name', 'icon', 'created_at'],
             ],
             'settings' => [
                 'title' => 'Settings',
@@ -960,6 +982,16 @@ class AdminController extends Controller
         unset($images[$coverIndex]);
 
         return array_values([$cover, ...$images]);
+    }
+
+    private function sanitizeRichText(string $value): string
+    {
+        $allowedTags = '<p><br><strong><b><em><i><u><ul><ol><li><blockquote><h3><a>';
+        $clean = strip_tags($value, $allowedTags);
+        $clean = preg_replace('/\s+on\w+\s*=\s*(".*?"|\'.*?\'|[^\s>]+)/i', '', $clean) ?? $clean;
+        $clean = preg_replace('/href\s*=\s*("|\')\s*javascript:.*?\1/i', 'href="#"', $clean) ?? $clean;
+
+        return trim($clean);
     }
 
     private function publicStorageUrl(string $path): string

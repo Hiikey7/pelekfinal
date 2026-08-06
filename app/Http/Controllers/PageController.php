@@ -11,13 +11,14 @@ use App\Models\Review;
 use App\Models\SiteSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PageController extends Controller
 {
     public function home()
     {
         return view('pages.home', [
-            'featured' => Property::where('featured', true)->latest()->limit(6)->get(),
+            'featured' => Property::where('active', true)->where('featured', true)->latest()->limit(6)->get(),
             'blogs' => Blog::where('show_on_homepage', true)->latest()->limit(3)->get(),
             'reviews' => Review::latest('created_at')->limit(8)->get(),
             'faqs' => $this->defaultFaqs(),
@@ -31,7 +32,10 @@ class PageController extends Controller
 
     public function property(Property $property)
     {
+        abort_unless($property->active, 404);
+
         $similar = Property::query()
+            ->where('active', true)
             ->where('id', '!=', $property->id)
             ->where('category', $property->category)
             ->latest()
@@ -40,6 +44,7 @@ class PageController extends Controller
 
         if ($similar->count() < 4) {
             $fallback = Property::query()
+                ->where('active', true)
                 ->where('id', '!=', $property->id)
                 ->whereNotIn('id', $similar->pluck('id'))
                 ->latest()
@@ -52,6 +57,7 @@ class PageController extends Controller
         return view('pages.property', [
             'property' => $property,
             'similar' => $similar,
+            'amenityIcons' => DB::table('amenities')->pluck('icon', 'name')->all(),
         ]);
     }
 
@@ -79,7 +85,7 @@ class PageController extends Controller
     public function favorites()
     {
         return view('pages.favorites', [
-            'properties' => Property::latest()->get(),
+            'properties' => Property::where('active', true)->latest()->get(),
         ]);
     }
 
