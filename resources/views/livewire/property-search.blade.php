@@ -20,7 +20,7 @@
                 </span>
                 <i data-lucide="chevron-down" class="h-4 w-4 text-secondary"></i>
             </button>
-            <div class="absolute right-0 top-[calc(100%+0.35rem)] z-30 hidden w-44 rounded-lg border border-secondary/20 bg-white p-1.5 shadow-card" data-multiselect-panel>
+            <div class="absolute right-0 top-[calc(100%+0.35rem)] z-30 hidden w-full rounded-lg border border-secondary/20 bg-white p-1.5 shadow-card md:w-44" data-multiselect-panel>
                 @foreach ([['0', 'Studio'], ['1', '1 Bedroom'], ['2', '2 Bedrooms'], ['3', '3 Bedrooms'], ['4', '4 Bedrooms'], ['5', '5 Bedrooms'], ['6', '6 Bedrooms'], ['7', '7 Bedrooms']] as [$value, $label])
                     <label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-xs font-semibold text-primary transition hover:bg-secondary/10">
                         <input type="checkbox" wire:model.live="bedrooms" value="{{ $value }}" data-multiselect-option-label="{{ $label }}" class="h-3.5 w-3.5 rounded border-border accent-[#06c6b6]">
