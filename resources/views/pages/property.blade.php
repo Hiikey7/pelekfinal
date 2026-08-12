@@ -83,7 +83,7 @@
         </div>
         <div class="max-w-3xl">
             <span class="text-sm font-semibold capitalize text-secondary">{{ str_replace('_', ' ', $property->category) }}</span>
-            <h1 class="mt-2 text-4xl font-bold">{{ $property->title }}</h1>
+            <h1 class="mt-2 text-3xl font-bold sm:text-4xl">{{ $property->title }}</h1>
             <p class="mt-3 flex items-center gap-2 text-muted-foreground">
                 <i data-lucide="map-pin" class="h-4 w-4"></i>{{ $property->location }}
             </p>
@@ -110,11 +110,11 @@
             @if (! empty($property->amenities))
                 <section class="mt-10">
                     <h2 class="text-2xl font-bold">Amenities</h2>
-                    <div class="mt-5 grid gap-x-14 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <div class="mt-5 grid grid-cols-3 gap-x-3 gap-y-5 sm:gap-x-8 lg:gap-x-14">
                         @foreach ($property->amenities as $amenity)
-                            <div class="flex items-center gap-3 text-sm font-medium text-primary">
+                            <div class="flex min-w-0 items-center gap-2 text-xs font-medium text-primary sm:gap-3 sm:text-sm">
                                 <i data-lucide="{{ $amenityIcon($amenity) }}" class="h-4 w-4 shrink-0 text-secondary"></i>
-                                <span>{{ $amenity }}</span>
+                                <span class="min-w-0 leading-snug">{{ $amenity }}</span>
                             </div>
                         @endforeach
                     </div>

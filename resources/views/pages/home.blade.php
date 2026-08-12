@@ -6,7 +6,7 @@
     <div class="container relative z-10 text-center">
         <h1 class="mb-6 text-4xl font-bold text-primary-foreground md:text-6xl lg:text-7xl">Find Your Dream <br><span class="text-secondary">Property</span></h1>
         <p class="mx-auto mb-8 max-w-2xl text-lg text-white/80 md:text-xl">Luxury Airbnb stays, premium rentals, properties for sale, and commercial spaces like offices across Kenya</p>
-        <form action="/properties" class="mx-auto w-[82%] max-w-xl rounded-xl bg-white/95 p-3 shadow-card backdrop-blur-xl md:w-[78%]">
+        <form action="/properties" class="mx-auto w-[96%] max-w-3xl rounded-xl bg-white/95 p-2.5 shadow-card backdrop-blur-xl sm:p-3 md:w-[90%]">
             <div class="space-y-2.5">
                 <div class="grid grid-cols-2 gap-1 rounded-md bg-muted p-1 sm:grid-cols-4">
                     @foreach([['airbnb','Airbnb'],['rental','Rental'],['sale','For Sale'],['commercial_spaces','Commercial']] as [$value,$label])
@@ -18,10 +18,24 @@
                         </label>
                     @endforeach
                 </div>
-                <div class="grid grid-cols-1 gap-2.5 md:grid-cols-[1fr_1fr_auto]">
+                <div class="grid grid-cols-1 gap-2.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_9.5rem_auto]">
                     <input name="location" placeholder="Location" class="rounded-md border border-gray-300 bg-muted px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#06c6b6]">
                     <input name="maxPrice" placeholder="Max price" class="rounded-md border border-gray-300 bg-muted px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[#06c6b6]">
-                    <button class="flex min-h-8 items-center justify-center gap-2 rounded-md bg-secondary px-4 py-1.5 text-sm font-semibold text-white"><i data-lucide="search" class="h-4 w-4"></i> Search</button>
+                    <div class="relative" data-multiselect>
+                        <button type="button" class="flex min-h-8 w-full items-center justify-between rounded-md border border-gray-300 bg-muted px-3 py-1.5 text-left text-sm text-muted-foreground outline-none transition focus:ring-2 focus:ring-[#06c6b6]" data-multiselect-trigger>
+                            <span data-multiselect-label data-placeholder="Bedrooms">Bedrooms</span>
+                            <i data-lucide="chevron-down" class="h-4 w-4 text-secondary"></i>
+                        </button>
+                        <div class="absolute right-0 top-[calc(100%+0.35rem)] z-30 hidden w-44 rounded-lg border border-secondary/20 bg-white p-1.5 text-left shadow-card" data-multiselect-panel>
+                            @foreach ([['0', 'Studio'], ['1', '1 Bedroom'], ['2', '2 Bedrooms'], ['3', '3 Bedrooms'], ['4', '4 Bedrooms'], ['5', '5 Bedrooms'], ['6', '6 Bedrooms'], ['7', '7 Bedrooms']] as [$value, $label])
+                                <label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-xs font-semibold text-primary transition hover:bg-secondary/10">
+                                    <input type="checkbox" name="bedrooms[]" value="{{ $value }}" data-multiselect-option-label="{{ $label }}" class="h-3.5 w-3.5 rounded border-border accent-[#06c6b6]">
+                                    <span class="whitespace-nowrap">{{ $label }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                    <button class="flex min-h-8 w-full items-center justify-center gap-2 rounded-md bg-secondary px-4 py-1.5 text-sm font-semibold text-white"><i data-lucide="search" class="h-4 w-4"></i> Search</button>
                 </div>
             </div>
         </form>
@@ -65,18 +79,30 @@
 @if($reviews->count())
 <section class="bg-muted py-16">
     <div class="container">
-        <h2 class="mb-4 text-center text-3xl font-bold md:text-4xl">What Our Clients Say</h2>
+        <div class="mb-4 flex items-end justify-between gap-4">
+            <h2 class="text-3xl font-bold md:text-4xl">What Our Clients Say</h2>
+            <div class="flex gap-2">
+                <button type="button" class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-primary shadow-card transition hover:bg-secondary hover:text-white" data-horizontal-carousel-prev aria-label="Previous testimonial">
+                    <i data-lucide="chevron-left" class="h-5 w-5"></i>
+                </button>
+                <button type="button" class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-primary shadow-card transition hover:bg-secondary hover:text-white" data-horizontal-carousel-next aria-label="Next testimonial">
+                    <i data-lucide="chevron-right" class="h-5 w-5"></i>
+                </button>
+            </div>
+        </div>
         <div class="mb-10 flex items-center justify-center gap-1">
             @for($i=0;$i<5;$i++)<i data-lucide="star" class="h-5 w-5 fill-[#06c6b6] text-[#06c6b6]"></i>@endfor
             <span class="ml-2 font-semibold">4.8</span><span class="text-sm text-muted-foreground">from Google Reviews</span>
         </div>
-        <div class="mx-auto grid max-w-5xl gap-4 md:grid-cols-3">
-            @foreach($reviews->take(3) as $review)
-                <article class="rounded-xl bg-card p-6 shadow-card">
+        <div class="-mx-1 overflow-hidden" data-horizontal-carousel>
+            <div class="flex snap-x gap-4 overflow-x-auto px-1 pb-4 scroll-smooth" data-horizontal-carousel-track>
+            @foreach($reviews as $review)
+                <article class="min-h-48 w-[86%] shrink-0 snap-start rounded-xl bg-card p-6 shadow-card sm:w-[48%] lg:w-[32%]">
                     <div class="mb-4 flex items-center gap-3"><div class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary/10 text-sm font-semibold text-secondary">{{ $review->avatar ?: substr($review->name,0,1) }}</div><div><p class="text-sm font-semibold">{{ $review->name }}</p><p class="text-xs text-muted-foreground">{{ $review->date }}</p></div></div>
                     <p class="text-sm leading-relaxed text-muted-foreground">{{ $review->comment }}</p>
                 </article>
             @endforeach
+            </div>
         </div>
     </div>
 </section>

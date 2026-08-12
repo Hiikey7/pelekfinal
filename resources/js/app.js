@@ -29,6 +29,41 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const syncMultiselectLabel = (select) => {
+    const label = select.querySelector('[data-multiselect-label]');
+    if (!label) return;
+
+    const checkedLabels = Array.from(select.querySelectorAll('input[type="checkbox"]:checked'))
+      .map((input) => input.getAttribute('data-multiselect-option-label') || input.value);
+
+    label.textContent = checkedLabels.length
+      ? (checkedLabels.length <= 2 ? checkedLabels.join(', ') : `${checkedLabels.length} selected`)
+      : (label.getAttribute('data-placeholder') || 'Select');
+  };
+
+  document.querySelectorAll('[data-multiselect]').forEach((select) => {
+    const trigger = select.querySelector('[data-multiselect-trigger]');
+    const panel = select.querySelector('[data-multiselect-panel]');
+
+    trigger?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      document.querySelectorAll('[data-multiselect-panel]').forEach((otherPanel) => {
+        if (otherPanel !== panel) otherPanel.classList.add('hidden');
+      });
+      panel?.classList.toggle('hidden');
+    });
+
+    select.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+      input.addEventListener('change', () => syncMultiselectLabel(select));
+    });
+
+    syncMultiselectLabel(select);
+  });
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('[data-multiselect-panel]').forEach((panel) => panel.classList.add('hidden'));
+  });
+
   const isStandaloneApp = () => (
     window.matchMedia('(display-mode: standalone)').matches ||
     ('standalone' in window.navigator && Boolean(window.navigator.standalone))
@@ -194,6 +229,23 @@ window.addEventListener('DOMContentLoaded', () => {
     carousel.addEventListener('mouseleave', start);
     syncJumpButtons();
     start();
+  });
+
+  document.querySelectorAll('[data-horizontal-carousel]').forEach((carousel) => {
+    const track = carousel.querySelector('[data-horizontal-carousel-track]');
+    const section = carousel.closest('section');
+    const previous = section?.querySelector('[data-horizontal-carousel-prev]');
+    const next = section?.querySelector('[data-horizontal-carousel-next]');
+    if (!track) return;
+
+    const scrollByCard = (direction) => {
+      const card = track.querySelector(':scope > *');
+      const distance = card ? card.getBoundingClientRect().width + 16 : track.clientWidth * 0.85;
+      track.scrollBy({ left: direction * distance, behavior: 'smooth' });
+    };
+
+    previous?.addEventListener('click', () => scrollByCard(-1));
+    next?.addEventListener('click', () => scrollByCard(1));
   });
 
   const imageLightbox = document.querySelector('[data-image-lightbox]');
