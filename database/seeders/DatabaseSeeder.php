@@ -26,21 +26,6 @@ class DatabaseSeeder extends Seeder
             ['Executive Townhouse', 'Runda, Nairobi', 'rental', '/images/property-6.jpg', 220000, false],
         ];
 
-<<<<<<< HEAD
-        $propertyGalleries = [
-            'Modern Family Rental' => [
-                '/images/property-2.jpg',
-                '/images/property-1.jpg',
-                '/images/property-3.jpg',
-                '/images/property-4.jpg',
-                '/images/property-5.jpg',
-                '/images/property-6.jpg',
-                '/images/hero-bg.jpg',
-            ],
-        ];
-
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         foreach ($properties as [$title, $location, $category, $image, $price, $featured]) {
             Property::query()->updateOrCreate(
                 ['title' => $title],
@@ -49,11 +34,7 @@ class DatabaseSeeder extends Seeder
                     'category' => $category,
                     'type' => ucfirst(str_replace('_', ' ', $category)),
                     'image' => $image,
-<<<<<<< HEAD
-                    'images' => $propertyGalleries[$title] ?? [$image],
-=======
                     'images' => [$image],
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                     'description' => 'A carefully managed Pelek Properties listing with thoughtful amenities, responsive support, and a convenient location.',
                     'amenities' => ['WiFi', 'Parking', 'Security', 'Kitchen'],
                     'bedrooms' => 3,

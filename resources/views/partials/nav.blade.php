@@ -9,11 +9,7 @@
                 <a href="{{ $href }}" class="text-sm font-medium transition-colors {{ request()->path() === trim($href, '/') || (request()->is('/') && $href === '/') ? 'text-[#06c6b6]' : 'text-muted-foreground hover:text-[#06c6b6]' }}">{{ $label }}</a>
             @endforeach
         </div>
-<<<<<<< HEAD
-        <a href="/properties?category=airbnb" class="hidden rounded-sm bg-[#06c6b6] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#05b3a3] md:inline-flex">Book Now</a>
-=======
         <a href="/properties?category=airbnb" class="hidden rounded-lg bg-[#06c6b6] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#05b3a3] md:inline-flex">Book Now</a>
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         <button type="button" class="rounded-lg p-2 text-foreground hover:bg-muted md:hidden" data-mobile-menu-button aria-label="Open menu">
             <i data-lucide="menu" class="h-5 w-5"></i>
         </button>

@@ -199,11 +199,7 @@
                 <p><strong>Pelek Properties</strong></p>
                 <p>Nairobi, Kenya</p>
                 <p>Phone: +254711614099</p>
-<<<<<<< HEAD
-                <p>Email: info@pelekproperties.co.ke</p>
-=======
                 <p>Email: info@pelekproperties.com</p>
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             </div>
             <div class="column">
                 <h2>BILLED TO</h2>
