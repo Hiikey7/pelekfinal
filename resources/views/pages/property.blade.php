@@ -79,7 +79,17 @@
             <button type="button" class="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20" data-image-lightbox-close aria-label="Close image">
                 <i data-lucide="x" class="h-5 w-5"></i>
             </button>
+            @if ($propertyImages->count() > 1)
+                <button type="button" class="absolute left-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:left-6" data-image-lightbox-prev aria-label="Previous image">
+                    <i data-lucide="chevron-left" class="h-6 w-6"></i>
+                </button>
+            @endif
             <img src="" alt="{{ $property->title }}" class="max-h-full max-w-full rounded-sm object-contain" data-image-lightbox-image>
+            @if ($propertyImages->count() > 1)
+                <button type="button" class="absolute right-3 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:right-6" data-image-lightbox-next aria-label="Next image">
+                    <i data-lucide="chevron-right" class="h-6 w-6"></i>
+                </button>
+            @endif
         </div>
         <div class="max-w-3xl">
             <span class="text-sm font-semibold capitalize text-secondary">{{ str_replace('_', ' ', $property->category) }}</span>

@@ -250,6 +250,18 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const imageLightbox = document.querySelector('[data-image-lightbox]');
   const imageLightboxImage = document.querySelector('[data-image-lightbox-image]');
+  const imageLightboxTriggers = Array.from(document.querySelectorAll('[data-image-lightbox-open]'));
+  const imageSources = [...new Set(imageLightboxTriggers
+    .map((button) => button.getAttribute('data-image-src'))
+    .filter(Boolean))];
+  let imageIndex = 0;
+
+  const showLightboxImage = (index) => {
+    if (!imageLightboxImage || imageSources.length === 0) return;
+    imageIndex = (index + imageSources.length) % imageSources.length;
+    imageLightboxImage.src = imageSources[imageIndex];
+  };
+
   const closeImageLightbox = () => {
     imageLightbox?.classList.add('hidden');
     imageLightbox?.classList.remove('flex');
@@ -257,12 +269,12 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.classList.remove('overflow-hidden');
   };
 
-  document.querySelectorAll('[data-image-lightbox-open]').forEach((button) => {
+  imageLightboxTriggers.forEach((button) => {
     button.addEventListener('click', () => {
       const imageSrc = button.getAttribute('data-image-src');
       if (!imageLightbox || !imageLightboxImage || !imageSrc) return;
 
-      imageLightboxImage.src = imageSrc;
+      showLightboxImage(Math.max(0, imageSources.indexOf(imageSrc)));
       imageLightbox.classList.remove('hidden');
       imageLightbox.classList.add('flex');
       document.body.classList.add('overflow-hidden');
@@ -278,8 +290,14 @@ window.addEventListener('DOMContentLoaded', () => {
     if (event.target === imageLightbox) closeImageLightbox();
   });
 
+  imageLightbox?.querySelector('[data-image-lightbox-prev]')?.addEventListener('click', () => showLightboxImage(imageIndex - 1));
+  imageLightbox?.querySelector('[data-image-lightbox-next]')?.addEventListener('click', () => showLightboxImage(imageIndex + 1));
+
   window.addEventListener('keydown', (event) => {
+    if (!imageLightbox || imageLightbox.classList.contains('hidden')) return;
     if (event.key === 'Escape') closeImageLightbox();
+    if (event.key === 'ArrowLeft') showLightboxImage(imageIndex - 1);
+    if (event.key === 'ArrowRight') showLightboxImage(imageIndex + 1);
   });
 
   const offerPopup = document.querySelector('[data-offer-popup]');

@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\PropertySearch;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class AdminPropertiesTest extends TestCase
@@ -63,5 +65,12 @@ class AdminPropertiesTest extends TestCase
         $this->get('/admin/properties?search=Property+22&category=rental')
             ->assertOk()->assertSee('No properties found.')
             ->assertViewHas('rows', fn ($rows) => $rows->total() === 0);
+    }
+
+    public function test_public_property_filters_return_only_exact_matches(): void
+    {
+        Livewire::test(PropertySearch::class)
+            ->set('category', ['sale'])
+            ->assertViewHas('properties', fn ($properties) => $properties->total() === 1);
     }
 }
