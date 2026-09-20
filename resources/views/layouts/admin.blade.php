@@ -38,36 +38,20 @@
 
                 <nav class="grid gap-1 px-4 pb-6">
                     @foreach ($navItems as $item)
-<<<<<<< HEAD
-                        @if ($item['key'] === 'properties')
-                            <div>
-                                <a href="{{ route('admin.section', ['section' => 'properties', 'view' => 'list']) }}" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition {{ ($currentSection ?? '') === 'properties' ? 'bg-[#dff7f4] text-[#00bfb3]' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
-                                    <i data-lucide="home" class="h-4 w-4"></i>
-                                    Properties
-                                </a>
-                                @if (($currentSection ?? '') === 'properties')
-                                    <div class="ml-5 mt-1 grid gap-1 border-l border-border pl-3">
-                                        <a href="{{ route('admin.section', ['section' => 'properties', 'view' => 'add']) }}" class="rounded-md px-3 py-2 text-xs font-medium transition {{ in_array($propertyView ?? 'list', ['add', 'edit'], true) ? 'bg-[#e9faf8] text-[#008f86]' : 'text-muted-foreground hover:bg-muted' }}">
-                                            Add Property
-                                        </a>
-                                        <a href="{{ route('admin.section', ['section' => 'properties', 'view' => 'list']) }}" class="rounded-md px-3 py-2 text-xs font-medium transition {{ ($propertyView ?? 'list') === 'list' ? 'bg-[#e9faf8] text-[#008f86]' : 'text-muted-foreground hover:bg-muted' }}">
-                                            Property List
-                                        </a>
-                                    </div>
-                                @endif
-                            </div>
-                        @else
-                            <a href="{{ $item['url'] }}" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition {{ ($currentSection ?? '') === $item['key'] ? 'bg-[#dff7f4] text-[#00bfb3]' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
-                                <i data-lucide="{{ $item['icon'] }}" class="h-4 w-4"></i>
-                                {{ $item['label'] }}
-                            </a>
-                        @endif
-=======
                         <a href="{{ $item['url'] }}" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition {{ ($currentSection ?? '') === $item['key'] ? 'bg-[#dff7f4] text-[#00bfb3]' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
                             <i data-lucide="{{ $item['icon'] }}" class="h-4 w-4"></i>
                             {{ $item['label'] }}
                         </a>
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
+                        @if ($item['key'] === 'properties' && ($currentSection ?? '') === 'properties')
+                            <div class="ml-7 grid gap-1 border-l border-border pl-3">
+                                <a href="{{ route('admin.section', ['section' => 'properties', 'mode' => 'create']) }}" class="rounded-lg px-3 py-2 text-xs font-semibold transition {{ request('mode') === 'create' || request()->filled('edit') ? 'bg-[#eef3f1] text-primary' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
+                                    Add Property
+                                </a>
+                                <a href="{{ route('admin.section', 'properties') }}" class="rounded-lg px-3 py-2 text-xs font-semibold transition {{ request('mode') !== 'create' && ! request()->filled('edit') ? 'bg-[#eef3f1] text-primary' : 'text-muted-foreground hover:bg-muted hover:text-primary' }}">
+                                    Property List
+                                </a>
+                            </div>
+                        @endif
                     @endforeach
                 </nav>
 

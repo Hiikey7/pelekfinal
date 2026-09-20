@@ -1,99 +1,9 @@
 import './bootstrap';
 import { createIcons, icons } from 'lucide';
 
-<<<<<<< HEAD
-let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', (event) => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-});
-
 window.addEventListener('DOMContentLoaded', () => {
   createIcons({ icons });
 
-  const installBanner = document.querySelector('[data-pwa-install-banner]');
-  const dismissInstallBanner = () => {
-    if (!installBanner) return;
-    installBanner.classList.add('hidden');
-  };
-
-  if (installBanner) {
-    const isInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    if (isInstalled) {
-      dismissInstallBanner();
-    } else {
-      const dismissTimer = window.setTimeout(dismissInstallBanner, 5000);
-      window.addEventListener('scroll', () => {
-        window.clearTimeout(dismissTimer);
-        dismissInstallBanner();
-      }, { once: true, passive: true });
-    }
-
-    installBanner.querySelector('[data-pwa-dismiss]')?.addEventListener('click', dismissInstallBanner);
-    installBanner.querySelector('[data-pwa-install]')?.addEventListener('click', async () => {
-      if (deferredInstallPrompt) {
-        deferredInstallPrompt.prompt();
-        await deferredInstallPrompt.userChoice;
-        deferredInstallPrompt = null;
-        dismissInstallBanner();
-        return;
-      }
-
-      const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-      window.alert(isIos
-        ? 'To install this app, tap Share and then “Add to Home Screen”.'
-        : 'Use your browser menu and choose “Install app” or “Add to Home screen”.');
-    });
-  }
-
-  window.addEventListener('appinstalled', dismissInstallBanner);
-
-  const allowedRichTextTags = new Set(['P', 'BR', 'STRONG', 'B', 'EM', 'I', 'U', 'H2', 'H3', 'BLOCKQUOTE', 'UL', 'OL', 'LI']);
-  const cleanRichText = (html) => {
-    const parsed = new DOMParser().parseFromString(`<div>${html}</div>`, 'text/html');
-    const root = parsed.body.firstElementChild;
-    root?.querySelectorAll('*').forEach((element) => {
-      if (!allowedRichTextTags.has(element.tagName)) {
-        element.replaceWith(...element.childNodes);
-        return;
-      }
-      Array.from(element.attributes).forEach((attribute) => element.removeAttribute(attribute.name));
-    });
-    return root?.innerHTML || '';
-  };
-
-  document.querySelectorAll('[data-rich-text-editor]').forEach((editor) => {
-    const content = editor.querySelector('[data-rich-text-content]');
-    const input = editor.querySelector('[data-rich-text-input]');
-    if (!content || !input) return;
-
-    content.innerHTML = cleanRichText(input.value);
-    const sync = () => {
-      input.value = cleanRichText(content.innerHTML);
-    };
-
-    editor.querySelectorAll('[data-rich-text-command]').forEach((button) => {
-      button.addEventListener('click', () => {
-        content.focus();
-        document.execCommand(
-          button.getAttribute('data-rich-text-command'),
-          false,
-          button.getAttribute('data-rich-text-value') || null,
-        );
-        sync();
-      });
-    });
-
-    content.addEventListener('input', sync);
-    content.addEventListener('blur', sync);
-    editor.closest('form')?.addEventListener('submit', sync);
-  });
-
-=======
-window.addEventListener('DOMContentLoaded', () => {
-  createIcons({ icons });
-
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
   document.querySelectorAll('[data-mobile-menu-button]').forEach((button) => {
     button.addEventListener('click', () => {
       document.querySelector('[data-mobile-menu]')?.classList.toggle('hidden');
@@ -119,8 +29,41 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-<<<<<<< HEAD
-=======
+  const syncMultiselectLabel = (select) => {
+    const label = select.querySelector('[data-multiselect-label]');
+    if (!label) return;
+
+    const checkedLabels = Array.from(select.querySelectorAll('input[type="checkbox"]:checked'))
+      .map((input) => input.getAttribute('data-multiselect-option-label') || input.value);
+
+    label.textContent = checkedLabels.length
+      ? (checkedLabels.length <= 2 ? checkedLabels.join(', ') : `${checkedLabels.length} selected`)
+      : (label.getAttribute('data-placeholder') || 'Select');
+  };
+
+  document.querySelectorAll('[data-multiselect]').forEach((select) => {
+    const trigger = select.querySelector('[data-multiselect-trigger]');
+    const panel = select.querySelector('[data-multiselect-panel]');
+
+    trigger?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      document.querySelectorAll('[data-multiselect-panel]').forEach((otherPanel) => {
+        if (otherPanel !== panel) otherPanel.classList.add('hidden');
+      });
+      panel?.classList.toggle('hidden');
+    });
+
+    select.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+      input.addEventListener('change', () => syncMultiselectLabel(select));
+    });
+
+    syncMultiselectLabel(select);
+  });
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('[data-multiselect-panel]').forEach((panel) => panel.classList.add('hidden'));
+  });
+
   const isStandaloneApp = () => (
     window.matchMedia('(display-mode: standalone)').matches ||
     ('standalone' in window.navigator && Boolean(window.navigator.standalone))
@@ -166,7 +109,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
   const readWishlist = () => {
     try {
       return JSON.parse(localStorage.getItem('pelek-favorites') || '[]');
@@ -289,100 +231,57 @@ window.addEventListener('DOMContentLoaded', () => {
     start();
   });
 
-<<<<<<< HEAD
-  document.querySelectorAll('[data-reviews-carousel]').forEach((carousel) => {
-    const track = carousel.querySelector('[data-reviews-track]');
-    const cards = Array.from(track?.children || []);
-    if (!track || cards.length <= 1) return;
+  document.querySelectorAll('[data-horizontal-carousel]').forEach((carousel) => {
+    const track = carousel.querySelector('[data-horizontal-carousel-track]');
+    const section = carousel.closest('section');
+    const previous = section?.querySelector('[data-horizontal-carousel-prev]');
+    const next = section?.querySelector('[data-horizontal-carousel-next]');
+    if (!track) return;
 
-    const stepSize = () => cards[0].getBoundingClientRect().width + 16;
-    const move = (direction) => {
-      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
-      const atStart = track.scrollLeft <= 8;
-
-      if (direction > 0 && atEnd) {
-        track.scrollTo({ left: 0, behavior: 'smooth' });
-      } else if (direction < 0 && atStart) {
-        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
-      } else {
-        track.scrollBy({ left: stepSize() * direction, behavior: 'smooth' });
-      }
+    const scrollByCard = (direction) => {
+      const card = track.querySelector(':scope > *');
+      const distance = card ? card.getBoundingClientRect().width + 16 : track.clientWidth * 0.85;
+      track.scrollBy({ left: direction * distance, behavior: 'smooth' });
     };
 
-    let reviewsTimer;
-    const startReviews = () => {
-      window.clearInterval(reviewsTimer);
-      reviewsTimer = window.setInterval(() => move(1), 4500);
-    };
-
-    carousel.querySelector('[data-reviews-prev]')?.addEventListener('click', () => {
-      move(-1);
-      startReviews();
-    });
-    carousel.querySelector('[data-reviews-next]')?.addEventListener('click', () => {
-      move(1);
-      startReviews();
-    });
-    carousel.addEventListener('mouseenter', () => window.clearInterval(reviewsTimer));
-    carousel.addEventListener('mouseleave', startReviews);
-    carousel.addEventListener('touchstart', () => window.clearInterval(reviewsTimer), { passive: true });
-    carousel.addEventListener('touchend', startReviews, { passive: true });
-    startReviews();
+    previous?.addEventListener('click', () => scrollByCard(-1));
+    next?.addEventListener('click', () => scrollByCard(1));
   });
 
-  const lightbox = document.querySelector('[data-image-lightbox]');
-  const lightboxImage = lightbox?.querySelector('[data-lightbox-image]');
-  const lightboxTriggers = Array.from(document.querySelectorAll('[data-lightbox-open]'));
-  const lightboxSources = [...new Set(lightboxTriggers
-    .map((trigger) => trigger.getAttribute('data-lightbox-src') || trigger.getAttribute('src'))
-    .filter(Boolean))];
-  let lightboxIndex = 0;
-
-  const showLightboxImage = (index) => {
-    if (!lightboxImage || lightboxSources.length === 0) return;
-    lightboxIndex = (index + lightboxSources.length) % lightboxSources.length;
-    lightboxImage.setAttribute('src', lightboxSources[lightboxIndex]);
+  const imageLightbox = document.querySelector('[data-image-lightbox]');
+  const imageLightboxImage = document.querySelector('[data-image-lightbox-image]');
+  const closeImageLightbox = () => {
+    imageLightbox?.classList.add('hidden');
+    imageLightbox?.classList.remove('flex');
+    if (imageLightboxImage) imageLightboxImage.src = '';
+    document.body.classList.remove('overflow-hidden');
   };
 
-  const openLightbox = (source) => {
-    if (!lightbox || !lightboxImage) return;
-    showLightboxImage(Math.max(0, lightboxSources.indexOf(source)));
-    lightbox.classList.remove('hidden');
-    lightbox.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-    lightbox.querySelector('[data-lightbox-close]')?.focus();
-  };
+  document.querySelectorAll('[data-image-lightbox-open]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const imageSrc = button.getAttribute('data-image-src');
+      if (!imageLightbox || !imageLightboxImage || !imageSrc) return;
 
-  const closeLightbox = () => {
-    if (!lightbox) return;
-    lightbox.classList.add('hidden');
-    lightbox.classList.remove('flex');
-    document.body.style.overflow = '';
-  };
-
-  lightboxTriggers.forEach((trigger) => {
-    trigger.addEventListener('click', (event) => {
-      event.stopPropagation();
-      openLightbox(trigger.getAttribute('data-lightbox-src') || trigger.getAttribute('src'));
+      imageLightboxImage.src = imageSrc;
+      imageLightbox.classList.remove('hidden');
+      imageLightbox.classList.add('flex');
+      document.body.classList.add('overflow-hidden');
+      createIcons({ icons });
     });
   });
 
-  lightbox?.querySelector('[data-lightbox-close]')?.addEventListener('click', closeLightbox);
-  lightbox?.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => showLightboxImage(lightboxIndex - 1));
-  lightbox?.querySelector('[data-lightbox-next]')?.addEventListener('click', () => showLightboxImage(lightboxIndex + 1));
-  lightbox?.addEventListener('click', (event) => {
-    if (event.target === lightbox) closeLightbox();
+  document.querySelectorAll('[data-image-lightbox-close]').forEach((button) => {
+    button.addEventListener('click', closeImageLightbox);
   });
 
-  document.addEventListener('keydown', (event) => {
-    if (!lightbox || lightbox.classList.contains('hidden')) return;
-    if (event.key === 'Escape') closeLightbox();
-    if (event.key === 'ArrowLeft') showLightboxImage(lightboxIndex - 1);
-    if (event.key === 'ArrowRight') showLightboxImage(lightboxIndex + 1);
+  imageLightbox?.addEventListener('click', (event) => {
+    if (event.target === imageLightbox) closeImageLightbox();
   });
 
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeImageLightbox();
+  });
+
   const offerPopup = document.querySelector('[data-offer-popup]');
   if (offerPopup && !sessionStorage.getItem('pelek-offer-seen')) {
     window.setTimeout(() => {
@@ -513,5 +412,40 @@ window.addEventListener('DOMContentLoaded', () => {
     coverFileKey = propertyImageFiles[0] ? `${propertyImageFiles[0].name}-${propertyImageFiles[0].lastModified}` : null;
     syncPropertyImageInput();
     renderPropertyImages();
+  });
+
+  document.querySelectorAll('[data-rich-text-editor]').forEach((editor) => {
+    const input = editor.querySelector('[data-rich-text-input]');
+    const output = editor.querySelector('[data-rich-text-output]');
+    if (!input || !output) return;
+
+    const syncOutput = () => {
+      output.value = input.innerHTML.trim();
+    };
+
+    editor.querySelectorAll('[data-rich-text-command]').forEach((button) => {
+      button.addEventListener('click', () => {
+        input.focus();
+        const command = button.getAttribute('data-rich-text-command');
+        const value = button.getAttribute('data-rich-text-value');
+
+        if (command === 'createLink') {
+          const url = window.prompt('Paste the link URL');
+          if (!url) return;
+          document.execCommand(command, false, url);
+        } else if (command === 'formatBlock') {
+          document.execCommand(command, false, value || 'p');
+        } else {
+          document.execCommand(command, false, value || null);
+        }
+
+        syncOutput();
+        createIcons({ icons });
+      });
+    });
+
+    input.addEventListener('input', syncOutput);
+    input.closest('form')?.addEventListener('submit', syncOutput);
+    syncOutput();
   });
 });

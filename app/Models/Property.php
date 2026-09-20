@@ -13,11 +13,7 @@ class Property extends Model
     protected $fillable = [
         'title', 'slug', 'location', 'price', 'price_label', 'rating', 'reviews_count',
         'category', 'type', 'image', 'images', 'description', 'amenities',
-<<<<<<< HEAD
         'bedrooms', 'bathrooms', 'guests', 'featured', 'active', 'whatsapp', 'lat', 'lng',
-=======
-        'bedrooms', 'bathrooms', 'guests', 'featured', 'whatsapp', 'lat', 'lng',
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         'google_map_link', 'social_media_url', 'social_media_type',
     ];
 
@@ -25,10 +21,7 @@ class Property extends Model
         'images' => 'array',
         'amenities' => 'array',
         'featured' => 'boolean',
-<<<<<<< HEAD
         'active' => 'boolean',
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         'price' => 'decimal:2',
         'rating' => 'decimal:2',
     ];

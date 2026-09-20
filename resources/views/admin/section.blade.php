@@ -1,22 +1,16 @@
 @extends('layouts.admin', ['title' => $title])
 
 @section('content')
-<<<<<<< HEAD
 @php
-    $propertyView = $propertyView ?? 'list';
-    $displayTitle = $section === 'properties'
-        ? ($propertyView === 'list' ? 'Property List' : ($propertyView === 'edit' ? 'Edit Property' : 'Add Property'))
-        : $title;
+    $isPropertyForm = $section === 'properties' && (request('mode') === 'create' || request()->filled('edit'));
+    $pageTitle = $isPropertyForm ? ($editItem ? 'Edit Property' : 'Add Property') : $title;
+    $pageDescription = $isPropertyForm ? 'Create or update one property listing.' : $description;
 @endphp
+
 <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
     <div>
-        <h1 class="text-3xl font-bold">{{ $displayTitle }}</h1>
-=======
-<div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-    <div>
-        <h1 class="text-3xl font-bold">{{ $title }}</h1>
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
-        <p class="mt-2 text-sm text-muted-foreground">{{ $description }}</p>
+        <h1 class="text-3xl font-bold">{{ $pageTitle }}</h1>
+        <p class="mt-2 text-sm text-muted-foreground">{{ $pageDescription }}</p>
     </div>
 
     @if ($section === 'orders')
@@ -45,16 +39,18 @@
             <i data-lucide="plus" class="h-4 w-4"></i>
             Add Amenity
         </a>
-<<<<<<< HEAD
-    @elseif ($section === 'properties' && $propertyView === 'list')
-        <a href="{{ route('admin.section', ['section' => 'properties', 'view' => 'add']) }}" class="inline-flex items-center gap-2 rounded-lg bg-[#00bfb3] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#00aaa0]">
-=======
     @elseif ($section === 'properties')
-        <a href="#new-property" class="inline-flex items-center gap-2 rounded-lg bg-[#00bfb3] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#00aaa0]">
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
-            <i data-lucide="plus" class="h-4 w-4"></i>
-            Add Property
-        </a>
+        @if ($isPropertyForm)
+            <a href="{{ route('admin.section', 'properties') }}" class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold shadow-card transition hover:bg-muted">
+                <i data-lucide="list" class="h-4 w-4"></i>
+                Property List
+            </a>
+        @else
+            <a href="{{ route('admin.section', ['section' => 'properties', 'mode' => 'create']) }}" class="inline-flex items-center gap-2 rounded-lg bg-[#00bfb3] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#00aaa0]">
+                <i data-lucide="plus" class="h-4 w-4"></i>
+                Add Property
+            </a>
+        @endif
     @elseif ($section === 'reviews')
         <a href="#new-review" class="inline-flex items-center gap-2 rounded-lg bg-[#00bfb3] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#00aaa0]">
             <i data-lucide="plus" class="h-4 w-4"></i>
@@ -111,11 +107,15 @@
 
 @if ($section === 'amenities')
     <section id="new-amenity" class="mb-6 rounded-lg bg-white p-6 shadow-card">
-        <form method="POST" action="{{ route('admin.amenities.store') }}" class="grid gap-4 md:grid-cols-[1fr_auto_auto] md:items-end">
+        <form method="POST" action="{{ route('admin.amenities.store') }}" class="grid gap-4 md:grid-cols-[1fr_220px_auto_auto] md:items-end">
             @csrf
             <div>
                 <label class="mb-2 block text-sm font-medium text-muted-foreground">Amenity Name</label>
                 <input name="name" placeholder="e.g. Swimming Pool" class="w-full rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-medium text-muted-foreground">Lucide Icon</label>
+                <input name="icon" placeholder="e.g. wifi" class="w-full rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
             </div>
             <button type="submit" class="rounded-lg bg-[#00bfb3] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#00aaa0]">Add</button>
             <a href="{{ route('admin.section', 'amenities') }}" class="rounded-lg border border-border bg-white px-6 py-3 text-center text-sm font-semibold transition hover:bg-muted">Cancel</a>
@@ -123,11 +123,7 @@
     </section>
 @endif
 
-<<<<<<< HEAD
-@if ($section === 'properties' && in_array($propertyView, ['add', 'edit'], true))
-=======
-@if ($section === 'properties')
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
+@if ($isPropertyForm)
     @php($editingProperty = $editItem)
     <section id="new-property" class="mb-6 rounded-lg bg-white p-6 shadow-card">
         <form method="POST" action="{{ $editingProperty ? route('admin.properties.update', $editingProperty) : route('admin.properties.store') }}" enctype="multipart/form-data" class="space-y-5">
@@ -198,25 +194,23 @@
 
             <div>
                 <label class="mb-2 block text-sm font-medium text-muted-foreground">Description</label>
-<<<<<<< HEAD
-                <div data-rich-text-editor class="overflow-hidden rounded-lg border border-border bg-white focus-within:ring-2 focus-within:ring-[#00bfb3]/30">
-                    <div class="flex flex-wrap items-center gap-1 border-b border-border bg-muted p-2" aria-label="Description formatting tools">
-                        <button type="button" data-rich-text-command="bold" class="flex h-8 min-w-8 items-center justify-center rounded-sm px-2 text-sm font-bold hover:bg-white" title="Bold">B</button>
-                        <button type="button" data-rich-text-command="italic" class="flex h-8 min-w-8 items-center justify-center rounded-sm px-2 text-sm italic hover:bg-white" title="Italic">I</button>
-                        <button type="button" data-rich-text-command="underline" class="flex h-8 min-w-8 items-center justify-center rounded-sm px-2 text-sm underline hover:bg-white" title="Underline">U</button>
-                        <span class="mx-1 h-5 w-px bg-gray-300"></span>
-                        <button type="button" data-rich-text-command="formatBlock" data-rich-text-value="p" class="h-8 rounded-sm px-2 text-xs font-medium hover:bg-white" title="Paragraph">Paragraph</button>
-                        <button type="button" data-rich-text-command="formatBlock" data-rich-text-value="h2" class="h-8 rounded-sm px-2 text-xs font-bold hover:bg-white" title="Heading">Heading</button>
-                        <button type="button" data-rich-text-command="insertUnorderedList" class="flex h-8 min-w-8 items-center justify-center rounded-sm px-2 hover:bg-white" title="Bulleted list"><i data-lucide="list" class="h-4 w-4"></i></button>
-                        <button type="button" data-rich-text-command="insertOrderedList" class="flex h-8 min-w-8 items-center justify-center rounded-sm px-2 hover:bg-white" title="Numbered list"><i data-lucide="list-ordered" class="h-4 w-4"></i></button>
-                        <button type="button" data-rich-text-command="removeFormat" class="flex h-8 min-w-8 items-center justify-center rounded-sm px-2 hover:bg-white" title="Clear formatting"><i data-lucide="remove-formatting" class="h-4 w-4"></i></button>
+                <div class="overflow-hidden rounded-lg border border-border bg-muted" data-rich-text-editor>
+                    <div class="flex flex-wrap gap-1 border-b border-border bg-white px-3 py-2 text-muted-foreground">
+                        <button type="button" data-rich-text-command="formatBlock" data-rich-text-value="h3" class="flex h-8 min-w-8 items-center justify-center rounded px-2 text-xs font-semibold transition hover:bg-muted hover:text-primary">H3</button>
+                        <button type="button" data-rich-text-command="bold" class="flex h-8 min-w-8 items-center justify-center rounded px-2 text-sm font-bold transition hover:bg-muted hover:text-primary">B</button>
+                        <button type="button" data-rich-text-command="italic" class="flex h-8 min-w-8 items-center justify-center rounded px-2 text-sm italic transition hover:bg-muted hover:text-primary">I</button>
+                        <button type="button" data-rich-text-command="underline" class="flex h-8 min-w-8 items-center justify-center rounded px-2 text-sm underline transition hover:bg-muted hover:text-primary">U</button>
+                        <button type="button" data-rich-text-command="insertUnorderedList" class="flex h-8 min-w-8 items-center justify-center rounded px-2 transition hover:bg-muted hover:text-primary" aria-label="Bullet list"><i data-lucide="list" class="h-4 w-4"></i></button>
+                        <button type="button" data-rich-text-command="insertOrderedList" class="flex h-8 min-w-8 items-center justify-center rounded px-2 transition hover:bg-muted hover:text-primary" aria-label="Numbered list"><i data-lucide="list-ordered" class="h-4 w-4"></i></button>
+                        <button type="button" data-rich-text-command="formatBlock" data-rich-text-value="blockquote" class="flex h-8 min-w-8 items-center justify-center rounded px-2 transition hover:bg-muted hover:text-primary" aria-label="Quote"><i data-lucide="quote" class="h-4 w-4"></i></button>
+                        <button type="button" data-rich-text-command="createLink" class="flex h-8 min-w-8 items-center justify-center rounded px-2 transition hover:bg-muted hover:text-primary" aria-label="Link"><i data-lucide="link" class="h-4 w-4"></i></button>
+                        <button type="button" data-rich-text-command="removeFormat" class="flex h-8 min-w-8 items-center justify-center rounded px-2 text-xs font-semibold transition hover:bg-muted hover:text-primary">Clear</button>
                     </div>
-                    <div data-rich-text-content contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Describe the property, nearby landmarks, house rules, standout amenities, and who it is best for." class="prose prose-sm min-h-40 max-w-none px-4 py-3 outline-none empty:before:pointer-events-none empty:before:text-muted-foreground empty:before:content-[attr(data-placeholder)]"></div>
-                    <textarea data-rich-text-input name="description" class="hidden">{{ old('description', $editingProperty?->description) }}</textarea>
+                    <div contenteditable="true" data-rich-text-input class="prose prose-sm min-h-40 max-w-none bg-white px-4 py-3 text-sm outline-none focus:bg-white">
+                        {!! old('description', $editingProperty?->description) !!}
+                    </div>
+                    <textarea name="description" class="sr-only" data-rich-text-output>{{ old('description', $editingProperty?->description) }}</textarea>
                 </div>
-=======
-                <textarea name="description" placeholder="Describe the property, nearby landmarks, house rules, standout amenities, and who it is best for." class="min-h-28 w-full rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">{{ old('description', $editingProperty?->description) }}</textarea>
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             </div>
 
             <div>
@@ -361,41 +355,6 @@
 @endif
 
 @if ($section === 'orders')
-<<<<<<< HEAD
-    @php($editingOrder = $editItem)
-    <section id="new-order" class="mb-6 rounded-lg bg-white p-6 shadow-card">
-        <form method="POST" action="{{ $editingOrder ? route('admin.orders.update', $editingOrder) : route('admin.orders.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            @csrf
-            @if ($editingOrder)
-                @method('PUT')
-            @endif
-            <input name="visitor_name" value="{{ old('visitor_name', $editingOrder?->visitor_name) }}" placeholder="Guest name" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
-            <input name="phone" value="{{ old('phone', $editingOrder?->phone) }}" placeholder="Phone" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
-            <select name="property_id" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
-                <option value="">Select property</option>
-                @foreach ($properties as $property)
-                    <option value="{{ $property->id }}" @selected(old('property_id', $editingOrder?->property_id) === $property->id)>{{ $property->title }}</option>
-                @endforeach
-            </select>
-            <input name="price_per_night" type="number" min="0" step="1" value="{{ old('price_per_night', $editingOrder?->price_per_night) }}" placeholder="Price per night" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
-            <input name="num_days" type="number" min="1" value="{{ old('num_days', $editingOrder?->num_days ?? 1) }}" placeholder="Days" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
-            <input name="discount_amount" type="number" min="0" step="1" value="{{ old('discount_amount', $editingOrder?->discount_amount ?? 0) }}" placeholder="Discount" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
-            <select name="payment_method" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
-                @foreach (['cash' => 'Cash', 'mpesa' => 'M-Pesa', 'card' => 'Card', 'bank' => 'Bank'] as $value => $label)
-                    <option value="{{ $value }}" @selected(old('payment_method', $editingOrder?->payment_method ?? 'cash') === $value)>{{ $label }}</option>
-                @endforeach
-            </select>
-            <select name="status" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
-                @foreach (['pending' => 'Pending', 'paid' => 'Paid', 'cancelled' => 'Cancelled'] as $value => $label)
-                    <option value="{{ $value }}" @selected(old('status', $editingOrder?->status ?? 'pending') === $value)>{{ $label }}</option>
-                @endforeach
-            </select>
-            <button type="submit" class="rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary/90">{{ $editingOrder ? 'Save Update' : 'Create' }}</button>
-            <textarea name="notes" placeholder="Notes" class="md:col-span-2 xl:col-span-4 min-h-24 rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">{{ old('notes', $editingOrder?->notes) }}</textarea>
-            @if ($editingOrder)
-                <a href="{{ route('admin.section', 'orders') }}" class="rounded-lg border border-border px-5 py-3 text-center text-sm font-semibold transition hover:bg-muted">Cancel</a>
-            @endif
-=======
     <section id="new-order" class="mb-6 rounded-lg bg-white p-6 shadow-card">
         <form method="POST" action="{{ route('admin.orders.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             @csrf
@@ -423,7 +382,6 @@
             </select>
             <button type="submit" class="rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary/90">Create</button>
             <textarea name="notes" placeholder="Notes" class="md:col-span-2 xl:col-span-4 min-h-24 rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30"></textarea>
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
         </form>
     </section>
 @endif
@@ -515,11 +473,7 @@
     </form>
 @endif
 
-<<<<<<< HEAD
-@unless ($section === 'settings' || ($section === 'properties' && in_array($propertyView, ['add', 'edit'], true)))
-=======
-@unless ($section === 'settings')
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
+@unless ($section === 'settings' || $isPropertyForm)
 <section class="rounded-lg bg-white shadow-card">
     <div class="flex items-center gap-3 border-b border-border px-5 py-4">
         <i data-lucide="{{ $icon }}" class="h-5 w-5 text-[#00bfb3]"></i>
@@ -571,6 +525,11 @@
                                             @method('PUT')
                                             <input name="name" value="{{ $value }}" class="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-[#00bfb3] focus:ring-2 focus:ring-[#00bfb3]/20">
                                         </form>
+                                    @elseif ($section === 'amenities' && $column === 'icon')
+                                        <div class="flex min-w-[180px] items-center gap-2">
+                                            <i data-lucide="{{ $value ?: 'circle-check' }}" class="h-4 w-4 text-[#00bfb3]"></i>
+                                            <input form="amenity-edit-{{ $row->id }}" name="icon" value="{{ $value ?: 'circle-check' }}" class="w-full rounded-md border border-border px-3 py-2 text-sm outline-none focus:border-[#00bfb3] focus:ring-2 focus:ring-[#00bfb3]/20">
+                                        </div>
                                     @elseif (is_bool($value))
                                         {{ $value ? 'Yes' : 'No' }}
                                     @elseif (is_numeric($value) && (str_contains($column, 'amount') || str_contains($column, 'price')))
@@ -623,24 +582,20 @@
                                 <?php endif; ?>
 
                                 <?php if ($section === 'properties'): ?>
-<<<<<<< HEAD
                                     <div class="flex flex-wrap gap-2">
-                                        <form method="POST" action="{{ route('admin.properties.active', $row) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold transition {{ $row->active ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}" title="{{ $row->active ? 'Deactivate property' : 'Activate property' }}">
-                                                <i data-lucide="{{ $row->active ? 'eye' : 'eye-off' }}" class="h-3.5 w-3.5"></i>
-                                                {{ $row->active ? 'Active' : 'Inactive' }}
-                                            </button>
-                                        </form>
-=======
-                                    <div class="flex gap-2">
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                                         <a href="{{ $openUrl }}" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
                                             <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
                                             Open
                                         </a>
-                                        <a href="{{ route('admin.section', ['section' => 'properties', 'edit' => $row->id]) }}#new-property" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
+                                        <form method="POST" action="{{ route('admin.properties.active', $row) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold transition {{ $row->active ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' : 'bg-[#dff7f4] text-[#008f86] hover:bg-[#c9f1ed]' }}">
+                                                <i data-lucide="{{ $row->active ? 'eye-off' : 'eye' }}" class="h-3.5 w-3.5"></i>
+                                                {{ $row->active ? 'Deactivate' : 'Activate' }}
+                                            </button>
+                                        </form>
+                                        <a href="{{ route('admin.section', ['section' => 'properties', 'mode' => 'create', 'edit' => $row->id]) }}#new-property" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
                                             <i data-lucide="pencil" class="h-3.5 w-3.5"></i>
                                             Edit
                                         </a>
@@ -693,16 +648,11 @@
                                     </div>
                                 <?php endif; ?>
 
-<<<<<<< HEAD
                                 <?php if ($section === 'orders'): ?>
-                                    <div class="flex flex-wrap gap-2">
+                                    <div class="flex gap-2">
                                         <a href="{{ $openUrl }}" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
                                             <i data-lucide="receipt" class="h-3.5 w-3.5"></i>
                                             Receipt
-                                        </a>
-                                        <a href="{{ route('admin.section', ['section' => 'orders', 'edit' => $row->id]) }}#new-order" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
-                                            <i data-lucide="pencil" class="h-3.5 w-3.5"></i>
-                                            Edit
                                         </a>
                                         <form method="POST" action="{{ route('admin.orders.delete', $row) }}" onsubmit="return confirm('Delete this order?');">
                                             @csrf
@@ -716,20 +666,13 @@
                                 <?php endif; ?>
 
                                 <?php if (! in_array($section, ['amenities', 'offers', 'expenses', 'reviews', 'properties', 'blogs', 'orders'], true) && $openUrl): ?>
-=======
-                                <?php if (! in_array($section, ['amenities', 'offers', 'expenses', 'reviews', 'properties', 'blogs'], true) && $openUrl): ?>
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                                     <a href="{{ $openUrl }}" class="inline-flex items-center gap-1 rounded-md bg-[#dff7f4] px-3 py-1.5 text-xs font-semibold text-[#008f86] transition hover:bg-[#c9f1ed]">
                                         <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
-                                        {{ $section === 'orders' ? 'Receipt' : 'Open' }}
+                                        Open
                                     </a>
                                 <?php endif; ?>
 
-<<<<<<< HEAD
                                 <?php if (! in_array($section, ['amenities', 'offers', 'expenses', 'reviews', 'properties', 'blogs', 'orders'], true) && ! $openUrl): ?>
-=======
-                                <?php if (! in_array($section, ['amenities', 'offers', 'expenses', 'reviews', 'properties', 'blogs'], true) && ! $openUrl): ?>
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
                                     <span class="text-muted-foreground">-</span>
                                 <?php endif; ?>
                             </td>

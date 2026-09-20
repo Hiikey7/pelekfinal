@@ -39,19 +39,16 @@
 
 @layer utilities {
   .container {
-    width: min(95%, 1200px);
+    width: min(99%, 1200px);
     margin-inline: auto;
   }
 
-<<<<<<< HEAD
-  @media (max-width: 639px) {
-    .property-page-container {
-      width: 99%;
+  @media (min-width: 640px) {
+    .container {
+      width: min(95%, 1200px);
     }
   }
 
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
   .bg-primary { background-color: hsl(var(--primary)); }
   .bg-secondary { background-color: hsl(var(--secondary)); }
   .bg-muted { background-color: hsl(var(--muted)); }

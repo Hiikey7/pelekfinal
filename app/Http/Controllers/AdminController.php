@@ -77,12 +77,6 @@ class AdminController extends Controller
         return view('admin.section', [
             'section' => $section,
             'currentSection' => $section,
-<<<<<<< HEAD
-            'propertyView' => $section === 'properties'
-                ? ($request->filled('edit') ? 'edit' : ($request->query('view') === 'add' ? 'add' : 'list'))
-                : null,
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             ...$this->sectionData($request, $section),
         ]);
     }
@@ -114,11 +108,12 @@ class AdminController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
+            'icon' => ['nullable', 'string', 'max:80'],
         ]);
 
         DB::table('amenities')->updateOrInsert(
             ['name' => $data['name']],
-            ['id' => (string) Str::uuid(), 'created_at' => now()]
+            ['id' => (string) Str::uuid(), 'icon' => $data['icon'] ?: 'circle-check', 'created_at' => now()]
         );
 
         return back()->with('status', 'Amenity added.');
@@ -130,10 +125,12 @@ class AdminController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
+            'icon' => ['nullable', 'string', 'max:80'],
         ]);
 
         DB::table('amenities')->where('id', $id)->update([
             'name' => $data['name'],
+            'icon' => $data['icon'] ?: 'circle-check',
         ]);
 
         return redirect()->route('admin.section', 'amenities')->with('status', 'Amenity updated.');
@@ -242,46 +239,6 @@ class AdminController extends Controller
         return back()->with('status', 'Order added.');
     }
 
-<<<<<<< HEAD
-    public function updateOrder(Request $request, Order $order): RedirectResponse
-    {
-        $this->requireAdmin();
-
-        $data = $request->validate([
-            'visitor_name' => ['required', 'string', 'max:180'],
-            'phone' => ['nullable', 'string', 'max:80'],
-            'property_id' => ['nullable', 'exists:properties,id'],
-            'price_per_night' => ['required', 'numeric', 'min:0'],
-            'num_days' => ['required', 'integer', 'min:1'],
-            'discount_amount' => ['nullable', 'numeric', 'min:0'],
-            'payment_method' => ['required', 'string', 'max:80'],
-            'status' => ['required', 'string', 'max:80'],
-            'notes' => ['nullable', 'string'],
-        ]);
-
-        $property = filled($data['property_id'] ?? null)
-            ? Property::query()->find($data['property_id'])
-            : null;
-        $subtotal = (float) $data['price_per_night'] * (int) $data['num_days'];
-        $discount = min((float) ($data['discount_amount'] ?? 0), $subtotal);
-
-        $order->update([
-            'visitor_name' => $data['visitor_name'],
-            'phone' => $data['phone'] ?? '',
-            'property_id' => $property?->id,
-            'property_title' => $property?->title ?? '',
-            'price_per_night' => $data['price_per_night'],
-            'num_days' => $data['num_days'],
-            'discount_amount' => $discount,
-            'total_amount' => $subtotal - $discount,
-            'payment_method' => $data['payment_method'],
-            'status' => $data['status'],
-            'notes' => $data['notes'] ?? '',
-        ]);
-
-        return redirect()->route('admin.section', 'orders')->with('status', 'Order updated.');
-    }
-
     public function deleteOrder(Order $order): RedirectResponse
     {
         $this->requireAdmin();
@@ -291,8 +248,6 @@ class AdminController extends Controller
         return redirect()->route('admin.section', 'orders')->with('status', 'Order deleted.');
     }
 
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     public function storeBlog(Request $request): RedirectResponse
     {
         $this->requireAdmin();
@@ -444,7 +399,7 @@ class AdminController extends Controller
 
         $offer->fill([
             'title' => $data['title'],
-            'description' => $data['description'],
+            'description' => $this->sanitizeRichText($data['description']),
             'image' => $image,
             'cta_text' => $isPromo ? 'Copy Code' : ($data['cta_text'] ?: 'View Now'),
             'cta_link' => $isPromo ? '' : ($data['cta_link'] ?: '/'),
@@ -490,10 +445,6 @@ class AdminController extends Controller
         $images = $this->storedImagePaths($request, 'images');
         $images = $this->orderedImagesWithCover($images, (int) ($data['cover_image_index'] ?? 0));
         $coverImage = $images[0] ?? '/images/property-1.jpg';
-<<<<<<< HEAD
-        $data['description'] = $this->sanitizeRichText($data['description']);
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
 
         Property::query()->create([
             'title' => $data['title'],
@@ -506,7 +457,7 @@ class AdminController extends Controller
             'type' => $data['type'] ?? '',
             'image' => $coverImage,
             'images' => $images ?: [$coverImage],
-            'description' => $data['description'],
+            'description' => $this->sanitizeRichText($data['description']),
             'amenities' => $data['amenities'] ?? [],
             'bedrooms' => $data['bedrooms'],
             'bathrooms' => $data['bathrooms'],
@@ -520,13 +471,7 @@ class AdminController extends Controller
             'social_media_type' => $data['social_media_type'] ?? '',
         ]);
 
-<<<<<<< HEAD
-        return redirect()
-            ->route('admin.section', ['section' => 'properties', 'view' => 'list'])
-            ->with('status', 'Property created.');
-=======
         return back()->with('status', 'Property created.');
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     }
 
     public function updateProperty(Request $request, Property $property): RedirectResponse
@@ -563,10 +508,6 @@ class AdminController extends Controller
         $existingImages = $property->images ?: [$property->image];
         $finalImages = $images ?: $existingImages;
         $coverImage = $finalImages[0] ?? $property->image ?: '/images/property-1.jpg';
-<<<<<<< HEAD
-        $data['description'] = $this->sanitizeRichText($data['description']);
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
 
         $property->update([
             'title' => $data['title'],
@@ -577,7 +518,7 @@ class AdminController extends Controller
             'type' => $data['type'] ?? '',
             'image' => $coverImage,
             'images' => $finalImages,
-            'description' => $data['description'],
+            'description' => $this->sanitizeRichText($data['description']),
             'amenities' => $data['amenities'] ?? [],
             'bedrooms' => $data['bedrooms'],
             'bathrooms' => $data['bathrooms'],
@@ -603,18 +544,16 @@ class AdminController extends Controller
         return redirect()->route('admin.section', 'properties')->with('status', 'Property deleted.');
     }
 
-<<<<<<< HEAD
     public function togglePropertyActive(Property $property): RedirectResponse
     {
         $this->requireAdmin();
 
         $property->update(['active' => ! $property->active]);
 
-        return back()->with('status', $property->active ? 'Property activated.' : 'Property deactivated.');
+        return redirect()->route('admin.section', 'properties')
+            ->with('status', $property->active ? 'Property activated.' : 'Property deactivated.');
     }
 
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     public function exportOrders(Request $request): Response
     {
         $this->requireAdmin();
@@ -715,7 +654,7 @@ class AdminController extends Controller
                 'icon' => 'home',
                 'source' => 'model',
                 'model' => Property::class,
-                'columns' => ['title', 'location', 'category', 'price'],
+                'columns' => ['title', 'location', 'category', 'price', 'active'],
             ],
             'blogs' => [
                 'title' => 'Blogs',
@@ -763,7 +702,7 @@ class AdminController extends Controller
                 'icon' => 'list-checks',
                 'source' => 'table',
                 'table' => 'amenities',
-                'columns' => ['name', 'created_at'],
+                'columns' => ['name', 'icon', 'created_at'],
             ],
             'settings' => [
                 'title' => 'Settings',
@@ -909,10 +848,6 @@ class AdminController extends Controller
             'blogs' => Blog::query()->find($request->query('edit')),
             'expenses' => DB::table('expenses')->where('id', $request->query('edit'))->first(),
             'reviews' => Review::query()->find($request->query('edit')),
-<<<<<<< HEAD
-            'orders' => Order::query()->find($request->query('edit')),
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
             default => null,
         };
     }
@@ -1049,19 +984,16 @@ class AdminController extends Controller
         return array_values([$cover, ...$images]);
     }
 
-<<<<<<< HEAD
-    private function sanitizeRichText(string $html): string
+    private function sanitizeRichText(string $value): string
     {
-        $allowedTags = '<p><br><strong><b><em><i><u><h2><h3><blockquote><ul><ol><li>';
-        $html = strip_tags($html, $allowedTags);
+        $allowedTags = '<p><br><strong><b><em><i><u><ul><ol><li><blockquote><h3><a>';
+        $clean = strip_tags($value, $allowedTags);
+        $clean = preg_replace('/\s+on\w+\s*=\s*(".*?"|\'.*?\'|[^\s>]+)/i', '', $clean) ?? $clean;
+        $clean = preg_replace('/href\s*=\s*("|\')\s*javascript:.*?\1/i', 'href="#"', $clean) ?? $clean;
 
-        // The editor does not need element attributes. Removing them also blocks
-        // event handlers, inline styles, and unsafe URLs from reaching the page.
-        return trim((string) preg_replace('/<([a-z][a-z0-9]*)\b[^>]*>/i', '<$1>', $html));
+        return trim($clean);
     }
 
-=======
->>>>>>> e2a2cd99738bbb7dfe22bb748399b5c35b526e01
     private function publicStorageUrl(string $path): string
     {
         return '/storage/'.ltrim($path, '/');
