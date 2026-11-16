@@ -4,7 +4,7 @@ This project is a Laravel-based application using Blade templates and Livewire f
 
 ## Stack
 
-- Backend: Laravel 12 (PHP 8.2)
+- Backend: Laravel 12 (PHP 8.2–8.5)
 - Database: MySQL
 - Frontend templates: Blade
 - Styling: Tailwind CSS (Vite)
@@ -14,7 +14,7 @@ This project is a Laravel-based application using Blade templates and Livewire f
 - PWA: `manifest.webmanifest` + `sw.js` in `public/`
 - Dependency management: Composer (PHP) and npm/Vite (frontend)
 - Version control: Git (GitHub)
-- Hosting target: HostPinnacle cPanel (PHP 8.2, Apache)
+- Hosting target: HostPinnacle cPanel (Apache; PHP 8.2 minimum, newest patched version recommended)
 - SSL: AutoSSL / HTTPS (use cPanel to enable)
 
 ## Environment

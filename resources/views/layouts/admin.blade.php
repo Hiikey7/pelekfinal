@@ -30,7 +30,7 @@
                         ['key' => 'reviews', 'label' => 'Reviews', 'icon' => 'star', 'url' => route('admin.section', 'reviews')],
                         ['key' => 'expenses', 'label' => 'Expenses', 'icon' => 'receipt', 'url' => route('admin.section', 'expenses')],
                         ['key' => 'offers', 'label' => 'Offers', 'icon' => 'gift', 'url' => route('admin.section', 'offers')],
-                        ['key' => 'orders', 'label' => 'Orders', 'icon' => 'shopping-cart', 'url' => route('admin.section', 'orders')],
+                        ['key' => 'orders', 'label' => 'Bookings', 'icon' => 'calendar-check', 'url' => route('admin.section', 'orders')],
                         ['key' => 'amenities', 'label' => 'Amenities', 'icon' => 'list-checks', 'url' => route('admin.section', 'amenities')],
                         ['key' => 'settings', 'label' => 'Settings', 'icon' => 'settings', 'url' => route('admin.section', 'settings')],
                     ];

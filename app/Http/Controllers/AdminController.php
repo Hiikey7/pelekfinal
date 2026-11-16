@@ -87,6 +87,7 @@ class AdminController extends Controller
 
         $settings = $request->validate([
             'whatsapp' => ['nullable', 'string', 'max:80'],
+            'booking_email' => ['required', 'email', 'max:255'],
             'instagram' => ['nullable', 'url', 'max:255'],
             'tiktok' => ['nullable', 'url', 'max:255'],
             'facebook' => ['nullable', 'url', 'max:255'],
@@ -206,7 +207,11 @@ class AdminController extends Controller
 
         $data = $request->validate([
             'visitor_name' => ['required', 'string', 'max:180'],
+            'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:80'],
+            'booking_date' => ['nullable', 'date'],
+            'check_out_date' => ['nullable', 'date'],
+            'guest_count' => ['nullable', 'integer', 'min:1'],
             'property_id' => ['nullable', 'exists:properties,id'],
             'price_per_night' => ['required', 'numeric', 'min:0'],
             'num_days' => ['required', 'integer', 'min:1'],
@@ -224,7 +229,11 @@ class AdminController extends Controller
 
         Order::query()->create([
             'visitor_name' => $data['visitor_name'],
+            'email' => $data['email'] ?? '',
             'phone' => $data['phone'] ?? '',
+            'booking_date' => $data['booking_date'] ?? null,
+            'check_out_date' => $data['check_out_date'] ?? null,
+            'guest_count' => $data['guest_count'] ?? null,
             'property_id' => $property?->id,
             'property_title' => $property?->title ?? '',
             'price_per_night' => $data['price_per_night'],
@@ -689,12 +698,12 @@ class AdminController extends Controller
                 'columns' => ['title', 'promo_code', 'offer_type', 'active'],
             ],
             'orders' => [
-                'title' => 'Orders',
-                'description' => 'Bookings, receipts, and order totals.',
-                'icon' => 'shopping-cart',
+                'title' => 'Bookings',
+                'description' => 'Property booking requests and guest details.',
+                'icon' => 'calendar-check',
                 'source' => 'model',
                 'model' => Order::class,
-                'columns' => ['visitor_name', 'property_title', 'total_amount', 'status'],
+                'columns' => ['visitor_name', 'email', 'phone', 'property_title', 'booking_date', 'check_out_date', 'guest_count', 'num_days', 'total_amount', 'status'],
             ],
             'amenities' => [
                 'title' => 'Amenities',

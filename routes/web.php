@@ -12,6 +12,7 @@ Route::get('/storage/{path}', [PublicStorageController::class, 'show'])
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/properties', [PageController::class, 'properties'])->name('properties');
 Route::get('/property/{property}', [PageController::class, 'property'])->name('property.show');
+Route::post('/property/{property}/book', [PageController::class, 'bookProperty'])->name('property.book');
 Route::get('/blog', [PageController::class, 'blog'])->name('blog');
 Route::get('/blog/{blog}', [PageController::class, 'blogDetail'])->name('blog.show');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');

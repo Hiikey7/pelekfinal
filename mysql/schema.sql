@@ -101,9 +101,13 @@ CREATE TABLE IF NOT EXISTS amenities (
 CREATE TABLE IF NOT EXISTS orders (
   id CHAR(32) PRIMARY KEY,
   visitor_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL DEFAULT '',
   phone VARCHAR(80) NOT NULL DEFAULT '',
   property_id CHAR(32) NULL,
   property_title VARCHAR(255) NOT NULL DEFAULT '',
+  booking_date DATE NULL,
+  check_out_date DATE NULL,
+  guest_count INT UNSIGNED NULL,
   price_per_night DECIMAL(12,2) NOT NULL DEFAULT 0,
   num_days INT NOT NULL DEFAULT 1,
   total_amount DECIMAL(12,2) NOT NULL DEFAULT 0,

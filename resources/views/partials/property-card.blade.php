@@ -3,8 +3,10 @@
         <a href="{{ route('property.show', $property) }}" class="block h-full w-full">
         <img src="{{ $property->image ?: '/images/property-1.jpg' }}" alt="{{ $property->title }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
         </a>
-        <div class="absolute left-3 right-3 top-3 flex items-center justify-between gap-3">
+        <div class="absolute left-3 top-3">
             <span class="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold capitalize text-secondary shadow-sm backdrop-blur">{{ str_replace('_', ' ', $property->category) }}</span>
+        </div>
+        <div class="absolute right-3 top-3">
             <button type="button" data-wishlist-toggle data-wishlist-icon data-property-id="{{ $property->id }}" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-secondary shadow-sm backdrop-blur transition-colors hover:bg-secondary hover:text-white" aria-label="Add to Wishlist">
                 <i data-lucide="heart" class="h-4 w-4"></i>
             </button>

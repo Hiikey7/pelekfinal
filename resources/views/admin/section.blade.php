@@ -86,6 +86,11 @@
                 <p class="mt-1 text-xs text-muted-foreground">Used in mobile nav and property pages</p>
             </div>
             <div>
+                <label class="mb-2 block text-sm font-semibold">Booking notification email</label>
+                <input name="booking_email" type="email" required value="{{ old('booking_email', $settings['booking_email'] ?? config('admin.email')) }}" placeholder="bookings@pelekproperties.co.ke" class="w-full rounded-lg border border-border px-4 py-3 text-sm outline-none focus:border-[#00bfb3] focus:ring-2 focus:ring-[#00bfb3]/20">
+                <p class="mt-1 text-xs text-muted-foreground">Booking requests will be emailed to this address.</p>
+            </div>
+            <div>
                 <label class="mb-2 block text-sm font-semibold">Instagram URL</label>
                 <input name="instagram" value="{{ old('instagram', $settings['instagram'] ?? '') }}" placeholder="https://instagram.com/yourpage" class="w-full rounded-lg border border-border px-4 py-3 text-sm outline-none focus:border-[#00bfb3] focus:ring-2 focus:ring-[#00bfb3]/20">
             </div>
@@ -359,7 +364,9 @@
         <form method="POST" action="{{ route('admin.orders.store') }}" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             @csrf
             <input name="visitor_name" placeholder="Guest name" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+            <input name="email" type="email" placeholder="Guest email" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
             <input name="phone" placeholder="Phone" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+            <input name="booking_date" type="date" aria-label="Booking date" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
             <select name="property_id" class="rounded-lg border-0 bg-muted px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
                 <option value="">Select property</option>
                 @foreach ($properties as $property)
