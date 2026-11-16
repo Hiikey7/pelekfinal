@@ -8,9 +8,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('properties', function (Blueprint $table) {
-            $table->boolean('active')->default(true)->after('featured');
-        });
+        if (! Schema::hasColumn('properties', 'active')) {
+            Schema::table('properties', function (Blueprint $table) {
+                $table->boolean('active')->default(true)->after('featured');
+            });
+        }
     }
 
     public function down(): void
