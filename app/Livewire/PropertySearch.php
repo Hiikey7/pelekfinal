@@ -16,10 +16,8 @@ class PropertySearch extends Component
     public string $maxPrice = '';
 
     protected $queryString = [
-        'category' => ['except' => []],
         'location' => ['except' => ''],
         'maxPrice' => ['except' => ''],
-        'bedrooms' => ['except' => []],
     ];
 
     public function mount(): void
@@ -38,6 +36,8 @@ class PropertySearch extends Component
 
         $this->category = $this->cleanCategories($category);
         $this->bedrooms = $this->cleanBedrooms($bedrooms);
+        $this->location = trim((string) request()->query('location', ''));
+        $this->maxPrice = trim((string) request()->query('maxPrice', ''));
     }
 
     public function updating($name): void
@@ -54,6 +54,11 @@ class PropertySearch extends Component
         $this->resetPage();
     }
 
+    public function applyFilters(): void
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $categories = $this->cleanCategories($this->category);
@@ -65,20 +70,10 @@ class PropertySearch extends Component
         $properties = $this->exactPropertyQuery($categories, $bedrooms, $location, $maxPrice)
             ->latest()
             ->paginate(9);
-        $showingSimilar = false;
-
-        if ($hasFilters && $properties->total() === 0) {
-            $properties = $this->similarPropertyQuery($categories, $bedrooms, $location, $maxPrice)
-                ->latest()
-                ->paginate(9);
-            $showingSimilar = $properties->total() > 0;
-        }
-
         return view('livewire.property-search', [
             'properties' => $properties,
             'selectedBedrooms' => $bedrooms,
             'hasFilters' => $hasFilters,
-            'showingSimilar' => $showingSimilar,
         ]);
     }
 
@@ -90,29 +85,6 @@ class PropertySearch extends Component
             ->when($location !== '', fn ($query) => $query->where('location', 'like', "%{$location}%"))
             ->when($maxPrice !== '', fn ($query) => $query->where('price', '<=', (float) $maxPrice))
             ->when($bedrooms !== [], fn ($query) => $query->whereIn('bedrooms', $bedrooms));
-    }
-
-    private function similarPropertyQuery(array $categories, array $bedrooms, string $location, string $maxPrice)
-    {
-        return Property::query()
-            ->where('active', true)
-            ->where(function ($query) use ($categories, $bedrooms, $location, $maxPrice) {
-                if ($categories !== []) {
-                    $query->orWhereIn('category', $categories);
-                }
-
-                if ($location !== '') {
-                    $query->orWhere('location', 'like', "%{$location}%");
-                }
-
-                if ($maxPrice !== '') {
-                    $query->orWhere('price', '<=', (float) $maxPrice);
-                }
-
-                if ($bedrooms !== []) {
-                    $query->orWhereIn('bedrooms', $bedrooms);
-                }
-            });
     }
 
     private function cleanCategories(array $categories): array

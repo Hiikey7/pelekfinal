@@ -628,7 +628,20 @@ class AdminController extends Controller
     {
         $config = $this->sections()[$section];
 
-        if ($section === 'orders') {
+        if ($section === 'properties') {
+            $search = trim($request->string('search')->toString());
+            $category = $request->string('category')->toString();
+            $rows = Property::query()
+                ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search) {
+                    $query->where('title', 'like', '%'.$search.'%')
+                        ->orWhere('location', 'like', '%'.$search.'%');
+                }))
+                ->when($category !== '', fn ($query) => $query->where('category', $category))
+                ->latest()
+                ->orderBy('id')
+                ->paginate(20)
+                ->withQueryString();
+        } elseif ($section === 'orders') {
             $rows = $this->filteredOrders($request)->limit(25)->get();
         } elseif ($section === 'expenses') {
             $rows = $this->filteredExpenses($request)->limit(25)->get();

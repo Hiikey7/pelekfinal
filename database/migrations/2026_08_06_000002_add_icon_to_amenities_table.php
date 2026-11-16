@@ -8,15 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasColumn('amenities', 'icon')) {
-            Schema::table('amenities', function (Blueprint $table) {
-                $table->string('icon', 80)->default('circle-check')->after('name');
-            });
+        if (Schema::hasColumn('amenities', 'icon')) {
+            return;
         }
+
+        Schema::table('amenities', function (Blueprint $table) {
+            $table->string('icon', 80)->default('circle-check')->after('name');
+        });
     }
 
     public function down(): void
     {
+        if (! Schema::hasColumn('amenities', 'icon')) {
+            return;
+        }
+
         Schema::table('amenities', function (Blueprint $table) {
             $table->dropColumn('icon');
         });

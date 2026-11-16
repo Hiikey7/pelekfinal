@@ -480,6 +480,30 @@
     </form>
 @endif
 
+@if ($section === 'properties' && ! $isPropertyForm)
+    <form method="GET" action="{{ route('admin.section', 'properties') }}" class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div class="min-w-0 flex-1">
+            <label for="property-search" class="mb-2 block text-sm font-medium">Search properties</label>
+            <input id="property-search" type="search" name="search" value="{{ request('search') }}" placeholder="Title or location" class="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+        </div>
+        <div>
+            <label for="property-category" class="mb-2 block text-sm font-medium">Category</label>
+            <select id="property-category" name="category" class="w-full rounded-lg border border-border bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#00bfb3]/30">
+                <option value="">All categories</option>
+                @foreach (['rental' => 'Rental', 'airbnb' => 'Airbnb', 'sale' => 'Sale', 'commercial_spaces' => 'Commercial Spaces'] as $value => $label)
+                    <option value="{{ $value }}" @selected(request('category') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+        <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-[#00bfb3] px-5 py-3 text-sm font-semibold text-white hover:bg-[#00aaa0]">
+            <i data-lucide="search" class="h-4 w-4"></i> Search
+        </button>
+        @if (request()->filled('search') || request()->filled('category'))
+            <a href="{{ route('admin.section', 'properties') }}" class="px-4 py-3 text-center text-sm font-semibold hover:underline">Clear</a>
+        @endif
+    </form>
+@endif
+
 @unless ($section === 'settings' || $isPropertyForm)
 <section class="rounded-lg bg-white shadow-card">
     <div class="flex items-center gap-3 border-b border-border px-5 py-4">
@@ -495,6 +519,8 @@
                 No expenses recorded
             @elseif ($section === 'blogs')
                 No blogs yet
+            @elseif ($section === 'properties')
+                No properties found.
             @elseif ($section === 'amenities')
                 No amenities yet
             @else
@@ -688,6 +714,23 @@
                 </tbody>
             </table>
         </div>
+    @endif
+    @if ($section === 'properties')
+        <nav aria-label="Property pagination" class="flex flex-col gap-3 border-t border-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-sm text-muted-foreground">Page {{ $rows->currentPage() }} of {{ $rows->lastPage() }} &middot; {{ $rows->total() }} properties</p>
+            <div class="flex items-center gap-3">
+                @if ($rows->onFirstPage())
+                    <button type="button" disabled class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-muted-foreground opacity-50"><i data-lucide="chevron-left" class="h-4 w-4"></i> Previous</button>
+                @else
+                    <a href="{{ $rows->previousPageUrl() }}" rel="prev" class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-muted"><i data-lucide="chevron-left" class="h-4 w-4"></i> Previous</a>
+                @endif
+                @if ($rows->hasMorePages())
+                    <a href="{{ $rows->nextPageUrl() }}" rel="next" class="inline-flex items-center gap-2 rounded-lg bg-[#00bfb3] px-4 py-2 text-sm font-semibold text-white hover:bg-[#00aaa0]">Next <i data-lucide="chevron-right" class="h-4 w-4"></i></a>
+                @else
+                    <button type="button" disabled class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-muted-foreground opacity-50">Next <i data-lucide="chevron-right" class="h-4 w-4"></i></button>
+                @endif
+            </div>
+        </nav>
     @endif
 </section>
 @endunless

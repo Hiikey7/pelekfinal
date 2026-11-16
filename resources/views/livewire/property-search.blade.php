@@ -29,14 +29,9 @@
                 @endforeach
             </div>
         </div>
-        <button type="button" class="rounded-lg bg-secondary px-5 py-2 font-semibold text-white">Filter</button>
+        <button type="button" wire:click="applyFilters" class="rounded-lg bg-secondary px-5 py-2 font-semibold text-white transition-colors hover:bg-primary">Filter</button>
         </div>
     </div>
-    @if ($showingSimilar)
-        <div class="mb-5 rounded-xl border border-secondary/20 bg-secondary/10 px-4 py-3 text-sm font-medium text-primary">
-            No exact matches found. Showing similar properties that match some of your filters.
-        </div>
-    @endif
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         @forelse($properties as $property)
             @include('partials.property-card', ['property' => $property])

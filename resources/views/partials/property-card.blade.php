@@ -16,14 +16,18 @@
         <h3 class="mb-2 line-clamp-2 font-semibold text-card-foreground">{{ $property->title }}</h3>
         <p class="mb-4 flex items-center gap-1 text-sm text-muted-foreground"><i data-lucide="map-pin" class="h-4 w-4"></i>{{ $property->location }}</p>
         @php
+            $isStudio = filled($property->bedrooms) && (int) $property->bedrooms === 0;
             $stats = collect([
                 ['value' => $property->bedrooms, 'label' => 'bed'],
                 ['value' => $property->bathrooms, 'label' => 'bath'],
                 ['value' => $property->guests, 'label' => 'guest'],
             ])->filter(fn ($stat) => filled($stat['value']) && (int) $stat['value'] > 0);
         @endphp
-        @if ($stats->isNotEmpty())
-            <div class="mb-4 flex items-center gap-4 text-sm text-muted-foreground">
+        @if ($isStudio || $stats->isNotEmpty())
+            <div class="mb-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                @if ($isStudio)
+                    <span>Studio</span>
+                @endif
                 @foreach ($stats as $stat)
                     <span>{{ $stat['value'] }} {{ str($stat['label'])->plural((int) $stat['value']) }}</span>
                 @endforeach
